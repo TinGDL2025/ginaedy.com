@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Invitación - Gina & Edy - ginaedy.com</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>body{font-family:Inter,sans-serif;background:#fdfaf6}.serif{font-family:'Cormorant Garamond',serif}</style>
+</head>
+<body>
+<div class="max-w-sm mx-auto min-h-screen bg-white shadow-sm">
+<div class="text-center py-8 px-6">
+<div class="w-20 h-20 mx-auto rounded-full border-2 border-[#c9a88a] flex items-center justify-center"><span class="serif text-2xl font-bold">G&E</span></div>
+<h1 class="serif text-3xl mt-4">Gina & Edy</h1>
+<p class="text-[10px] tracking-[0.3em] mt-1">02.01.27 - ginaedy.com</p>
+<p class="text-[11px] mt-6 text-gray-600">¡Estás invitado a nuestra boda!</p>
+<div id="card" class="mt-6 bg-[#fdfaf6] p-5 rounded-2xl text-left">
+<p class="text-xs">Cargando invitación...</p>
+</div>
+<div id="formConfirm" class="hidden mt-6 text-left">
+<label class="text-[11px]">¿Cuántos asistirán?</label><input id="cuantos" type="number" class="w-full border rounded-full px-4 py-2 text-sm mt-1">
+<label class="text-[11px] mt-3 block">Escribe quiénes vienen</label><textarea id="quienes" class="w-full border rounded-xl px-3 py-2 text-sm mt-1" rows="2"></textarea>
+<button onclick="confirmar()" class="w-full mt-4 bg-[#2f4a44] text-white py-3 rounded-full text-sm">Confirmar Asistencia</button>
+<div id="msgOk" class="hidden mt-4 p-3 bg-green-600 text-white rounded-xl text-xs text-center"></div>
+<a id="btnFoto" href="subir-foto.html" class="hidden mt-3 block w-full text-center bg-[#c9a88a] text-white py-3 rounded-full text-sm">📸 Subir foto para pantalla</a>
+</div>
+<p class="text-[10px] text-gray-400 mt-8">Miguel Bernal 3432, Col. San Andrés, GDL<br><a href="https://maps.google.com/?q=Miguel+Bernal+3432+Guadalajara" target="_blank" class="underline">Ver mapa</a></p>
+</div>
+</div>
+<script>
+function getId(){ const p=new URLSearchParams(location.search); return p.get('id')||'010'; }
+let invitados = JSON.parse(localStorage.getItem('ge_inv')||'[]');
+if(invitados.length===0){
+ invitados=[{id:'010',titular:'Sandra López',lugares:3,grupo:'Sandra López, Martín Guerrero (esposo), Irene López (mamá)',mesa:'10',familia:'Gina',confirmados:0}];
+}
+const id=getId(); const inv=invitados.find(i=>i.id===id)||invitados[0];
+document.getElementById('card').innerHTML=`<p class="font-bold">Hola ${inv.titular}!</p><p class="text-[11px] mt-2">Tienes <b>${inv.lugares} lugares</b> reservados</p><p class="text-[11px] mt-1">Mesa: <b class="text-[#c9a88a] text-lg">${inv.mesa}</b></p><p class="text-[10px] mt-2 text-gray-500">Grupo: ${inv.grupo}</p>`;
+document.getElementById('formConfirm').classList.remove('hidden');
+document.getElementById('cuantos').value=inv.confirmados||'';
+function confirmar(){
+ const c=parseInt(document.getElementById('cuantos').value)||0; const q=document.getElementById('quienes').value;
+ inv.confirmados=c; inv.confirmadosNombres=q; inv.entregada=true;
+ localStorage.setItem('ge_inv', JSON.stringify(invitados));
+ document.getElementById('msgOk').innerHTML=`¡Gracias ${inv.titular}! Confirmaste ${c} lugares en Mesa ${inv.mesa}`; document.getElementById('msgOk').classList.remove('hidden');
+ document.getElementById('btnFoto').classList.remove('hidden');
+ document.getElementById('btnFoto').href='subir-foto.html?id='+inv.id;
+}
+</script>
+</body></html>
