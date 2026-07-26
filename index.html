@@ -3,31 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gina & Edy - 02.01.27 - ginaedy.com</title>
+<title>Gina & Edy - 02.01.27</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-<style>body{font-family:'Inter',sans-serif} .serif{font-family:'Cormorant Garamond',serif}</style>
+<style>
+body{font-family:'Inter',sans-serif;background:#fdfaf6}
+.serif{font-family:'Cormorant Garamond',serif}
+.hero-video{width:100%;height:100vh;object-fit:cover;background:#f5f1eb}
+</style>
 </head>
 <body class="bg-[#fdfaf6] text-[#2f4a44]">
-<!-- HEADER -->
-<header class="text-center py-16 px-4">
-<div class="w-28 h-28 mx-auto rounded-full border-2 border-[#c9a88a] flex items-center justify-center mb-6 bg-white"><span class="serif text-4xl font-bold">G&E</span></div>
-<h1 class="serif text-5xl md:text-6xl font-light">Gina & Edy</h1>
-<p class="tracking-[0.4em] text-xs mt-4 text-[#c9a88a]">02 . 01 . 27</p>
-<p class="text-sm mt-2 text-gray-600">Miguel Bernal 3432, Col. San Andrés, Guadalajara, Jal.</p>
-<div class="mt-8 flex justify-center gap-3">
-<a href="invitacion.html?id=010" class="bg-[#2f4a44] text-white px-8 py-3 rounded-full text-sm">Ver invitación de ejemplo</a>
-<a href="proyeccion.html" class="border border-[#2f4a44] text-[#2f4a44] px-8 py-3 rounded-full text-sm">Pantalla Proyección</a>
-</div>
-</header>
-
-<!-- DETAILS -->
-<section class="max-w-4xl mx-auto px-6 py-12 grid md:grid-cols-3 gap-8 text-center">
-<div class="bg-white p-6 rounded-2xl shadow-sm"><p class="text-2xl">⛪</p><h3 class="serif text-xl mt-2">Ceremonia</h3><p class="text-xs mt-2 text-gray-500">Templo San Andrés<br>5:00 PM</p></div>
-<div class="bg-white p-6 rounded-2xl shadow-sm"><p class="text-2xl">🥂</p><h3 class="serif text-xl mt-2">Recepción</h3><p class="text-xs mt-2 text-gray-500">Salón Miguel Bernal 3432<br>7:00 PM - Mesas numeradas</p></div>
-<div class="bg-white p-6 rounded-2xl shadow-sm"><p class="text-2xl">📸</p><h3 class="serif text-xl mt-2">Fotos</h3><p class="text-xs mt-2 text-gray-500">Sube tu foto con QR<br>Aparecerá en pantalla gigante</p></div>
-</section>
-
-<footer class="text-center py-10 text-[10px] text-gray-400">ginaedy.com - Sistema con mesas numeradas - Admin: ginaedy.com/admin.html</footer>
-</body>
-</html>
+<!-- VIDEO HERO -->
+<div class="relative w-full h-screen overflow-hidden bg-[#f5f1eb]">
+<video id="heroVideo" class="hero-video" autoplay muted loop playsinline>
+<source src="logo_animado_completo.mp4" type="video/mp4">
+Tu navegador no soporta video.
+</video>
+<div class="absolute inset-0 flex flex-col items-center justify
