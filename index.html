@@ -3,25 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gina & Edy - 02.01.27</title>
+<title>Gina & Edy - 02.01.27 - 8 Secciones</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 .serif{font-family:'Cormorant Garamond',serif}
-.hero{width:100%;background:#fdfaf6;display:flex;align-items:center;justify-content:center;padding:20px 0 10px 0;position:relative}
+.hero{width:100%;background:#fdfaf6;display:flex;align-items:center;justify-content:center;padding:20px 0;position:relative}
 .hero video{width:100%;max-width:520px;height:auto;max-height:68vh;object-fit:contain;display:block;margin:0 auto;background:#fdfaf6;border-radius:20px}
 .fallback{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;z-index:1}
 .container{max-width:520px;margin:0 auto;padding:0 20px 40px 20px}
-.card{background:white;border-radius:28px;padding:28px 24px;box-shadow:0 10px 40px rgba(47,74,68,0.08);border:1px solid rgba(201,168,138,0.15);margin-top:12px}
+.card{background:white;border-radius:28px;padding:28px 24px;box-shadow:0 10px 40px rgba(47,74,68,0.08);border:1px solid rgba(201,168,138,0.15);margin-top:24px}
 .badge{display:inline-block;background:#fdfaf6;border:1px solid #c9a88a33;border-radius:30px;padding:6px 14px;font-size:10px;letter-spacing:2px;margin-bottom:14px}
 .input{width:100%;border:1px solid #e8e0d6;background:#fdfaf6;border-radius:30px;padding:14px 18px;font-size:14px;margin-top:12px;outline:none}
-.btn{width:100%;background:#2f4a44;color:white;border:none;padding:16px;border-radius:30px;margin-top:16px;cursor:pointer;font-size:13px;letter-spacing:2px}
+.btn{width:100%;background:#2f4a44;color:white;border:none;padding:16px;border-radius:30px;margin-top:16px;cursor:pointer;font-size:13px;letter-spacing:2px;font-weight:500}
+.btn-outline{width:100%;background:white;border:1px solid #2f4a44;color:#2f4a44;padding:14px;border-radius:30px;margin-top:12px;cursor:pointer;font-size:13px}
+.btn-gift{flex:1;padding:18px;border-radius:20px;border:2px solid #c9a88a33;background:#fdfaf6;cursor:pointer;text-align:center;transition:all 0.2s}
+.btn-gift.active{border-color:#2f4a44;background:white;box-shadow:0 8px 20px rgba(47,74,68,0.1)}
 .ok{display:none;margin-top:16px;background:#2f4a44;color:white;padding:16px;border-radius:16px;text-align:center;font-size:13px}
 .detail-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #eee;font-size:12px}
+.gift-detail{display:none;margin-top:20px;padding:20px;background:#fdfaf6;border-radius:20px;border:1px dashed #c9a88a55}
+.music-btn{position:fixed;bottom:20px;right:20px;z-index:99;background:#2f4a44;color:white;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(0,0,0,0.2);cursor:pointer;font-size:20px;animation:pulse 2s infinite}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+.countdown{display:flex;gap:8px;justify-content:center;margin-top:16px}
+.countdown div{background:white;border:1px solid #e8e0d6;border-radius:16px;padding:12px 14px;min-width:62px;text-align:center}
+.countdown b{display:block;font-size:20px}
+.countdown span{font-size:9px;letter-spacing:1px;color:#8a9a96}
+.editable-note{background:#fff3cd;border:1px dashed #c9a88a;padding:8px 12px;border-radius:12px;font-size:10px;margin-top:10px;color:#856404}
 </style>
 </head>
 <body>
+
+<!-- MUSICA A Thousand Years Loop -->
+<audio id="audio" loop preload="auto">
+<source src="a_thousand_years_loop.mp3" type="audio/mpeg">
+</audio>
+<div id="musicBtn" class="music-btn" onclick="toggleMusic()">🎵</div>
+
+<!-- PORTADA VIDEO -->
 <div class="hero">
 <video id="heroVideo" autoplay muted loop playsinline>
 <source src="logo_animado_completo_light.mp4" type="video/mp4">
@@ -33,41 +52,193 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 </div>
 </div>
 </div>
+
 <div class="container">
-<div class="card">
+
+<!-- SECCION 1 - PORTADA -->
+<div class="card" id="seccion1">
 <div style="text-align:center">
-<span class="badge">INVITACIÓN PERSONALIZADA</span>
-<h1 id="saludo" class="serif" style="font-size:32px">Hola Sandra López!</h1>
-<p style="font-size:11px;color:#8a9a96;margin-top:8px">MIGUEL BERNAL 3432, COL. SAN ANDRÉS, GDL • 02.01.27</p>
+<span class="badge">SECCIÓN 1 - PORTADA</span>
+<h1 class="serif" style="font-size:38px;line-height:1">Gina & Edy</h1>
+<p style="font-size:11px;letter-spacing:4px;margin-top:8px;color:#8a9a96">02. 01. 27</p>
+<p style="margin-top:16px;font-size:13px;line-height:1.5">Te invitamos a compartir<br>la alegría de unir nuestras vidas</p>
+<button onclick="toggleMusic()" class="btn-outline" style="margin-top:16px">▶️ Play para escuchar nuestra canción<br><small>A Thousand Years - Piano & Violín</small></button>
 </div>
-<div style="background:#fdfaf6;border-radius:20px;padding:18px;margin-top:20px">
+<div class="editable-note">📝 EDITABLE: Nombres, fecha, texto portada, video y canción</div>
+</div>
+
+<!-- SECCION 2 - HISTORIA -->
+<div class="card" id="seccion2">
+<span class="badge">SECCIÓN 2 - NUESTRA HISTORIA</span>
+<h2 class="serif" style="font-size:26px;text-align:center">Nuestra historia</h2>
+<p style="font-size:13px;line-height:1.6;margin-top:12px;text-align:center;color:#555">Nos conocimos por casualidad... (aquí va su historia, luego lo editamos)</p>
+<div style="height:180px;background:#fdfaf6;border-radius:16px;margin-top:16px;display:flex;align-items:center;justify-content:center;border:1px dashed #c9a88a">Foto Gina & Edy</div>
+<div class="editable-note">📝 EDITABLE: Texto historia + fotos pareja</div>
+</div>
+
+<!-- SECCION 3 - PADRES -->
+<div class="card" id="seccion3">
+<span class="badge">SECCIÓN 3 - BENDICIÓN PADRES</span>
+<h2 class="serif" style="font-size:22px;text-align:center">Con la bendición de nuestros padres</h2>
+<div style="display:grid;grid-template-columns:1fr auto 1fr;gap:12px;margin-top:16px;text-align:center">
+<div><p style="font-size:10px;color:#8a9a96">PADRES DE LA NOVIA</p><p style="font-size:12px;margin-top:6px;font-weight:500">Papá de Gina<br>Mamá de Gina</p></div>
+<div class="serif" style="font-size:24px">&</div>
+<div><p style="font-size:10px;color:#8a9a96">PADRES DEL NOVIO</p><p style="font-size:12px;margin-top:6px;font-weight:500">Papá de Edy<br>Mamá de Edy</p></div>
+</div>
+<div class="editable-note">📝 EDITABLE: Nombres papás</div>
+</div>
+
+<!-- SECCION 4 - FECHA -->
+<div class="card" id="seccion4" style="text-align:center">
+<span class="badge">SECCIÓN 4 - FECHA</span>
+<h2 style="font-size:10px;letter-spacing:4px;color:#8a9a96">SÁBADO</h2>
+<p class="serif" style="font-size:56px;font-weight:700;line-height:1">02</p>
+<h2 style="font-size:10px;letter-spacing:4px;color:#8a9a96">ENERO - DOS MIL VEINTISIETE</h2>
+<div class="countdown" id="countdown">
+<div><b id="d">--</b><span>DÍAS</span></div>
+<div><b id="h">--</b><span>HRS</span></div>
+<div><b id="m">--</b><span>MIN</span></div>
+<div><b id="s">--</b><span>SEG</span></div>
+</div>
+<div class="editable-note">📝 EDITABLE: Fecha y hora real del evento</div>
+</div>
+
+<!-- SECCION 5 - GALERIA TEMPLO -->
+<div class="card" id="seccion5">
+<span class="badge">SECCIÓN 5 - TEMPLO PADRE GALVÁN</span>
+<h2 class="serif" style="font-size:22px;text-align:center">Templo del Padre Galván</h2>
+<p style="font-size:11px;text-align:center;color:#8a9a96;margin-top:6px">Parroquia Nuestra Señora del Rosario - Hospital #28, El Retiro, GDL</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px">
+<div style="height:120px;background:linear-gradient(45deg,#c9a88a55,#fdfaf6);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:10px">Foto Templo Exterior</div>
+<div style="height:120px;background:linear-gradient(45deg,#2f4a4455,#fdfaf6);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:10px">Foto Interior Vitrales</div>
+<div style="height:120px;background:linear-gradient(45deg,#8a9a9655,#fdfaf6);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:10px">Foto Dron Aérea</div>
+<div style="height:120px;background:linear-gradient(45deg,#c9a88a88,#fdfaf6);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:10px">Foto Noche</div>
+</div>
+<div class="editable-note">📝 EDITABLE: Aquí van las 4 fotos del Padre Galván que generamos</div>
+</div>
+
+<!-- SECCION 6 - UBICACIONES -->
+<div class="card" id="seccion6">
+<span class="badge">SECCIÓN 6 - UBICACIONES</span>
+<h2 class="serif" style="font-size:20px;text-align:center">Ubicaciones</h2>
+<div style="background:#fdfaf6;border-radius:16px;padding:16px;margin-top:12px;text-align:center">
+<p style="font-size:18px">⛪</p><p class="serif" style="font-weight:600">Templo Padre Galván</p><p style="font-size:11px;color:#888">Hospital 28, El Retiro - 5:00 PM</p>
+<button onclick="window.open('https://www.google.com/maps/search/?api=1&query=Parroquia+Nuestra+Senora+del+Rosario+Padre+Galvan+Guadalajara','_blank')" class="btn-outline" style="padding:8px;font-size:11px">📍 VER MAPA IGLESIA</button>
+</div>
+<div style="background:#fdfaf6;border-radius:16px;padding:16px;margin-top:12px;text-align:center">
+<p style="font-size:18px">🥂</p><p class="serif" style="font-weight:600">Salón Recepción</p><p style="font-size:11px;color:#888">Miguel Bernal 3432, San Andrés - 7:00 PM</p>
+<button onclick="window.open('https://www.google.com/maps/search/?api=1&query=Miguel+Bernal+3432+Guadalajara','_blank')" class="btn-outline" style="padding:8px;font-size:11px">📍 VER MAPA SALÓN</button>
+</div>
+<div class="editable-note">📝 EDITABLE: Direcciones y horarios</div>
+</div>
+
+<!-- SECCION 7 - MESA REGALOS / CUENTA -->
+<div class="card" id="seccion7" style="border:2px solid #2f4a44">
+<span class="badge" style="background:#2f4a44;color:white">SECCIÓN 7 - MESA DE REGALOS</span>
+<h2 class="serif" style="font-size:24px;text-align:center">Mesa de Regalos</h2>
+<p style="font-size:12px;text-align:center;color:#8a9a96;margin-top:8px">Tu presencia es nuestro mejor regalo, pero si deseas hacernos un obsequio...</p>
+<div style="display:flex;gap:12px;margin-top:20px">
+<div class="btn-gift" id="btnMesa" onclick="mostrarRegalo('mesa')">
+<div style="font-size:28px">🎁</div>
+<p style="font-weight:600;margin-top:8px;font-size:13px">Mesa de Regalos</p>
+<p style="font-size:10px;color:#888;margin-top:4px">Ver lista en tienda</p>
+</div>
+<div class="btn-gift" id="btnCuenta" onclick="mostrarRegalo('cuenta')">
+<div style="font-size:28px">💳</div>
+<p style="font-weight:600;margin-top:8px;font-size:13px">Cuenta Bancaria</p>
+<p style="font-size:10px;color:#888;margin-top:4px">Depósito / Transferencia</p>
+</div>
+</div>
+<div id="detalleMesa" class="gift-detail">
+<h3 class="serif" style="font-size:18px">🎁 Mesa de Regalos</h3>
+<p style="font-size:12px;margin-top:8px;color:#555">Hemos creado una lista con mucho cariño en:</p>
+<div style="margin-top:12px;display:grid;gap:10px">
+<a id="linkMesa1" href="#" target="_blank" style="display:block;background:white;border:1px solid #e8e0d6;padding:12px;border-radius:12px;text-decoration:none;color:#2f4a44;font-size:13px;text-align:center">🏬 Liverpool - Gina & Edy</a>
+<a id="linkMesa2" href="#" target="_blank" style="display:block;background:white;border:1px solid #e8e0d6;padding:12px;border-radius:12px;text-decoration:none;color:#2f4a44;font-size:13px;text-align:center">🛒 Amazon - Lista de Bodas</a>
+</div>
+<div class="editable-note">📝 EDITABLE: Cambia los links abajo en el código</div>
+</div>
+<div id="detalleCuenta" class="gift-detail">
+<h3 class="serif" style="font-size:18px">💳 Datos para Depósito</h3>
+<p style="font-size:12px;margin-top:8px;color:#555">Si prefieres apoyarnos con transferencia:</p>
+<div style="background:white;border-radius:12px;padding:16px;margin-top:12px;border:1px solid #e8e0d6">
+<p style="font-size:10px;color:#8a9a96;letter-spacing:1px">BANCO</p>
+<p id="bancoNombre" style="font-weight:600;font-size:14px">BBVA Bancomer</p>
+<p style="font-size:10px;color:#8a9a96;letter-spacing:1px;margin-top:12px">TITULAR</p>
+<p id="titularCuenta" style="font-weight:600;font-size:14px">Gina / Edy</p>
+<p style="font-size:10px;color:#8a9a96;letter-spacing:1px;margin-top:12px">CLABE INTERBANCARIA</p>
+<div style="display:flex;gap:8px;align-items:center;margin-top:4px">
+<p id="clabeCuenta" style="font-weight:600;font-size:13px;background:#fdfaf6;padding:8px 12px;border-radius:8px;flex:1">0123 4567 8901 2345 67</p>
+<button onclick="copiarClabe()" style="background:#2f4a44;color:white;border:none;padding:8px 12px;border-radius:8px;font-size:11px;cursor:pointer">Copiar</button>
+</div>
+<p id="copyMsg" style="display:none;color:green;font-size:10px;margin-top:6px">¡Copiado!</p>
+<p style="font-size:10px;color:#8a9a96;letter-spacing:1px;margin-top:12px">TARJETA (opcional)</p>
+<p id="tarjetaCuenta" style="font-size:13px;background:#fdfaf6;padding:8px 12px;border-radius:8px">4152 3137 1234 5678</p>
+</div>
+</div>
+</div>
+
+<!-- SECCION 8 - CONFIRMACION -->
+<div class="card" id="seccion8">
+<span class="badge">SECCIÓN 8 - CONFIRMACIÓN Y MESA</span>
+<div style="text-align:center">
+<h2 class="serif" style="font-size:22px">Confirma tu asistencia</h2>
+<p style="font-size:11px;color:#8a9a96;margin-top:6px">Sandra López - 3 lugares - Mesa 10</p>
+</div>
+<div style="background:#fdfaf6;border-radius:20px;padding:18px;margin-top:16px">
 <div class="detail-row"><span style="color:#8a9a96">TITULAR</span><b id="titularTxt">Sandra López</b></div>
 <div class="detail-row"><span style="color:#8a9a96">LUGARES</span><b><span id="lugaresTxt" style="color:#c9a88a">3</span> lugares</b></div>
-<div class="detail-row" style="border:none"><span style="color:#8a9a96">MESA</span><b style="background:#2f4a44;color:white;padding:4px 12px;border-radius:20px">Mesa <span id="mesaTxt">10</span></b></div>
+<div class="detail-row" style="border:none"><span style="color:#8a9a96">MESA</span><b style="background:#2f4a44;color:white;padding:4px 12px;border-radius:20px;font-size:12px">Mesa <span id="mesaTxt">10</span></b></div>
 <p id="grupoTxt" style="font-size:13px;margin-top:12px">Sandra López, Martín Guerrero (esposo), Irene López (mamá)</p>
 </div>
 <input id="cuantos" type="number" class="input" value="3">
 <textarea id="quienes" rows="2" class="input" placeholder="Ej: Sandra y Martín"></textarea>
 <button onclick="confirmar()" class="btn">CONFIRMAR ASISTENCIA</button>
 <div id="okBox" class="ok"></div>
-<button onclick="window.open('https://www.google.com/maps/search/?api=1&query=Miguel+Bernal+3432+Guadalajara','_blank')" style="width:100%;background:white;border:1px solid #2f4a44;color:#2f4a44;padding:12px;border-radius:30px;margin-top:12px">📍 VER MAPA</button>
 </div>
+
 </div>
+
 <script>
-const DATA={'010':{t:'Sandra López',l:3,m:'10',g:'Sandra López, Martín Guerrero (esposo), Irene López (mamá)'},'001':{t:'Familia Gina',l:3,m:'1',g:'Georgina Isabel, Mamá, Papá'},'002':{t:'Familia Eduardo',l:2,m:'1',g:'Eduardo, Hermano'}};
-const id=new URLSearchParams(window.location.search).get('id')||'010';
-const d=DATA[id]||DATA['010'];
-document.getElementById('saludo').textContent='Hola '+d.t+'!';
-document.getElementById('titularTxt').textContent=d.t;
-document.getElementById('lugaresTxt').textContent=d.l;
-document.getElementById('mesaTxt').textContent=d.m;
-document.getElementById('grupoTxt').textContent=d.g;
-document.getElementById('cuantos').value=d.l;
-function confirmar(){const c=document.getElementById('cuantos').value;const q=document.getElementById('quienes').value||d.g;const box=document.getElementById('okBox');box.innerHTML=`¡Gracias ${d.t}!<br>Confirmaste <b>${c}</b> en Mesa ${d.m}<br><small>${q}</small>`;box.style.display='block';}
+// === CONFIG EDITABLE - AQUI CAMBIAS TODO ===
+const mesaRegalosURL1 = "https://mesaderegalos.liverpool.com.mx/milistabodas/123456";
+const mesaRegalosURL2 = "https://www.amazon.com.mx/hz/wishlist/ls/ABC123";
+const bancoNombre = "BBVA Bancomer";
+const titularCuenta = "Gina Hernandez / Edy Lopez";
+const clabeCuenta = "012 320 01234567890 1";
+const tarjetaCuenta = "4152 3137 1234 5678";
+// === FIN CONFIG ===
+
+document.getElementById('linkMesa1').href = mesaRegalosURL1;
+document.getElementById('linkMesa2').href = mesaRegalosURL2;
+document.getElementById('bancoNombre').textContent = bancoNombre;
+document.getElementById('titularCuenta').textContent = titularCuenta;
+document.getElementById('clabeCuenta').textContent = clabeCuenta;
+document.getElementById('tarjetaCuenta').textContent = tarjetaCuenta;
+
+function mostrarRegalo(tipo){
+document.getElementById('detalleMesa').style.display = tipo==='mesa'?'block':'none';
+document.getElementById('detalleCuenta').style.display = tipo==='cuenta'?'block':'none';
+document.getElementById('btnMesa').classList.toggle('active', tipo==='mesa');
+document.getElementById('btnCuenta').classList.toggle('active', tipo==='cuenta');
+}
+function copiarClabe(){
+navigator.clipboard.writeText(clabeCuenta.replace(/ /g,''));
+document.getElementById('copyMsg').style.display='block';
+setTimeout(()=>document.getElementById('copyMsg').style.display='none',2000);
+}
+let isPlaying=false;const audio=document.getElementById('audio');
+function toggleMusic(){
+if(!isPlaying){audio.volume=0;audio.play();let v=0;let fade=setInterval(()=>{if(v<0.7){v+=0.05;audio.volume=v}else clearInterval(fade)},100);isPlaying=true;document.getElementById('musicBtn').textContent='🔊';}else{audio.pause();isPlaying=false;document.getElementById('musicBtn').textContent='🎵';}
+}
 const v=document.getElementById('heroVideo');const fb=document.getElementById('fallback');
-v.addEventListener('loadeddata',()=>{fb.style.display='none';});
-v.addEventListener('playing',()=>{fb.style.display='none';});
-setTimeout(()=>{if(v.readyState<2){fb.style.display='block'}else{fb.style.display='none'}},800);
+v.addEventListener('loadeddata',()=>fb.style.display='none');v.addEventListener('playing',()=>fb.style.display='none');
+const DATA={'010':{t:'Sandra López',l:3,m:'10',g:'Sandra López, Martín Guerrero (esposo), Irene López (mamá)'},'001':{t:'Familia Georgina',l:3,m:'1',g:'Georgina Isabel, Mamá, Papá'}};
+const id=new URLSearchParams(window.location.search).get('id')||'010';const d=DATA[id]||DATA['010'];
+document.getElementById('titularTxt').textContent=d.t;document.getElementById('lugaresTxt').textContent=d.l;document.getElementById('mesaTxt').textContent=d.m;document.getElementById('grupoTxt').textContent=d.g;document.getElementById('cuantos').value=d.l;
+function confirmar(){const c=document.getElementById('cuantos').value;const q=document.getElementById('quienes').value||d.g;const box=document.getElementById('okBox');box.innerHTML=`¡Gracias ${d.t}!<br>Confirmaste <b>${c}</b> en Mesa ${d.m}<br><small>${q}</small>`;box.style.display='block';if(!isPlaying)toggleMusic();}
+const fechaBoda=new Date('2027-01-02T17:00:00').getTime();
+setInterval(()=>{const now=new Date().getTime();const dist=fechaBoda-now;if(dist<0)return;document.getElementById('d').textContent=Math.floor(dist/(1000*60*60*24));document.getElementById('h').textContent=Math.floor((dist%(1000*60*60*24))/(1000*60*60));document.getElementById('m').textContent=Math.floor((dist%(1000*60*60))/(1000*60));document.getElementById('s').textContent=Math.floor((dist%(1000*60))/1000);},1000);
 </script>
 </body>
 </html>
