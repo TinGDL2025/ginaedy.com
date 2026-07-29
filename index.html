@@ -29,7 +29,7 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 .countdown div{background:white;border:1px solid #e8e0d6;border-radius:16px;padding:12px 14px;min-width:62px;text-align:center}
 .countdown b{display:block;font-size:20px}
 .countdown span{font-size:9px;letter-spacing:1px;color:#8a9a96}
-.foto-portada{width:100%;max-width:420px;height:auto;border-radius:20px;display:block;margin:20px auto 0 auto;box-shadow:0 12px 30px rgba(47,74,68,0.12)}
+.foto-portada{width:100%;max-width:420px;height:auto;border-radius:20px;display:block;margin:20px auto 0 auto;box-shadow:0 12px 30px rgba(47,74,68,0.12);object-fit:cover}
 .texto-seccion1{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;line-height:1.6;color:#3d5a54;font-weight:400;padding:0 10px;margin-top:10px}
 </style>
 </head>
@@ -56,7 +56,9 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 <p class="texto-seccion1">Con el corazón lleno de ilusión, queremos invitarte a ser parte del día más importante de nuestras vidas.</p>
 <p class="texto-seccion1">Después de compartir risas, sueños y un camino lleno de amor, hemos decidido dar el siguiente paso.</p>
 <p class="texto-seccion1">Con la gracia de Dios y tu presencia, hará que este momento sea aún más inolvidable</p>
-<img src="foto_portada.jpg" alt="Nuestro candado" class="foto-portada">
+<video autoplay muted loop playsinline class="foto-portada" poster="foto_portada.jpg">
+<source src="Foto_Portada_Video.mp4" type="video/mp4">
+</video>
 <button onclick="toggleMusic()" class="btn-outline" style="margin-top:18px">
 <span style="font-size:16px">▶</span> Escuchar A Thousand Years
 </button>
@@ -104,33 +106,6 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 <p style="font-size:11px;letter-spacing:3px;color:#c9a88a;margin-top:6px;font-weight:600">FORMAL</p>
 <div style="margin:20px auto 0 auto;background:#fdfaf6;border-radius:24px;padding:20px;border:1px solid #c9a88a22;max-width:320px">
 <img src="vestimenta_formal.png" alt="Código Vestimenta Formal" style="width:100%;max-width:260px;height:auto;display:block;margin:0 auto">
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px;text-align:left">
-<div style="background:#fdfaf6;border-radius:16px;padding:14px;border:1px solid #e8e0d6">
-<p style="font-size:11px;letter-spacing:1px;color:#8a9a96;text-align:center">CABALLEROS</p>
-<p style="font-size:13px;font-weight:600;margin-top:6px;text-align:center" class="serif">Traje oscuro</p>
-<ul style="font-size:11px;color:#555;margin-top:8px;padding-left:16px;line-height:1.8">
-<li>Smoking / Traje</li>
-<li>Corbata / Moño negro</li>
-<li>Zapato formal negro</li>
-</ul>
-</div>
-<div style="background:#fdfaf6;border-radius:16px;padding:14px;border:1px solid #e8e0d6">
-<p style="font-size:11px;letter-spacing:1px;color:#8a9a96;text-align:center">DAMAS</p>
-<p style="font-size:13px;font-weight:600;margin-top:6px;text-align:center" class="serif">Vestido largo</p>
-<ul style="font-size:11px;color:#555;margin-top:8px;padding-left:16px;line-height:1.8">
-<li>Largo / Midi elegante</li>
-<li>No blanco / No beige</li>
-<li>Tocado opcional</li>
-</ul>
-</div>
-</div>
-<div style="background:white;border:1px dashed #c9a88a;border-radius:14px;padding:12px;margin-top:16px;display:flex;gap:10px;align-items:center;justify-content:center">
-<span style="font-size:18px">🤍</span>
-<div style="text-align:left">
-<p style="font-size:10px;color:#8a9a96;letter-spacing:1px">COLOR RESERVADO NOVIA</p>
-<p style="font-size:12px;font-weight:600">Blanco • Ivory • Beige claro</p>
-</div>
 </div>
 </div>
 <div class="card" id="seccion7" style="border:2px solid #c9a88a55">
