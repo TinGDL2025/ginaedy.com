@@ -11,6 +11,7 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 .serif{font-family:'Cormorant Garamond',serif}
 .hero{width:100%;background:#fdfaf6;display:flex;align-items:center;justify-content:center;padding:20px 0;position:relative}
 .hero video{width:100%;max-width:520px;height:auto;max-height:68vh;object-fit:contain;display:block;margin:0 auto;background:#fdfaf6;border-radius:20px}
+.fallback{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;z-index:1;display:none}
 .container{max-width:520px;margin:0 auto;padding:0 20px 40px 20px}
 .card{background:white;border-radius:28px;padding:28px 24px;box-shadow:0 10px 40px rgba(47,74,68,0.08);border:1px solid rgba(201,168,138,0.15);margin-top:24px}
 .badge{display:inline-block;background:#fdfaf6;border:1px solid #c9a88a33;border-radius:30px;padding:6px 14px;font-size:10px;letter-spacing:2px;margin-bottom:14px}
@@ -33,7 +34,9 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 </style>
 </head>
 <body>
-<audio id="audio" loop preload="auto"><source src="a_thousand_years_loop.mp3" type="audio/mpeg"></audio>
+<audio id="audio" loop preload="auto">
+<source src="a_thousand_years_loop.mp3" type="audio/mpeg">
+</audio>
 <div id="musicBtn" class="music-btn" onclick="toggleMusic()">🎵</div>
 <div class="hero">
 <video id="heroVideo" autoplay muted loop playsinline>
@@ -54,7 +57,9 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 <source src="Foto Portada Video.mp4" type="video/mp4">
 </video>
 </div>
-<button onclick="toggleMusic()" class="btn-outline" style="margin-top:18px"><span style="font-size:16px">▶</span> Escuchar A Thousand Years</button>
+<button onclick="toggleMusic()" class="btn-outline" style="margin-top:18px">
+<span style="font-size:16px">▶</span> Escuchar A Thousand Years
+</button>
 </div>
 <div class="card" id="seccion2">
 <span class="badge">SECCIÓN 2 - NUESTRA HISTORIA</span>
@@ -77,16 +82,16 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 <p style="font-size:10px;letter-spacing:4px;color:#8a9a96">ENERO 2027 - 5:00 PM</p>
 <div class="countdown" id="countdown"><div><b id="d">--</b><span>DÍAS</span></div><div><b id="h">--</b><span>HRS</span></div><div><b id="m">--</b><span>MIN</span></div><div><b id="s">--</b><span>SEG</span></div></div>
 </div>
-<div class="card" id="seccion5">
-<span class="badge">SECCIÓN 5 - TEMPLO PADRE GALVÁN</span>
-<h2 class="serif" style="font-size:22px;text-align:center">Templo Padre Galván</h2>
-<p style="font-size:11px;text-align:center;color:#8a9a96;margin-top:6px">Hospital 28, El Retiro, GDL</p>
+<div class="card" id="seccion5" style="text-align:center">
+<img src="templo_padre_galvan_interior.jpg" alt="Templo Padre Galván" style="width:100%;height:auto;border-radius:20px;display:block;box-shadow:0 12px 30px rgba(47,74,68,0.12)">
+<h2 class="serif" style="font-size:22px;text-align:center;margin-top:16px">Templo Padre Galván</h2>
+<p style="font-size:11px;text-align:center;color:#8a9a96;margin-top:6px">Hospital 28, El Retiro, Guadalajara, Jal.</p>
 </div>
 <div class="card" id="seccion6">
 <span class="badge">SECCIÓN 6 - UBICACIONES</span>
 <h2 class="serif" style="font-size:20px;text-align:center">Ubicaciones</h2>
 <div style="background:#fdfaf6;border-radius:16px;padding:16px;margin-top:12px;text-align:center">
-<p style="font-size:18px">⛪</p><p class="serif" style="font-weight:600">Templo Padre Galván</p><p style="font-size:11px;color:#888">Hospital 28, El Retiro - 5:00 PM</p>
+<p style="font-size:18px">⛪</p><p class="serif" style="font-weight:600">Templo Padre Galván</p><p style="font-size:11px;color:#888">Hospital 28, El Retiro, Guadalajara, Jal. - 5:00 PM</p>
 </div>
 <div style="background:#fdfaf6;border-radius:16px;padding:16px;margin-top:12px;text-align:center">
 <p style="font-size:18px">🥂</p><p class="serif" style="font-weight:600">Recepción - Miguel Bernal 3432</p><p style="font-size:11px;color:#888">Col. San Andrés - 7:00 PM</p>
@@ -162,6 +167,8 @@ document.getElementById('btnCuenta').classList.toggle('active', tipo==='cuenta')
 function copiarClabe(){navigator.clipboard.writeText(clabeCuenta.replace(/ /g,''));document.getElementById('copyMsg').style.display='block';setTimeout(()=>document.getElementById('copyMsg').style.display='none',2000);}
 let isPlaying=false;const audio=document.getElementById('audio');
 function toggleMusic(){if(!isPlaying){audio.volume=0.7;audio.play().catch(e=>console.log(e));isPlaying=true;document.getElementById('musicBtn').textContent='🔊';}else{audio.pause();isPlaying=false;document.getElementById('musicBtn').textContent='🎵';}}
+const v=document.getElementById('heroVideo');const fb=document.getElementById('fallback');
+if(v){v.addEventListener('loadeddata',()=>{if(fb)fb.style.display='none'});v.addEventListener('playing',()=>{if(fb)fb.style.display='none'});}
 const DATA={'010':{t:'Sandra López',l:3,m:'10',g:'Sandra López, Martín Guerrero (esposo), Irene López (mamá)'},'001':{t:'Familia Georgina',l:3,m:'1',g:'Georgina Isabel, Mamá, Papá'},'002':{t:'Familia Eduardo',l:2,m:'1',g:'Eduardo, Hermano'},'003':{t:'Ejemplo Tíos',l:4,m:'5',g:'Tío Juan, Tía Rosa, Primo Luis, Prima Ana'}};
 const id=new URLSearchParams(window.location.search).get('id')||'010';const d=DATA[id]||DATA['010'];
 document.getElementById('titularTxt').textContent=d.t;document.getElementById('lugaresTxt').textContent=d.l;document.getElementById('mesaTxt').textContent=d.m;document.getElementById('grupoTxt').textContent=d.g;document.getElementById('cuantos').value=d.l;
