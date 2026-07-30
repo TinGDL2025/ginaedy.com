@@ -11,6 +11,7 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 .serif{font-family:'Cormorant Garamond',serif}
 .hero{width:100%;background:#fdfaf6;display:flex;align-items:center;justify-content:center;padding:20px 0;position:relative}
 .hero video{width:100%;max-width:520px;height:auto;max-height:68vh;object-fit:contain;display:block;margin:0 auto;background:#fdfaf6;border-radius:20px}
+.fallback{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;z-index:1;display:none}
 .container{max-width:520px;margin:0 auto;padding:0 20px 40px 20px}
 .card{background:white;border-radius:28px;padding:28px 24px;box-shadow:0 10px 40px rgba(47,74,68,0.08);border:1px solid rgba(201,168,138,0.15);margin-top:24px}
 .badge{display:inline-block;background:#fdfaf6;border:1px solid #c9a88a33;border-radius:30px;padding:6px 14px;font-size:10px;letter-spacing:2px;margin-bottom:14px}
@@ -40,6 +41,7 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 <div class="hero">
 <video id="heroVideo" autoplay muted loop playsinline>
 <source src="logo_animado_completo_light.mp4" type="video/mp4">
+<source src="logo_animado_completo.mp4" type="video/mp4">
 </video>
 </div>
 <div class="container">
@@ -166,6 +168,8 @@ document.getElementById('btnCuenta').classList.toggle('active', tipo==='cuenta')
 function copiarClabe(){navigator.clipboard.writeText(clabeCuenta.replace(/ /g,''));document.getElementById('copyMsg').style.display='block';setTimeout(()=>document.getElementById('copyMsg').style.display='none',2000);}
 let isPlaying=false;const audio=document.getElementById('audio');
 function toggleMusic(){if(!isPlaying){audio.volume=0.7;audio.play().catch(e=>console.log(e));isPlaying=true;document.getElementById('musicBtn').textContent='🔊';}else{audio.pause();isPlaying=false;document.getElementById('musicBtn').textContent='🎵';}}
+const v=document.getElementById('heroVideo');const fb=document.getElementById('fallback');
+if(v){v.addEventListener('loadeddata',()=>{if(fb)fb.style.display='none'});v.addEventListener('playing',()=>{if(fb)fb.style.display='none'});}
 const DATA={'010':{t:'Sandra López',l:3,m:'10',g:'Sandra López, Martín Guerrero (esposo), Irene López (mamá)'},'001':{t:'Familia Georgina',l:3,m:'1',g:'Georgina Isabel, Mamá, Papá'},'002':{t:'Familia Eduardo',l:2,m:'1',g:'Eduardo, Hermano'},'003':{t:'Ejemplo Tíos',l:4,m:'5',g:'Tío Juan, Tía Rosa, Primo Luis, Prima Ana'}};
 const id=new URLSearchParams(window.location.search).get('id')||'010';const d=DATA[id]||DATA['010'];
 document.getElementById('titularTxt').textContent=d.t;document.getElementById('lugaresTxt').textContent=d.l;document.getElementById('mesaTxt').textContent=d.m;document.getElementById('grupoTxt').textContent=d.g;document.getElementById('cuantos').value=d.l;
