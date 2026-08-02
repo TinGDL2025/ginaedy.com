@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Invitación - Gina & Edy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#fdfaf6;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Inter',sans-serif;overflow-x:hidden}
+.font-serif{font-family:'Cormorant Garamond',serif}
+#envelopeWrap{position:relative;width:92vw;max-width:380px;height:240px;margin-top:20px;transition:all .7s ease}
+.envelope{position:absolute;inset:0;background:#233F39;border-radius:6px;box-shadow:0 24px 60px rgba(35,63,57,.18),0 8px 24px rgba(0,0,0,.1);overflow:hidden}
+.envelope-flap{position:absolute;top:0;left:0;width:100%;height:55%;background:#2a4a42;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top center;transition:transform .6s cubic-bezier(.4,0,.2,1);z-index:3}
+.envelope-body{position:absolute;bottom:0;left:0;width:100%;height:100%;background:#233F39;z-index:1}
+.envelope-inner{position:absolute;top:50%;left:50%;transform:translate(-50%,-30%);width:86%;height:74%;background:#fdfaf6;border-radius:3px;z-index:2;transition:transform .7s cubic-bezier(.34,1.56,.64,1)}
+.cardLetter{position:absolute;top:50%;left:50%;transform:translate(-50%,-40%) scale(.9);width:88%;background:white;border:1px solid rgba(201,168,138,.25);border-radius:4px;padding:28px 22px;text-align:center;box-shadow:0 20px 50px rgba(35,63,57,.15);opacity:0;pointer-events:none;transition:all .7s cubic-bezier(.34,1.56,.64,1);z-index:4}
+.cardLetter.show{opacity:1;transform:translate(-50%,-55%) scale(1)}
+.waxSeal{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:56px;height:56px;background:#c9a88a;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-family:'Cormorant Garamond';font-weight:700;letter-spacing:1px;box-shadow:0 4px 12px rgba(0,0,0,.2),inset 0 -2px 6px rgba(0,0,0,.15);z-index:5;font-size:13px;border:2px solid #d4b896}
+.open .envelope-flap{transform:rotateX(180deg)}
+.open .envelope-inner{transform:translate(-50%,-90%)}
+.dissolve{animation:dissolveEnv .8s forwards}
+@keyframes dissolveEnv{to{opacity:0;transform:translate(-50%,-50%) scale(.7);filter:blur(8px)}}
+@keyframes confetti{0%{transform:translate3d(0,0,0) rotate(0) scale(1);opacity:1}100%{transform:translate3d(var(--tx),var(--ty),0) rotate(var(--rot)) scale(.8);opacity:0}}
+.confetti{position:absolute;width:6px;height:6px;pointer-events:none}
+#btnOpen{display:flex;align-items:center;gap:10px;padding:10px 20px;border-radius:100px;border:1px solid rgba(201,168,138,.35);background:#fffaf4;color:#8a6a4a;font-size:11px;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.08);animation:pulse 2.2s infinite;margin-top:18px}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+#muteBtn{position:fixed;top:18px;right:18px;width:36px;height:36px;border-radius:50%;border:1px solid rgba(35,63,57,.15);background:rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:20}
+#finalCard{position:fixed;left:50%;top:55%;transform:translate(-50%,-50%) scale(.9);width:92vw;max-width:400px;background:white;border:1px solid rgba(201,168,138,.2);border-radius:4px;padding:36px 28px;text-align:center;box-shadow:0 24px 64px rgba(35,63,57,.12);opacity:0;pointer-events:none;transition:all .7s cubic-bezier(.34,1.56,.64,1);z-index:30}
+#finalCard.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+</style>
+</head>
+<body>
+
+<button id="muteBtn">🔊</button>
+
+<div style="text-align:center;margin-bottom:8px">
+<p style="font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:#c9a88a;font-weight:500">GINA & EDY</p>
+<p class="font-serif" style="font-style:italic;font-size:22px;color:#2b211b;margin-top:6px">Tienes una invitación</p>
+</div>
+
+<div id="envelopeWrap">
+  <div class="envelope" id="envelope">
+    <div class="envelope-body"></div>
+    <div class="envelope-inner"></div>
+    <div class="envelope-flap" id="flap"></div>
+    <div class="waxSeal">G&E</div>
+    <div class="cardLetter" id="cardLetter">
+      <p style="font-size:10px;letter-spacing:.3em;color:#c9a88a;text-transform:uppercase">GINA & EDY</p>
+      <p class="font-serif" style="font-style:italic;font-size:24px;margin-top:8px">Nos casamos</p>
+    </div>
+  </div>
+</div>
+
+<div id="guestInfo" style="text-align:center;margin-top:54px;transition:all .5s">
+<p class="font-serif" style="font-style:italic;color:#c9a88a;font-size:19px">Con amor,</p>
+<h2 id="guestName" class="font-serif" style="font-size:28px;color:#233F39;margin-top:6px;line-height:.95">Sandra López</h2>
+<div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:18px"><div style="width:40px;height:1px;background:rgba(35,63,57,.1)"></div><div style="width:6px;height:6px;border-radius:50%;background:rgba(201,168,138,.6)"></div><div style="width:40px;height:1px;background:rgba(35,63,57,.1)"></div></div>
+<p style="font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:rgba(35,63,57,.6);margin-top:18px;font-weight:500">Georgina & Eduardo — 02. 01. 27</p>
+</div>
+
+<button id="btnOpen"><span>Toca el sobre para abrir</span><span>👆</span></button>
+
+<div id="finalCard">
+<div style="width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,138,.4),transparent);margin-bottom:18px"></div>
+<p style="font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:#c9a88a;font-weight:500">GINA & EDY</p>
+<p class="font-serif" style="font-style:italic;font-weight:300;font-size:28px;color:#2b211b;margin-top:6px">Nos casamos</p>
+<div style="width:32px;height:1px;background:rgba(201,168,138,.4);margin:16px auto"></div>
+<h2 class="font-serif" style="font-size:32px;font-weight:600;line-height:.95;color:#2b211b">Georgina &<br>Eduardo</h2>
+<div style="margin-top:28px;padding-top:22px;border-top:1px solid rgba(201,168,138,.15)">
+<p class="font-serif" style="font-style:italic;font-size:15px;color:#c9a88a">Con amor para</p>
+<p id="finalGuest" class="font-serif" style="font-size:26px;font-weight:500;color:#233F39;margin-top:8px;line-height:1.1">Sandra López</p>
+<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:20px"><div style="width:32px;height:1px;background:rgba(201,168,138,.25)"></div><div style="width:4px;height:4px;border-radius:50%;background:rgba(201,168,138,.5)"></div><div style="width:32px;height:1px;background:rgba(201,168,138,.25)"></div></div>
+</div>
+</div>
+
+<script>
+// ==== CONFIGURA TUS INVITADOS AQUI ====
+const DATA={
+"010":{t:"Sandra López",tipo:2},
+"001":{t:"Familia Georgina",tipo:1},
+"002":{t:"Familia Eduardo",tipo:1},
+"011":{t:"Prueba Amigo",tipo:2},
+"012":{t:"Prueba Amiga",tipo:1}
+};
+// ==== FIN CONFIG ====
+
+const params=new URLSearchParams(window.location.search);
+const id=params.get("id")||"010";
+const guest=DATA[id]||{t:"Invitado Especial",tipo:1};
+document.getElementById("guestName").textContent=guest.t;
+document.getElementById("finalGuest").textContent=guest.t;
+
+let muted=false;
+let audioCtx=null;
+function getCtx(){
+ if(audioCtx) return audioCtx;
+ audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+ return audioCtx;
+}
+async function playSound(){
+ if(muted) return;
+ try{
+  const ctx=getCtx();
+  if(ctx.state==="suspended") await ctx.resume();
+  const now=ctx.currentTime;
+  const bufferSize=Math.floor(ctx.sampleRate*0.35);
+  const buffer=ctx.createBuffer(1,bufferSize,ctx.sampleRate);
+  const data=buffer.getChannelData(0);
+  for(let i=0;i<bufferSize;i++) data[i]=(Math.random()*2-1)*Math.pow(1-i/bufferSize,2.2)*0.9;
+  const noise=ctx.createBufferSource(); noise.buffer=buffer;
+  const bp=ctx.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=1800; bp.Q.value=.8;
+  const ng=ctx.createGain(); ng.gain.setValueAtTime(0,now); ng.gain.linearRampToValueAtTime(.18,now+.02); ng.gain.exponentialRampToValueAtTime(.0001,now+.38);
+  noise.connect(bp).connect(ng).connect(ctx.destination); noise.start(now);
+  const osc=ctx.createOscillator(); osc.type="sine"; osc.frequency.setValueAtTime(180,now); osc.frequency.exponentialRampToValueAtTime(60,now+.25);
+  const g=ctx.createGain(); g.gain.setValueAtTime(0,now); g.gain.linearRampToValueAtTime(.22,now+.01); g.gain.exponentialRampToValueAtTime(.0001,now+.35);
+  osc.connect(g).connect(ctx.destination); osc.start(now); osc.stop(now+.36);
+ }catch(e){}
+}
+
+document.getElementById("muteBtn").onclick=function(){
+ muted=!muted; this.textContent=muted?"🔇":"🔊";
+}
+
+function openEnvelope(){
+ if(document.getElementById("envelopeWrap").classList.contains("open")) return;
+ playSound();
+ document.getElementById("envelopeWrap").classList.add("open");
+ setTimeout(()=>{document.getElementById("cardLetter").classList.add("show")},400);
+ setTimeout(()=>{
+   // confeti = sobre desintegrandose
+   const wrap=document.getElementById("envelopeWrap");
+   const colors=["#233F39","#c9a88a","#ffffff","#d4b896"];
+   for(let i=0;i<44;i++){
+     const c=document.createElement("div");
+     c.className="confetti";
+     c.style.left="50%"; c.style.top="45%";
+     c.style.width=(3+Math.random()*7)+"px";
+     c.style.height=(Math.random()>.4?c.style.width:parseFloat(c.style.width)*1.6+"px");
+     c.style.background=colors[Math.floor(Math.random()*colors.length)];
+     c.style.borderRadius=Math.random()>.4?"999px":"2px";
+     c.style.setProperty("--tx",(Math.random()-.5)*520+"px");
+     c.style.setProperty("--ty",(-120-Math.random()*360)+"px");
+     c.style.setProperty("--rot",Math.random()*720-360+"deg");
+     c.style.animation=`confetti ${.9+Math.random()*1.1}s cubic-bezier(.25,.46,.45,.94) ${Math.random()*.18}s forwards`;
+     wrap.appendChild(c);
+   }
+   wrap.classList.add("dissolve");
+   document.getElementById("guestInfo").style.opacity="0";
+   document.getElementById("btnOpen").style.opacity="0";
+   setTimeout(()=>{document.getElementById("finalCard").classList.add("show")},180);
+ },900);
+ setTimeout(()=>{
+   window.location.href=`index.html?id=${encodeURIComponent(id)}&t=${guest.tipo}`;
+ },3600);
+}
+
+document.getElementById("envelopeWrap").onclick=openEnvelope;
+document.getElementById("btnOpen").onclick=openEnvelope;
+</script>
+</body>
+</html>
