@@ -83,12 +83,35 @@ let isPlaying=false;const audio=document.getElementById('audio');
 function toggleMusic(){if(!isPlaying){audio.volume=0.7;audio.play().catch(e=>console.log(e));isPlaying=true;document.getElementById('musicBtn').textContent='🔊';}else{audio.pause();isPlaying=false;document.getElementById('musicBtn').textContent='🎵';}}
 const v=document.getElementById('heroVideo');const fb=document.getElementById('fallback');
 if(v){v.addEventListener('loadeddata',()=>{if(fb)fb.style.display='none'});v.addEventListener('playing',()=>{if(fb)fb.style.display='none'});}
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyd5Qr0UhZika0EAFoYVYdW48MFIaTdlWWxDWMg6IiI5d1yMwJgW3mB7HjGIYDFdPs/exec";
 const DATA={'010':{t:'Sandra López',l:3,m:'10',g:'Sandra López, Martín Guerrero (esposo), Irene López (mamá)'},'001':{t:'Familia Georgina',l:3,m:'1',g:'Georgina Isabel, Mamá, Papá'},'002':{t:'Familia Eduardo',l:2,m:'1',g:'Eduardo, Hermano'},'003':{t:'Ejemplo Tíos',l:4,m:'5',g:'Tío Juan, Tía Rosa, Primo Luis, Prima Ana'}};
 const id=new URLSearchParams(window.location.search).get('id')||'010';const d=DATA[id]||DATA['010'];
 const regalo=new URLSearchParams(window.location.search).get('regalo');
 if(regalo==='no') document.getElementById('seccion7').style.display='none';
 document.getElementById('titularTxt').textContent=d.t;document.getElementById('lugaresTxt').textContent=d.l;document.getElementById('mesaTxt').textContent=d.m;document.getElementById('grupoTxt').textContent=d.g;document.getElementById('cuantos').value=d.l;
-function confirmar(){const c=document.getElementById('cuantos').value;const q=document.getElementById('quienes').value||d.g;const box=document.getElementById('okBox');box.innerHTML=`¡Gracias ${d.t}!<br>Confirmaste <b>${c}</b> en Mesa ${d.m}<br><small>${q}</small>`;box.style.display='block';if(!isPlaying)toggleMusic();}
+function confirmar(){
+  const c=document.getElementById('cuantos').value;
+  const q=document.getElementById('quienes').value||d.g;
+  const box=document.getElementById('okBox');
+  const tipoInv = regalo==='no'? 'sin_regalo' : 'con_regalo';
+  box.innerHTML=`Enviando confirmación...`; box.style.display='block';
+  if(GOOGLE_SHEET_URL && GOOGLE_SHEET_URL.includes('/exec')){
+    fetch(GOOGLE_SHEET_URL, {
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({id:id,titular:d.t,lugaresConfirmados:c,nombresConfirmados:q,tipoInvitacion:tipoInv,mesa:d.m})
+    }).then(()=>{
+      box.innerHTML=`¡Gracias ${d.t}!<br>Confirmaste <b>${c}</b> en Mesa ${d.m}<br><small>${q}</small><br><small style="color:#c9a88a">Guardado ✓ (${tipoInv})</small>`;
+      if(!isPlaying) toggleMusic();
+    }).catch(()=>{
+      box.innerHTML=`¡Gracias ${d.t}!<br>Confirmaste <b>${c}</b> en Mesa ${d.m}<br><small>${q}</small><br><small style="color:#ffcc00">Guardado local</small>`;
+    });
+  } else {
+    box.innerHTML=`¡Gracias ${d.t}!<br>Confirmaste <b>${c}</b> en Mesa ${d.m}<br><small>${q}</small><br><small style="color:#8a9a96">Simulación - ${tipoInv}<br>Pega tu URL para guardar real</small>`;
+    if(!isPlaying) toggleMusic();
+  }
+}
 const fechaBoda=new Date('2027-01-02T17:00:00').getTime();
 setInterval(()=>{const now=new Date().getTime();const dist=fechaBoda-now;if(dist<0)return;const elD=document.getElementById('d');if(elD){elD.textContent=Math.floor(dist/(1000*60*60*24));document.getElementById('h').textContent=Math.floor((dist%(1000*60*60*24))/(1000*60*60));document.getElementById('m').textContent=Math.floor((dist%(1000*60*60))/(1000*60));document.getElementById('s').textContent=Math.floor((dist%(1000*60))/1000);}},1000);
 </script>
