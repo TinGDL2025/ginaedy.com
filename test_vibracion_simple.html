@@ -1,0 +1,22 @@
+<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test Vibración</title></head><body style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;gap:20px">
+<h2>Test Vibración Android</h2>
+<button id="b1" style="padding:20px 40px;font-size:18px;border-radius:12px;background:#233F39;color:white;border:none">Vibrar 80ms</button>
+<button id="b2" style="padding:20px 40px;font-size:18px;border-radius:12px;background:#c9a88a;color:white;border:none">Vibrar patrón</button>
+<p id="log"></p>
+<script>
+const log = document.getElementById('log');
+function check(){ log.textContent = 'vibrate' in navigator ? 'Soportado: SI' : 'Soportado: NO'; }
+check();
+document.getElementById('b1').addEventListener('click',()=>{
+  const r = navigator.vibrate(80);
+  log.textContent = 'Vibrar 80ms -> ' + r;
+});
+document.getElementById('b2').addEventListener('click',()=>{
+  const r = navigator.vibrate([100,50,150]);
+  log.textContent = 'Vibrar patrón -> ' + r;
+});
+document.getElementById('b1').addEventListener('touchstart',()=>{
+  navigator.vibrate(50);
+},{passive:true});
+</script>
+</body></html>
