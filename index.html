@@ -130,8 +130,7 @@ function parseSheetCSV(txt){
     if(!nombre) continue;
     let lugares=parseInt(c[12])||1;
     let mesa=c[13]?.trim()||'General';
-    let grupo=c[2]?.trim()||nombre;
-    if(c[3]) grupo+=', '+c[3];
+    let grupo=nombre; // Ya no usa columnas C,D,E,F,G con x
     let tipo=c[9]?.trim()||'con mesa de regalo';
     out[id]={t:nombre,l:lugares,m:mesa,g:grupo,tipo:tipo};
   }
@@ -144,7 +143,9 @@ function renderData(obj){
   document.getElementById('titularTxt').textContent=obj.t;
   document.getElementById('lugaresTxt').textContent=obj.l;
   document.getElementById('mesaTxt').textContent=obj.m;
-  document.getElementById('grupoTxt').textContent=obj.g;
+  let gClean = (obj.g||'').toString().split(',').map(s=>s.trim()).filter(s=>s.toLowerCase()!=='x' && s!=='').join(', ');
+document.getElementById('grupoTxt').textContent=gClean;
+if(!gClean) document.getElementById('grupoTxt').style.display='none'; else document.getElementById('grupoTxt').style.display='block';
   document.getElementById('cuantos').value=obj.l;
   // ocultar mesa si es sin
   if(obj.tipo && obj.tipo.toLowerCase().includes('sin')){
