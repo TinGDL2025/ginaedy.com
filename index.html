@@ -89,7 +89,42 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 <div id="detalleMesa" class="gift-detail"><h3 class="serif" style="font-size:16px;display:flex;align-items:center;gap:8px"><img src="icono_mesa_regalo.png" style="width:20px;height:20px"> Mesa de Regalos</h3><a id="linkMesa1" href="#" target="_blank" style="display:block;background:white;border:1px solid #e8e0d6;padding:12px;border-radius:12px;text-decoration:none;color:#2f4a44;font-size:13px;text-align:center;margin-top:10px">🏬 Liverpool</a><a id="linkMesa2" href="#" target="_blank" style="display:block;background:white;border:1px solid #e8e0d6;padding:12px;border-radius:12px;text-decoration:none;color:#2f4a44;font-size:13px;text-align:center;margin-top:8px">🛒 Amazon</a></div>
 <div id="detalleCuenta" class="gift-detail"><h3 class="serif" style="font-size:16px;display:flex;align-items:center;gap:8px"><img src="icono_tarjeta.png" style="width:20px;height:20px"> Datos Depósito</h3><div style="background:white;border-radius:12px;padding:14px;margin-top:10px;border:1px solid #e8e0d6"><p style="font-size:10px;color:#8a9a96">BANCO</p><p id="bancoNombre" style="font-weight:600;font-size:13px">BBVA</p><p style="font-size:10px;color:#8a9a96;margin-top:8px">TITULAR</p><p id="titularCuenta" style="font-weight:600;font-size:13px">Gina / Edy</p><p style="font-size:10px;color:#8a9a96;margin-top:8px">CLABE</p><div style="display:flex;gap:8px;align-items:center"><p id="clabeCuenta" style="background:#fdfaf6;padding:8px 12px;border-radius:8px;flex:1;font-size:12px">0123 4567 8901 2345 67</p><button onclick="copiarClabe()" style="background:#2f4a44;color:white;border:none;padding:8px 12px;border-radius:8px;font-size:10px">Copiar</button></div><p id="copyMsg" style="display:none;color:green;font-size:10px;margin-top:4px">¡Copiado!</p></div></div>
 </div>
-<div class="card" id="seccion8"><div style="text-align:center"><h2 class="serif" style="font-size:22px">Confirma tu asistencia</h2><p id="subInfo" style="font-size:11px;color:#8a9a96;margin-top:4px"></p></div><div style="background:#fdfaf6;border-radius:20px;padding:16px;margin-top:14px"><div class="detail-row"><span style="color:#8a9a96;font-size:11px">TITULAR</span><b id="titularTxt" style="font-size:13px">Sandra López</b></div><div class="detail-row"><span style="color:#8a9a96;font-size:11px">LUGARES</span><b style="font-size:13px"><span id="lugaresTxt" style="color:#c9a88a">3</span> lugares</b></div><div class="detail-row" style="border:none"><span style="color:#8a9a96;font-size:11px">MESA</span><b style="background:#2f4a44;color:white;padding:4px 12px;border-radius:20px;font-size:12px">Mesa <span id="mesaTxt">10</span></b></div><p id="grupoTxt" style="font-size:12px;margin-top:10px">Sandra López, Martín Guerrero (esposo), Irene López (mamá)</p></div><input id="cuantos" type="number" class="input" value="3"><textarea id="quienes" rows="2" class="input" placeholder="Ej: Sandra y Martín"></textarea><button onclick="confirmar()" class="btn">CONFIRMAR ASISTENCIA</button><div id="okBox" class="ok"></div></div>
+<!-- SECCION 8 PULIDA CON CANDADO V - PEGAR EN TU INDEX -->
+<div class="card" id="seccion8">
+<div style="text-align:center">
+<h2 class="serif" style="font-size:22px">Confirma tu asistencia</h2>
+<b id="titularTxt" style="font-size:22px;font-weight:600;display:block;margin-top:10px;text-align:center;font-family:'Inter',sans-serif">Cargando...</b>
+</div>
+<div id="areaNormal">
+<div style="background:#fdfaf6;border-radius:20px;padding:16px;margin-top:14px">
+<div class="detail-row"><span style="color:#8a9a96;font-size:11px">CANTIDAD DE LUGARES ASIGNADOS</span><b style="font-size:13px"><span id="lugaresTxt" style="color:#c9a88a">0</span> lugares</b></div>
+<div class="detail-row"><span style="color:#8a9a96;font-size:11px">ADULTOS</span><b id="kTxt">0</b></div>
+<div class="detail-row"><span style="color:#8a9a96;font-size:11px">MENORES</span><b id="lTxt">0</b></div>
+<div class="detail-row" style="border:none"><span style="color:#8a9a96;font-size:11px">NÚMERO DE MESA</span><b style="background:#2f4a44;color:white;padding:4px 12px;border-radius:20px;font-size:12px">Mesa <span id="mesaTxt">-</span></b></div>
+</div>
+<div id="bloqueConfirmacion" style="display:none;margin-top:20px">
+<label class="label-mini">CONFIRMACIÓN</label>
+<p id="txtCuentasCon" style="font-size:13px;margin-top:8px;line-height:1.5"></p>
+<div id="preguntaTodos" style="margin-top:14px"><p style="font-size:13px;font-weight:500">¿Vendrán todos a la fiesta?</p>
+<div style="margin-top:10px"><button id="btnSi" class="btn-small active" onclick="confirmarTodos(true)">SÍ, TODOS</button><button id="btnNo" class="btn-small" onclick="confirmarTodos(false)">NO, VAN MENOS</button></div></div>
+<div id="cajaNumero" style="display:none;margin-top:14px"><label class="label-mini">AJUSTA LA CANTIDAD</label>
+<div style="display:flex;gap:8px;margin-top:8px"><div style="flex:1"><label style="font-size:10px;color:#8a9a96">ADULTOS CONFIRMADOS</label><input id="adultosConf" type="number" class="input" min="0" value="0"></div><div style="flex:1"><label style="font-size:10px;color:#8a9a96">MENORES CONFIRMADOS</label><input id="ninosConf" type="number" class="input" min="0" value="0"></div></div>
+</div></div>
+<div id="bloqueNombres" style="display:none;margin-top:20px"><label class="label-mini">CONFIRMA LOS NOMBRES</label><textarea id="quienes" rows="3" class="input" placeholder="Ej: Gabriela, Kenia, Sebastian"></textarea></div>
+<button id="btnConfirmar" onclick="confirmarFinal()" class="btn">CONFIRMAR ASISTENCIA</button>
+</div>
+<div id="areaCongelada" style="display:none">
+<div class="frozen">
+<p class="serif" style="font-size:22px">¡Gracias por confirmar!</p>
+<p style="font-size:13px;margin-top:10px">Ya confirmaste el <b id="fechaConfTxt">-</b></p>
+<p style="font-size:13px;margin-top:8px">Confirmaste <b id="sConfTxt">0</b> de <b id="mConfTxt">0</b> lugares</p>
+<p style="font-size:13px;margin-top:12px"><small id="nombresConfTxt" style="color:#c9a88a">-</small></p>
+<div style="margin-top:18px;display:flex;gap:8px;justify-content:center"><button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="btn-small active" style="background:white;color:#2f4a44">VER INVITACIÓN</button> <button onclick="window.close()" class="btn-small" style="border-color:white;color:white;background:transparent">CERRAR</button></div>
+<p style="font-size:10px;margin-top:14px;color:#c9a88a">Si necesitas cambiar algo contacta a Gina & Edy</p>
+</div>
+</div>
+<div id="okBox" class="ok"></div>
+</div>
 <div class="card" id="seccionGracias" style="text-align:center;background:#2f4a44;color:white;border:none"><span class="badge" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);color:#c9a88a">SECCIÓN AGRADECIMIENTO - EDITABLE</span><h2 class="serif" style="font-size:32px;margin-top:12px;color:white">¡Gracias!</h2><p style="font-size:13px;margin-top:12px;line-height:1.6;color:#c9cbc8">De corazón, gracias por ser parte de este día tan especial. Su presencia, cariño y buenos deseos hacen que nuestro amor sea aún más grande.</p><p class="serif" style="font-size:22px;margin-top:18px;color:#c9a88a;font-style:italic">Con amor,</p><p class="serif" style="font-size:28px;font-weight:700;margin-top:4px;color:white">Gina & Edy</p><p style="font-size:10px;letter-spacing:4px;color:#8a9a96;margin-top:12px">02. 01. 27</p></div>
 </div>
 <script>
@@ -114,58 +149,60 @@ let isPlaying=false;const audio=document.getElementById('audio');
 function toggleMusic(){if(!isPlaying){audio.volume=0.7;audio.play().catch(e=>console.log(e));isPlaying=true;document.getElementById('musicBtn').textContent='🔊';}else{audio.pause();isPlaying=false;document.getElementById('musicBtn').textContent='🎵';}}
 const v=document.getElementById('heroVideo');const fb=document.getElementById('fallback');
 if(v){v.addEventListener('loadeddata',()=>{if(fb)fb.style.display='none'});v.addEventListener('playing',()=>{if(fb)fb.style.display='none'});}
-const CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQbzyIFPJGo2kKoUxfcMMtpvbCzOS-0ixuVsPJLDCtJkSqRWNtoRsieg-fGPldUmw/pub?output=csv";
-const FALLBACK_DATA={'010':{t:'Sandra López',l:3,m:'10',g:'Sandra López, Martín Guerrero (esposo), Irene López (mamá)',tipo:'sin mesa de regalo'},'001':{t:'Familia Georgina',l:3,m:'1',g:'Georgina Isabel, Mamá, Papá',tipo:'con mesa de regalo'},'002':{t:'Familia Eduardo',l:2,m:'1',g:'Eduardo, Hermano',tipo:'con mesa de regalo'},'003':{t:'Ejemplo Tíos',l:4,m:'5',g:'Tío Juan, Tía Rosa, Primo Luis, Prima Ana',tipo:'con mesa de regalo'}};
-let DATA = {...FALLBACK_DATA};
-function parseSheetCSV(txt){
-  let lines=txt.split('\n');
-  let out={};
-  for(let i=1;i<lines.length;i++){
-    let line=lines[i].trim();
-    if(!line) continue;
-    let c=line.split(',');
-    if(!c[0]) continue;
-    let id=c[0].trim().padStart(3,'0');
-    let nombre=c[1]?.trim();
-    if(!nombre) continue;
-    let lugares=parseInt(c[12])||1;
-    let mesa=c[13]?.trim()||'General';
-    let grupo=nombre; // Ya no usa columnas C,D,E,F,G con x
-    let tipo=c[9]?.trim()||'con mesa de regalo';
-    out[id]={t:nombre,l:lugares,m:mesa,g:grupo,tipo:tipo};
-  }
-  return out;
-}
-
-const id=new URLSearchParams(window.location.search).get('id')||'010';
-let d=DATA[id]||DATA['010'];
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyHs7tjLBrpX1YQfFYfFnOUx99EKs0cCzf0IJIA2Dy1A6aD2tVDCLJZoiYkffEtOHzQhw/exec";
+let K_asignados=0,L_asignados=0,M_asignados=0,AB_confirmados=0,AC_confirmados=0,S_confirmados=0,vendranTodos=true,esFamiliaActual=false,DATA_ACTUAL=null;
 function renderData(obj){
-  document.getElementById('titularTxt').textContent=obj.t;
-  document.getElementById('lugaresTxt').textContent=obj.l;
-  document.getElementById('mesaTxt').textContent=obj.m;
-  let gClean = (obj.g||'').toString().split(',').map(s=>s.trim()).filter(s=>s.toLowerCase()!=='x' && s!=='').join(', ');
-document.getElementById('grupoTxt').textContent=gClean;
-if(!gClean) document.getElementById('grupoTxt').style.display='none'; else document.getElementById('grupoTxt').style.display='block';
-  document.getElementById('cuantos').value=obj.l;
-  // ocultar mesa si es sin
-  if(obj.tipo && obj.tipo.toLowerCase().includes('sin')){
-    document.getElementById('seccion7')?.classList.add('hidden');
-    document.querySelectorAll('#seccion7, #detalleMesa').forEach(el=>{if(el) el.style.display='none';});
+  if(obj.status==="no encontrado"){ document.getElementById('titularTxt').textContent="ID no encontrado"; return; }
+  if(obj.status==="ya_confirmado"){ obj.confirmado=true; obj.fechaConfirmacion=obj.fecha; obj.tConfirmado=obj.t; obj.sConfirmado=obj.s; }
+  if(obj.confirmado){
+    DATA_ACTUAL=obj; document.getElementById('areaNormal').style.display='none'; document.getElementById('areaCongelada').style.display='block';
+    document.getElementById('fechaConfTxt').textContent=obj.fechaConfirmacion||''; document.getElementById('sConfTxt').textContent=obj.sConfirmado||obj.m||0; document.getElementById('mConfTxt').textContent=obj.m||0;
+    document.getElementById('nombresConfTxt').textContent=obj.tConfirmado||obj.g||''; document.getElementById('titularTxt').textContent=obj.t; return;
   }
+  DATA_ACTUAL=obj; K_asignados=parseInt(obj.k)||0; L_asignados=parseInt(obj.l)||0; M_asignados=parseInt(obj.m)||0; esFamiliaActual=!!obj.esFamilia;
+  AB_confirmados=K_asignados; AC_confirmados=L_asignados; S_confirmados=M_asignados;
+  document.getElementById('titularTxt').textContent=obj.t; document.getElementById('lugaresTxt').textContent=M_asignados;
+  document.getElementById('kTxt').textContent=K_asignados; document.getElementById('lTxt').textContent=L_asignados; document.getElementById('mesaTxt').textContent=obj.mesa||'-';
+  document.getElementById('bloqueConfirmacion').style.display='block';
+  document.getElementById('txtCuentasCon').innerHTML=`Invitados confirmados:<br><b style="font-size:14px;color:#2f4a44">${obj.g||'sin acompañantes'}</b><br><span style="color:#8a9a96;font-size:11px;margin-top:6px;display:block">Total: ${M_asignados} lugares • Mesa ${obj.mesa}</span>`;
+  document.getElementById('adultosConf').max=K_asignados; document.getElementById('ninosConf').max=L_asignados;
+  document.getElementById('adultosConf').value=K_asignados; document.getElementById('ninosConf').value=L_asignados;
 }
-renderData(d);
-fetch(CSV_URL).then(r=>r.text()).then(txt=>{
-  let parsed=parseSheetCSV(txt);
-  if(Object.keys(parsed).length){
-    DATA={...FALLBACK_DATA, ...parsed};
-    let nid=id.padStart(3,'0');
-    if(DATA[nid]){
-      d=DATA[nid];
-      renderData(d);
-    }
+function confirmarTodos(si){ vendranTodos=si; document.getElementById('btnSi').classList.toggle('active',si); document.getElementById('btnNo').classList.toggle('active',!si); document.getElementById('cajaNumero').style.display=si?'none':'block'; document.getElementById('bloqueNombres').style.display=si?'none':'block'; if(si){AB_confirmados=K_asignados; AC_confirmados=L_asignados;} }const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyHs7tjLBrpX1YQfFYfFnOUx99EKs0cCzf0IJIA2Dy1A6aD2tVDCLJZoiYkffEtOHzQhw/exec";
+let K_asignados=0,L_asignados=0,M_asignados=0,AB_confirmados=0,AC_confirmados=0,S_confirmados=0,vendranTodos=true,esFamiliaActual=false,DATA_ACTUAL=null;
+function renderData(obj){
+  if(obj.status==="no encontrado"){ document.getElementById('titularTxt').textContent="ID no encontrado: "+(obj.id||""); return; }
+  if(obj.status==="ya_confirmado"){ obj.confirmado=true; obj.fechaConfirmacion=obj.fecha; obj.tConfirmado=obj.t; obj.sConfirmado=obj.s; }
+  if(obj.confirmado){
+    DATA_ACTUAL=obj; document.getElementById('areaNormal').style.display='none'; document.getElementById('areaCongelada').style.display='block';
+    document.getElementById('fechaConfTxt').textContent=obj.fechaConfirmacion||''; document.getElementById('sConfTxt').textContent=obj.sConfirmado||obj.m||0; document.getElementById('mConfTxt').textContent=obj.m||0;
+    document.getElementById('nombresConfTxt').textContent=obj.tConfirmado||obj.g||''; document.getElementById('titularTxt').textContent=obj.t; return;
   }
-}).catch(e=>console.log('sheet error',e));
-// render movido a renderData()
+  DATA_ACTUAL=obj; K_asignados=parseInt(obj.k)||0; L_asignados=parseInt(obj.l)||0; M_asignados=parseInt(obj.m)||0; esFamiliaActual=!!obj.esFamilia;
+  AB_confirmados=K_asignados; AC_confirmados=L_asignados; S_confirmados=M_asignados;
+  document.getElementById('titularTxt').textContent=obj.t; document.getElementById('lugaresTxt').textContent=M_asignados;
+  document.getElementById('kTxt').textContent=K_asignados; document.getElementById('lTxt').textContent=L_asignados; document.getElementById('mesaTxt').textContent=obj.mesa||'-';
+  document.getElementById('bloqueConfirmacion').style.display='block';
+  document.getElementById('txtCuentasCon').innerHTML=`Invitados confirmados:<br><b style="font-size:14px;color:#2f4a44">${obj.g||'sin acompañantes'}</b><br><span style="color:#8a9a96;font-size:11px;margin-top:6px;display:block">Total: ${M_asignados} lugares • Mesa ${obj.mesa}</span>`;
+  document.getElementById('adultosConf').max=K_asignados; document.getElementById('ninosConf').max=L_asignados;
+  document.getElementById('adultosConf').value=K_asignados; document.getElementById('ninosConf').value=L_asignados;
+  vendranTodos=true; document.getElementById('btnSi').classList.add('active'); document.getElementById('btnNo').classList.remove('active');
+  document.getElementById('cajaNumero').style.display='none'; document.getElementById('bloqueNombres').style.display='none'; document.getElementById('quienes').value=obj.g||'';
+}
+function confirmarTodos(si){ vendranTodos=si; let btnSi=document.getElementById('btnSi'),btnNo=document.getElementById('btnNo'),cajaNumero=document.getElementById('cajaNumero'),bloqueNombres=document.getElementById('bloqueNombres'); if(si){ btnSi.classList.add('active'); btnNo.classList.remove('active'); cajaNumero.style.display='none'; AB_confirmados=K_asignados; AC_confirmados=L_asignados; S_confirmados=M_asignados; document.getElementById('adultosConf').value=K_asignados; document.getElementById('ninosConf').value=L_asignados; bloqueNombres.style.display='none'; } else { btnSi.classList.remove('active'); btnNo.classList.add('active'); cajaNumero.style.display='block'; bloqueNombres.style.display='block'; } }
+document.getElementById('adultosConf').addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>K_asignados)v=K_asignados; if(v<0)v=0; this.value=v; AB_confirmados=v; });
+document.getElementById('ninosConf').addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>L_asignados)v=L_asignados; if(v<0)v=0; this.value=v; AC_confirmados=v; });
+const id=new URLSearchParams(window.location.search).get('id')||'001';
+let s=document.createElement('script'); s.src=APPS_SCRIPT_URL+"?id="+id+"&callback=renderData"; document.body.appendChild(s);
+function confirmarFinal(){
+  if(esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=1+AB_confirmados+AC_confirmados; }
+  let q=document.getElementById('quienes').value||''; let Y=K_asignados-AB_confirmados,Z=L_asignados-AC_confirmados,AA=Y+Z,box=document.getElementById('okBox'),btn=document.getElementById('btnConfirmar');
+  if(!q&&!vendranTodos){ alert('Escribe los nombres'); return; }
+  let params=new URLSearchParams({id:id,s:S_confirmados,ab:AB_confirmados,ac:AC_confirmados,y:Y,z:Z,aa:AA,t:q||(DATA_ACTUAL?DATA_ACTUAL.g:'')});
+  box.style.display='block'; box.innerHTML=`Enviando confirmación...`; if(btn)btn.textContent='ENVIANDO...';
+  let iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=APPS_SCRIPT_URL+'?'+params.toString(); document.body.appendChild(iframe);
+  iframe.onload=function(){ setTimeout(()=>{ let s2=document.createElement('script'); s2.src=APPS_SCRIPT_URL+"?id="+id+"&callback=renderData&rand="+Date.now(); document.body.appendChild(s2); box.style.display='none'; if(btn)btn.textContent='CONFIRMAR ASISTENCIA'; },1500); };
+}
 function confirmar(){const c=document.getElementById('cuantos').value;const q=document.getElementById('quienes').value||d.g;const box=document.getElementById('okBox');box.innerHTML=`¡Gracias ${d.t}!<br>Confirmaste <b>${c}</b> en Mesa ${d.m}<br><small>${q}</small>`;box.style.display='block';if(!isPlaying)toggleMusic();}
 const fechaBoda=new Date('2027-01-02T17:00:00').getTime();
 setInterval(()=>{const now=new Date().getTime();const dist=fechaBoda-now;if(dist<0)return;const elD=document.getElementById('d');if(elD){elD.textContent=Math.floor(dist/(1000*60*60*24));document.getElementById('h').textContent=Math.floor((dist%(1000*60*60*24))/(1000*60*60));document.getElementById('m').textContent=Math.floor((dist%(1000*60*60))/(1000*60));document.getElementById('s').textContent=Math.floor((dist%(1000*60))/1000);}},1000);
