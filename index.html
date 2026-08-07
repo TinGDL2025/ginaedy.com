@@ -193,51 +193,37 @@ function confirmarTodos(si){ vendranTodos=si; let btnSi=document.getElementById(
 document.getElementById('adultosConf').addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>K_asignados)v=K_asignados; if(v<0)v=0; this.value=v; AB_confirmados=v; });
 document.getElementById('ninosConf').addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>L_asignados)v=L_asignados; if(v<0)v=0; this.value=v; AC_confirmados=v; });
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTD_H1YQuDY2KhzZrb6q_-G8TEsvyh_0PmVTzm1hKahQa3M72wpg2oulA7hdW1x-9LVwC_KydLAia6h/pub?output=csv";
-const idParam = new URLSearchParams(window.location.search).get('id')||'001';
-const id = String(idParam).padStart(3,'0');
 
 function parseCSV(text){
-  // parser que respeta comillas y comas internas
-  const rows=[];
-  let row=[], cur="", inQ=false;
+  const rows=[]; let row=[], cur="", inQ=false;
   for(let i=0;i<text.length;i++){
     let c=text[i], n=text[i+1];
-    if(c=='"' ){ if(inQ && n=='"'){cur+='"'; i++;} else inQ=!inQ; }
+    if(c=='"'){ if(inQ && n=='"'){cur+='"'; i++;} else inQ=!inQ; }
     else if(c==',' &&!inQ){ row.push(cur); cur=""; }
-    else if((c=='\n' || c=='\r') &&!inQ){ if(cur||row.length){row.push(cur); rows.push(row);} row=[]; cur=""; if(c=='\r'&&n=='\n')i++; }
+    else if((c=='\n'||c=='\r') &&!inQ){ if(cur||row.length){row.push(cur); rows.push(row);} row=[]; cur=""; if(c=='\r'&&n=='\n')i++; }
     else cur+=c;
   }
-  if(cur||row.length){row.push(cur); rows.push(row);}
-  return rows;
+  if(cur||row.length){row.push(cur); rows.push(row);} return rows;
 }
+const idParam = new URLSearchParams(window.location.search).get('id')||'001';
+const id = String(idParam).padStart(3,'0');
 
 async function cargarCSV(){
   try{
     const res = await fetch(CSV_URL + "&_=" + Date.now());
     const txt = await res.text();
     const filas = parseCSV(txt);
-    console.log("Filas:", filas.length, "Buscando ID:", id);
     let obj=null;
     for(let i=1;i<filas.length;i++){
       let idFila = String((filas[i][0]||"").trim()).padStart(3,'0');
       if(idFila===id){
-        let titular = filas[i][1]||"";
-        let adultos = parseInt(filas[i][10])||0;
-        let ninos = parseInt(filas[i][11])||0;
-        let lugares = parseInt(filas[i][12])||0;
-        let mesa = filas[i][13]||"-";
-        let grupo = filas[i][17]||"";
-        obj={ t:titular, k:adultos, l:ninos, m:lugares, mesa:mesa, g:grupo, esFamilia:titular.toLowerCase().includes("familia"), status:"ok" };
-        console.log("ENCONTRADO:", obj);
-        break;
+        let titular = filas[i][1]||""; let adultos=parseInt(filas[i][10])||0; let ninos=parseInt(filas[i][11])||0; let lugares=parseInt(filas[i][12])||0; let mesa=filas[i][13]||"-"; let grupo=filas[i][17]||"";
+        obj={ t:titular, k:adultos, l:ninos, m:lugares, mesa:mesa, g:grupo, esFamilia:titular.toLowerCase().includes("familia"), status:"ok" }; break;
       }
     }
     if(!obj) obj={ status:"no encontrado", id:id };
     renderData(obj);
-  }catch(e){
-    console.error("Error CSV", e);
-    document.getElementById('titularTxt').textContent="Error cargando - ID "+id;
-  }
+  }catch(e){ console.error(e); }
 }
 cargarCSV();
 
@@ -250,30 +236,9 @@ function confirmarFinal(){
   let iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=APPS_SCRIPT_URL+'?'+params.toString(); document.body.appendChild(iframe);
   iframe.onload=function(){ setTimeout(()=>{ cargarCSV(); box.style.display='none'; if(btn)btn.textContent='CONFIRMAR ASISTENCIA'; },1500); };
 }
-
-// CONTADOR - ARREGLADO
 const fechaBoda=new Date('2027-01-02T17:00:00').getTime();
-function actualizarContador(){
-  const now=new Date().getTime(); const dist=fechaBoda-now;
-  if(dist<0) return;
-  const elD=document.getElementById('d'), elH=document.getElementById('h'), elM=document.getElementById('m'), elS=document.getElementById('s');
-  if(elD) elD.textContent=Math.floor(dist/(1000*60*60*24));
-  if(elH) elH.textContent=Math.floor((dist%(1000*60*60*24))/(1000*60*60));
-  if(elM) elM.textContent=Math.floor((dist%(1000*60*60))/(1000*60));
-  if(elS) elS.textContent=Math.floor((dist%(1000*60))/1000);
-}
+function actualizarContador(){ const now=new Date().getTime(); const dist=fechaBoda-now; if(dist<0) return; const elD=document.getElementById('d'), elH=document.getElementById('h'), elM=document.getElementById('m'), elS=document.getElementById('s'); if(elD) elD.textContent=Math.floor(dist/(1000*60*60*24)); if(elH) elH.textContent=Math.floor((dist%(1000*60*60*24))/(1000*60*60)); if(elM) elM.textContent=Math.floor((dist%(1000*60*60))/(1000*60)); if(elS) elS.textContent=Math.floor((dist%(1000*60))/1000); }
 setInterval(actualizarContador,1000); actualizarContador();
-  if(esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=1+AB_confirmados+AC_confirmados; }
-  let q=document.getElementById('quienes').value||''; let Y=K_asignados-AB_confirmados,Z=L_asignados-AC_confirmados,AA=Y+Z,box=document.getElementById('okBox'),btn=document.getElementById('btnConfirmar');
-  if(!q&&!vendranTodos){ alert('Escribe los nombres'); return; }
-  let params=new URLSearchParams({id:id,s:S_confirmados,ab:AB_confirmados,ac:AC_confirmados,y:Y,z:Z,aa:AA,t:q||(DATA_ACTUAL?DATA_ACTUAL.g:'')});
-  box.style.display='block'; box.innerHTML=`Enviando confirmación...`; if(btn)btn.textContent='ENVIANDO...';
-  let iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=APPS_SCRIPT_URL+'?'+params.toString(); document.body.appendChild(iframe);
-  iframe.onload=function(){ setTimeout(()=>{ let s2=document.createElement('script'); s2.src=APPS_SCRIPT_URL+"?id="+id+"&callback=renderData&rand="+Date.now(); document.body.appendChild(s2); box.style.display='none'; if(btn)btn.textContent='CONFIRMAR ASISTENCIA'; },1500); };
-}
-function confirmar(){const c=document.getElementById('cuantos').value;const q=document.getElementById('quienes').value||d.g;const box=document.getElementById('okBox');box.innerHTML=`¡Gracias ${d.t}!<br>Confirmaste <b>${c}</b> en Mesa ${d.m}<br><small>${q}</small>`;box.style.display='block';if(!isPlaying)toggleMusic();}
-const fechaBoda=new Date('2027-01-02T17:00:00').getTime();
-setInterval(()=>{const now=new Date().getTime();const dist=fechaBoda-now;if(dist<0)return;const elD=document.getElementById('d');if(elD){elD.textContent=Math.floor(dist/(1000*60*60*24));document.getElementById('h').textContent=Math.floor((dist%(1000*60*60*24))/(1000*60*60));document.getElementById('m').textContent=Math.floor((dist%(1000*60*60))/(1000*60));document.getElementById('s').textContent=Math.floor((dist%(1000*60))/1000);}},1000);
 </script>
 </body>
 </html>
