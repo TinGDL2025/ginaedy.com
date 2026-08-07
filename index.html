@@ -128,7 +128,7 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44;overflow-x:
 </div>
 
 <script>
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzlumsnJM2dYg73NEQ9caSGO1fwjFG_KN8ZqHvUkoxhlA7ZW4ylisKssYbVhvKaMhg/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYToJd8tgpmw/exec";
 const mesaRegalosURL1 = "https://mesaderegalos.liverpool.com.mx/milistabodas/123456";
 const mesaRegalosURL2 = "https://www.amazon.com.mx/hz/wishlist/ls/ABC123";
 const bancoNombre = "BBVA Bancomer";
@@ -220,23 +220,92 @@ document.getElementById('adultosConf').addEventListener('input', function(){ let
 document.getElementById('ninosConf').addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>L_asignados)v=L_asignados; if(v<0)v=0; this.value=v; AC_confirmados=v; });
 const id=new URLSearchParams(window.location.search).get('id')||'001';
 let s=document.createElement('script'); s.src=APPS_SCRIPT_URL+"?id="+id+"&callback=renderData"; document.body.appendChild(s);
-function confirmarFinal(){
-  if(esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=1+AB_confirmados+AC_confirmados; }
-  let q=document.getElementById('quienes').value||''; 
-  let Y=K_asignados-AB_confirmados,Z=L_asignados-AC_confirmados,AA=Y+Z;
-  let box=document.getElementById('okBox'),btn=document.getElementById('btnConfirmar');
-  if(!q&&!vendranTodos){ alert('Escribe los nombres'); return; }
-  let params=new URLSearchParams({id:id,s:S_confirmados,ab:AB_confirmados,ac:AC_confirmados,y:Y,z:Z,aa:AA,t:q||(DATA_ACTUAL?DATA_ACTUAL.g:'')});
-  box.style.display='block'; box.innerHTML=`Enviando confirmación...`; if(btn)btn.textContent='ENVIANDO...';
-  let iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=APPS_SCRIPT_URL+'?'+params.toString(); document.body.appendChild(iframe);
-  iframe.onload=function(){ 
-    setTimeout(()=>{ 
-      let s2=document.createElement('script'); s2.src=APPS_SCRIPT_URL+"?id="+id+"&callback=renderData&rand="+Date.now(); document.body.appendChild(s2); 
-      box.style.display='none'; 
-      if(btn)btn.textContent='CONFIRMAR ASISTENCIA';
-    },1500); 
-  };
+
+let confirmando = false;
+async function confirmarFinal(){
+  if(confirmando) return;
+  const listaNombres = document.getElementById('listaNombresConfirmados');
+  if(!listaNombres){ alert("Error: no se encontró lista"); return; }
+  
+  // Recolectar nombres y contar adultos/niños
+  const inputs = listaNombres.querySelectorAll('input');
+  let nombres = [];
+  let adultos = 0;
+  let ninos = 0;
+  let tieneFamilia = false;
+  
+  inputs.forEach(inp=>{
+    const v = inp.value.trim();
+    if(v){
+      nombres.push(v);
+      const tipo = inp.dataset.tipo;
+      if(tipo === 'adulto') adultos++;
+      else if(tipo === 'nino') ninos++;
+      if(tipo === 'familia') tieneFamilia = true;
+    }
+  });
+  
+  if(nombres.length === 0){
+    alert("Por favor escribe al menos 1 nombre que asistirá");
+    return;
+  }
+  
+  const totalPersonas = tieneFamilia ? (adultos+ninos) : nombres.length;
+  const tParam = encodeURIComponent(nombres.join(", "));
+  
+  confirmando = true;
+  const btn = document.getElementById('btnConfirmarFinal');
+  if(btn){ btn.disabled=true; btn.textContent="Confirmando..."; }
+  
+  try{
+    // Guardar usando el GS que espera s, ab, ac, t
+    const url = `${APPS_SCRIPT_URL}?id=${idInvitado}&s=${totalPersonas}&ab=${adultos}&ac=${ninos}&t=${tParam}&callback=cbConfirmar&_=${Date.now()}`;
+    
+    window.cbConfirmar = function(res){
+      confirmando=false;
+      if(btn){ btn.disabled=false; btn.textContent="Confirmar Asistencia"; }
+      if(res.status === "ya_confirmado"){
+        document.getElementById('seccion8').innerHTML = `
+          <div style="text-align:center; padding:40px 20px;">
+            <div style="font-size:48px;">✅</div>
+            <h2 style="font-family:'Great Vibes',cursive; font-size:32px; color:#2f4a44;">¡Ya habías confirmado!</h2>
+            <p style="margin-top:12px;">${res.t||''}</p>
+            <p style="font-size:12px; color:#888; margin-top:8px;">${res.fecha||''}</p>
+            <p style="margin-top:20px; font-size:14px;">Si quieres modificar, contacta a los novios.</p>
+          </div>`;
+        return;
+      }
+      if(res.status === "ok" || res.status === "ok"){
+        document.getElementById('seccion8').innerHTML = `
+          <div style="text-align:center; padding:40px 20px;">
+            <div style="font-size:48px;">💌</div>
+            <h2 style="font-family:'Great Vibes',cursive; font-size:32px; color:#2f4a44;">¡Gracias por confirmar!</h2>
+            <p style="margin-top:12px;">Hemos registrado a: <strong>${res.t||nombres.join(", ")}</strong></p>
+            <p style="margin-top:8px;">Total: ${res.s||totalPersonas} personas</p>
+            <p style="font-size:12px; color:#888; margin-top:8px;">${res.fecha||''}</p>
+          </div>`;
+        return;
+      }
+      alert("Respuesta: "+JSON.stringify(res));
+    };
+    
+    const s = document.createElement('script');
+    s.src = url;
+    s.onerror = function(){
+      confirmando=false;
+      if(btn){ btn.disabled=false; btn.textContent="Confirmar Asistencia"; }
+      alert("Error de conexión. Revisa tu internet.");
+    };
+    document.body.appendChild(s);
+    setTimeout(()=>{ try{ s.remove(); }catch(e){} }, 5000);
+    
+  }catch(e){
+    confirmando=false;
+    if(btn){ btn.disabled=false; btn.textContent="Confirmar Asistencia"; }
+    alert("Error: "+e.message);
+  }
 }
+
 const fechaBoda=new Date('2027-01-02T17:00:00').getTime();
 setInterval(()=>{const now=new Date().getTime();const dist=fechaBoda-now;if(dist<0)return;const elD=document.getElementById('d');if(elD){elD.textContent=Math.floor(dist/(1000*60*60*24));document.getElementById('h').textContent=Math.floor((dist%(1000*60*60*24))/(1000*60*60));document.getElementById('m').textContent=Math.floor((dist%(1000*60*60))/(1000*60));document.getElementById('s').textContent=Math.floor((dist%(1000*60))/1000);}},1000);
 </script>
