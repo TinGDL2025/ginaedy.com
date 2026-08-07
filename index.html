@@ -41,7 +41,7 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44;overflow-x:
 .sobre-video{width:100%;max-width:280px;margin:0 auto;border-radius:20px;overflow:hidden;background:#fdfaf6}
 #mainContent{display:none}
 #mainContent.visible{display:block}
-</style>
+#mainContent.visible{display:block !important} #sobreOverlay[style*="display: none"] + #mainContent{display:block !important}</style>
 </head>
 <body>
 <audio id="audio" loop preload="auto"><source src="a_thousand_years_loop.mp3" type="audio/mpeg"></audio>
@@ -49,14 +49,14 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44;overflow-x:
 <!-- SOBRE INICIO - TAL CUAL FORMATO -->
 <div id="sobreOverlay">
   <div class="sobre-card">
-    <div class="sobre-video"><video autoplay muted loop playsinline><source src="logo_animado_completo_light.mp4" type="video/mp4"><source src="logo_animado_completo.mp4" type="video/mp4"></video></div>
+    <div class="sobre-video"><video autoplay muted loop playsinline onerror="this.style.display='none'"><source src="./logo_animado_completo_light.mp4" type="video/mp4"><source src="logo_animado_completo.mp4" type="video/mp4"></video></div>
     <h1 class="serif" style="font-size:38px;font-weight:700;margin-top:20px;letter-spacing:1px">Gina & Edy</h1>
     <p style="font-size:11px;letter-spacing:5px;color:#8a9a96;margin-top:4px;font-weight:500">02. 01. 27</p>
     <div style="margin-top:20px;padding:16px;background:#fdfaf6;border-radius:16px">
       <p style="font-size:11px;letter-spacing:2px;color:#8a9a96">INVITACIÓN PARA</p>
       <b id="sobreTitular" class="serif" style="font-size:20px;display:block;margin-top:6px;color:#2f4a44">Cargando...</b>
     </div>
-    <button onclick="abrirInvitacion()" class="btn" style="margin-top:24px">ABRIR INVITACIÓN</button>
+    <button id="sobreBtn" onclick="abrirInvitacion()" class="btn" style="margin-top:24px">ABRIR INVITACIÓN</button>
     <p style="font-size:10px;color:#8a9a96;margin-top:12px;letter-spacing:1px">Toca para abrir con música</p>
   </div>
 </div>
@@ -64,7 +64,7 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44;overflow-x:
 <div id="musicBtn" class="music-btn" onclick="toggleMusic()">🎵</div>
 
 <div id="mainContent">
-<div class="hero"><video id="heroVideo" autoplay muted loop playsinline><source src="logo_animado_completo_light.mp4" type="video/mp4"><source src="logo_animado_completo.mp4" type="video/mp4"></video></div>
+<div class="hero"><video id="heroVideo" autoplay muted loop playsinline onerror="this.style.display='none'"><source src="./logo_animado_completo_light.mp4" type="video/mp4"><source src="logo_animado_completo.mp4" type="video/mp4"></video></div>
 <div class="container">
 <div class="card" id="seccion1" style="text-align:center"><h1 class="serif" style="font-size:42px;font-weight:700;letter-spacing:1px">Gina & Edy</h1><p style="font-size:11px;letter-spacing:5px;color:#8a9a96;margin-top:4px;font-weight:500">02. 01. 27</p><p class="texto-seccion1">Con el corazón lleno de ilusión, queremos invitarte a ser parte del día más importante de nuestras vidas.</p><p class="texto-seccion1">Después de compartir risas, sueños y un camino lleno de amor, hemos decidido dar el siguiente paso.</p><p class="texto-seccion1">Con la gracia de Dios y tu presencia, hará que este momento sea aún más inolvidable</p><div style="width:100%;max-width:420px;margin:20px auto 0 auto;border-radius:20px;overflow:hidden;box-shadow:0 12px 30px rgba(47,74,68,0.12);background:#fdfaf6;line-height:0"><video autoplay muted loop playsinline preload="auto" class="foto-portada" style="margin:0;border-radius:20px;box-shadow:none;width:100%;height:auto;display:block"><source src="./Foto Portada Video.mp4" type="video/mp4"><source src="Foto Portada Video.mp4" type="video/mp4"></video></div><button onclick="toggleMusic()" class="btn-outline" style="margin-top:18px"><span style="font-size:16px">▶</span> Escuchar A Thousand Years</button></div>
 <div class="card" id="seccion2"><h2 class="serif" style="font-size:26px;text-align:center">Nuestra historia</h2><p style="font-size:13px;text-align:center;color:#555;margin-top:8px">Nos conocimos por casualidad... (editable)</p><div style="width:100%;margin-top:12px;border-radius:20px;overflow:hidden;background:#000"><video autoplay muted loop playsinline style="width:100%;height:auto;display:block"><source src="video_historia.mp4" type="video/mp4"></video></div></div>
