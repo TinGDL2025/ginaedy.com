@@ -4,25 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gina & Edy - 02.01.27</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2f4a44">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="logo_animado_completo_light.mp4">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44;overflow-x:hidden}
 .serif{font-family:'Cormorant Garamond',serif}
-/* SOBRE */
-#sobre{position:fixed;inset:0;z-index:9999;background:#fdfaf6;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform 0.9s cubic-bezier(0.77,0,0.175,1)}
-#sobre.abierto{transform:translateY(-100%)}
-.sobre-carta{width:90%;max-width:420px;background:white;border-radius:24px;padding:40px 28px;box-shadow:0 20px 60px rgba(47,74,68,0.15);border:1px solid rgba(201,168,138,0.2);text-align:center;position:relative}
-.sobre-carta::before{content:'';position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:60px;height:12px;background:#c9a88a;border-radius:6px 6px 0 0}
-.sobre-sello{width:64px;height:64px;background:#2f4a44;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px auto;color:#c9a88a;font-size:26px}
-.btn-sobre{margin-top:22px;background:#2f4a44;color:white;border:none;padding:16px 32px;border-radius:30px;letter-spacing:2px;font-size:12px;cursor:pointer;transition:all 0.2s}
-.btn-sobre:hover{transform:scale(1.03)}
-/* RESTO */
 .hero{width:100%;background:#fdfaf6;display:flex;align-items:center;justify-content:center;padding:20px 0;position:relative}
 .hero video{width:100%;max-width:520px;height:auto;max-height:68vh;object-fit:contain;display:block;margin:0 auto;background:#fdfaf6;border-radius:20px}
 .container{max-width:520px;margin:0 auto;padding:0 20px 40px 20px}
@@ -34,7 +20,7 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44;overflow-x:
 .btn-gift{flex:1;padding:18px;border-radius:20px;border:2px solid #c9a88a33;background:#fdfaf6;cursor:pointer;text-align:center;transition:all 0.2s}
 .btn-gift.active{border-color:#2f4a44;background:white;box-shadow:0 8px 20px rgba(47,74,68,0.1)}
 .ok{display:none;margin-top:16px;background:#2f4a44;color:white;padding:16px;border-radius:16px;text-align:center;font-size:13px}
-.detail-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px dashed #eee;font-size:12px;align-items:center}
+.detail-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #eee;font-size:12px;align-items:center}
 .gift-detail{display:none;margin-top:20px;padding:20px;background:#fdfaf6;border-radius:20px;border:1px dashed #c9a88a55}
 .music-btn{position:fixed;bottom:20px;right:20px;z-index:99;background:#2f4a44;color:white;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(0,0,0,0.2);cursor:pointer;font-size:20px;animation:pulse 2s infinite}
 @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
@@ -44,45 +30,54 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44;overflow-x:
 .countdown span{font-size:9px;letter-spacing:1px;color:#8a9a96}
 .foto-portada{width:100%;max-width:420px;height:auto;border-radius:20px;display:block;margin:20px auto 0 auto;box-shadow:0 12px 30px rgba(47,74,68,0.12);object-fit:cover}
 .texto-seccion1{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;line-height:1.6;color:#3d5a54;font-weight:400;padding:0 10px;margin-top:10px}
+.label-mini{font-size:10px;letter-spacing:1.5px;color:#8a9a96;margin-top:18px;display:block;font-weight:500}
 .btn-small{padding:10px 18px;border-radius:30px;border:1px solid #2f4a44;background:white;color:#2f4a44;cursor:pointer;font-size:12px;margin-right:8px}
 .btn-small.active{background:#2f4a44;color:white}
-.label-mini{font-size:10px;letter-spacing:1.5px;color:#8a9a96;margin-top:18px;display:block;font-weight:500}
 .frozen{background:#2f4a44;color:white;border-radius:20px;padding:18px;margin-top:20px;text-align:center}
+/* SOBRE - FORMATO RESPETADO */
+#sobreOverlay{position:fixed;inset:0;z-index:9999;background:#fdfaf6;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;transition:all 0.8s cubic-bezier(0.4,0,0.2,1)}
+#sobreOverlay.abierto{transform:translateY(-100%);opacity:0;pointer-events:none}
+.sobre-card{background:white;border-radius:32px;padding:32px 24px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(47,74,68,0.12);border:1px solid rgba(201,168,138,0.15)}
+.sobre-video{width:100%;max-width:280px;margin:0 auto;border-radius:20px;overflow:hidden;background:#fdfaf6}
+#mainContent{display:none}
+#mainContent.visible{display:block}
 </style>
 </head>
 <body>
-<!-- SOBRE PORTADA -->
-<div id="sobre">
-<div class="sobre-carta">
-<div class="sobre-sello">G&E</div>
-<p style="font-size:10px;letter-spacing:4px;color:#8a9a96">02 . 01 . 27</p>
-<h1 class="serif" style="font-size:36px;font-weight:700;margin-top:8px">Gina & Edy</h1>
-<p id="sobrePara" class="serif" style="font-size:20px;margin-top:18px;font-style:italic;color:#3d5a54">Cargando...</p>
-<p style="font-size:11px;color:#8a9a96;margin-top:8px">Tenemos una invitación especial para ti</p>
-<button class="btn-sobre" onclick="abrirSobre()">ABRIR INVITACIÓN</button>
-<p style="font-size:9px;color:#c9a88a;margin-top:14px;letter-spacing:1px">ginaedy.com</p>
-</div>
+<audio id="audio" loop preload="auto"><source src="a_thousand_years_loop.mp3" type="audio/mpeg"></audio>
+
+<!-- SOBRE INICIO - TAL CUAL FORMATO -->
+<div id="sobreOverlay">
+  <div class="sobre-card">
+    <div class="sobre-video"><video autoplay muted loop playsinline><source src="logo_animado_completo_light.mp4" type="video/mp4"><source src="logo_animado_completo.mp4" type="video/mp4"></video></div>
+    <h1 class="serif" style="font-size:38px;font-weight:700;margin-top:20px;letter-spacing:1px">Gina & Edy</h1>
+    <p style="font-size:11px;letter-spacing:5px;color:#8a9a96;margin-top:4px;font-weight:500">02. 01. 27</p>
+    <div style="margin-top:20px;padding:16px;background:#fdfaf6;border-radius:16px">
+      <p style="font-size:11px;letter-spacing:2px;color:#8a9a96">INVITACIÓN PARA</p>
+      <b id="sobreTitular" class="serif" style="font-size:20px;display:block;margin-top:6px;color:#2f4a44">Cargando...</b>
+    </div>
+    <button onclick="abrirInvitacion()" class="btn" style="margin-top:24px">ABRIR INVITACIÓN</button>
+    <p style="font-size:10px;color:#8a9a96;margin-top:12px;letter-spacing:1px">Toca para abrir con música</p>
+  </div>
 </div>
 
-<audio id="audio" loop preload="auto"><source src="a_thousand_years_loop.mp3" type="audio/mpeg"></audio>
 <div id="musicBtn" class="music-btn" onclick="toggleMusic()">🎵</div>
+
+<div id="mainContent">
 <div class="hero"><video id="heroVideo" autoplay muted loop playsinline><source src="logo_animado_completo_light.mp4" type="video/mp4"><source src="logo_animado_completo.mp4" type="video/mp4"></video></div>
 <div class="container">
 <div class="card" id="seccion1" style="text-align:center"><h1 class="serif" style="font-size:42px;font-weight:700;letter-spacing:1px">Gina & Edy</h1><p style="font-size:11px;letter-spacing:5px;color:#8a9a96;margin-top:4px;font-weight:500">02. 01. 27</p><p class="texto-seccion1">Con el corazón lleno de ilusión, queremos invitarte a ser parte del día más importante de nuestras vidas.</p><p class="texto-seccion1">Después de compartir risas, sueños y un camino lleno de amor, hemos decidido dar el siguiente paso.</p><p class="texto-seccion1">Con la gracia de Dios y tu presencia, hará que este momento sea aún más inolvidable</p><div style="width:100%;max-width:420px;margin:20px auto 0 auto;border-radius:20px;overflow:hidden;box-shadow:0 12px 30px rgba(47,74,68,0.12);background:#fdfaf6;line-height:0"><video autoplay muted loop playsinline preload="auto" class="foto-portada" style="margin:0;border-radius:20px;box-shadow:none;width:100%;height:auto;display:block"><source src="./Foto Portada Video.mp4" type="video/mp4"><source src="Foto Portada Video.mp4" type="video/mp4"></video></div><button onclick="toggleMusic()" class="btn-outline" style="margin-top:18px"><span style="font-size:16px">▶</span> Escuchar A Thousand Years</button></div>
-
 <div class="card" id="seccion2"><h2 class="serif" style="font-size:26px;text-align:center">Nuestra historia</h2><p style="font-size:13px;text-align:center;color:#555;margin-top:8px">Nos conocimos por casualidad... (editable)</p><div style="width:100%;margin-top:12px;border-radius:20px;overflow:hidden;background:#000"><video autoplay muted loop playsinline style="width:100%;height:auto;display:block"><source src="video_historia.mp4" type="video/mp4"></video></div></div>
-
 <div class="card" id="seccion3"><h2 class="serif" style="font-size:20px;text-align:center">Con la bendición de Dios, nuestros padres y padrinos</h2><div style="display:grid;grid-template-columns:1fr auto 1fr;gap:12px;margin-top:16px;text-align:center"><div><p style="font-size:10px;color:#8a9a96">PADRES NOVIA</p><p style="font-size:12px;margin-top:6px;font-weight:500;line-height:1.3"><span style="font-weight:400">Gabriela Rosales Mondragón</span><br><span style="font-weight:400">Rogelio Gpe. Pérez Gómez</span></p></div><div class="serif" style="font-size:24px">&</div><div><p style="font-size:10px;color:#8a9a96">PADRES NOVIO</p><p style="font-size:12px;margin-top:6px;font-weight:500;line-height:1.3"><span style="font-weight:400">María Rosa Espíritu Lozano</span><br><span style="font-weight:400">Alfredo Magallón Martínez</span></p></div></div><div style="margin-top:22px;text-align:center"><p style="font-size:10px;color:#8a9a96">NUESTROS PADRINOS</p><p style="font-size:12px;margin-top:6px;font-weight:500;line-height:1.4"><span style="font-weight:400">Sandra Rosales Mondragón</span><br><span style="font-weight:400">Martín Alejandro Guerrero Domínguez</span></p></div></div>
+<div class="card" id="seccion4"><h2 class="serif" style="font-size:22px;text-align:center">¿Dónde y cuándo?</h2><div style="margin-top:16px"><div style="display:flex;gap:12px"><div style="flex:1;text-align:center;padding:16px;background:#fdfaf6;border-radius:16px"><p style="font-size:10px;color:#8a9a96">CEREMONIA</p><p style="font-size:14px;font-weight:600;margin-top:6px">Templo San Juan</p><p style="font-size:11px;margin-top:4px">5:00 PM</p></div><div style="flex:1;text-align:center;padding:16px;background:#fdfaf6;border-radius:16px"><p style="font-size:10px;color:#8a9a96">RECEPCIÓN</p><p style="font-size:14px;font-weight:600;margin-top:6px">Hacienda La Luz</p><p style="font-size:11px;margin-top:4px">7:00 PM</p></div></div></div></div>
+<div class="card" id="seccion5"><h2 class="serif" style="font-size:22px;text-align:center">Faltan</h2><div class="countdown"><div><b id="d">0</b><span>DÍAS</span></div><div><b id="h">0</b><span>HORAS</span></div><div><b id="m">0</b><span>MIN</span></div><div><b id="s">0</b><span>SEG</span></div></div></div>
+<div class="card" id="seccion5b"><h2 class="serif" style="font-size:18px;text-align:center">Ubicaciones</h2><p style="font-size:12px;text-align:center;margin-top:8px"><a href="#" style="color:#2f4a44">Ver mapa ceremonia</a> | <a href="#" style="color:#2f4a44">Ver mapa recepción</a></p></div>
+<div class="card" id="seccion6"><h2 class="serif" style="font-size:22px;text-align:center">Galería</h2><p style="font-size:12px;text-align:center;color:#8a9a96">Tus fotos y videos ya están en repo</p></div>
+<div class="card" id="seccionVestimenta"><h2 class="serif" style="font-size:18px;text-align:center">Código de vestimenta</h2><p style="font-size:13px;text-align:center;margin-top:8px">Formal - Tono tierra</p></div>
+<div class="card" id="seccionItinerario"><h2 class="serif" style="font-size:18px;text-align:center">Itinerario</h2><p style="font-size:12px;text-align:center;margin-top:8px">5:00 Ceremonia - 7:00 Recepción - 12:00 Fin</p></div>
+<div class="card" id="seccion7"><h2 class="serif" style="font-size:18px;text-align:center">Mesa de regalos</h2><div style="display:flex;gap:12px;margin-top:16px"><div id="btnMesa" class="btn-gift active" onclick="mostrarRegalo('mesa')"><p style="font-size:12px;font-weight:600">Mesa</p><p style="font-size:10px;color:#8a9a96;margin-top:4px">Liverpool / Amazon</p></div><div id="btnCuenta" class="btn-gift" onclick="mostrarRegalo('cuenta')"><p style="font-size:12px;font-weight:600">Cuenta</p><p style="font-size:10px;color:#8a9a96;margin-top:4px">Transferencia</p></div></div><div id="detalleMesa" class="gift-detail" style="display:block"><p style="font-size:12px">Links:</p><p style="margin-top:8px"><a id="linkMesa1" href="#" target="_blank" style="color:#2f4a44;font-size:12px">Liverpool</a></p><p><a id="linkMesa2" href="#" target="_blank" style="color:#2f4a44;font-size:12px">Amazon</a></p></div><div id="detalleCuenta" class="gift-detail"><p style="font-size:11px;color:#8a9a96">BANCO</p><p id="bancoNombre" style="font-size:13px;font-weight:600">-</p><p style="font-size:11px;color:#8a9a96;margin-top:10px">TITULAR</p><p id="titularCuenta" style="font-size:13px">-</p><p style="font-size:11px;color:#8a9a96;margin-top:10px">CLABE</p><div style="display:flex;align-items:center;gap:8px;margin-top:4px"><p id="clabeCuenta" style="font-size:13px">-</p><button onclick="copiarClabe()" style="padding:6px 12px;border-radius:20px;border:1px solid #2f4a44;background:white;font-size:10px;cursor:pointer">COPIAR</button></div><p id="copyMsg" style="display:none;font-size:10px;color:green;margin-top:8px">¡Copiado!</p></div></div>
 
-<div class="card" id="seccion4" style="text-align:center"><span class="badge">CUÁNDO Y DÓNDE</span><h2 class="serif" style="font-size:28px;margin-top:8px">02 de Enero de 2027</h2><div class="countdown"><div><b id="d">00</b><span>DÍAS</span></div><div><b id="h">00</b><span>HRS</span></div><div><b id="m">00</b><span>MIN</span></div><div><b id="s">00</b><span>SEG</span></div></div><div style="margin-top:20px;padding:16px;background:#fdfaf6;border-radius:20px"><p style="font-size:10px;color:#8a9a96">CEREMONIA - 5:00 PM</p><p style="font-size:13px;margin-top:4px;font-weight:500">Parroquia San Andrés</p><a href="https://maps.google.com/?q=Parroquia+San+Andres+Guadalajara" target="_blank" class="btn-outline" style="margin-top:10px">VER MAPA</a></div><div style="margin-top:12px;padding:16px;background:#fdfaf6;border-radius:20px"><p style="font-size:10px;color:#8a9a96">RECEPCIÓN - 7:00 PM</p><p style="font-size:13px;margin-top:4px;font-weight:500">Miguel Bernal 3432, Col. San Andrés</p><a href="https://maps.google.com/?q=Miguel+Bernal+3432+Guadalajara" target="_blank" class="btn-outline" style="margin-top:10px">VER MAPA</a></div></div>
-
-<div class="card" id="seccion5" style="text-align:center"><span class="badge">DRESS CODE</span><h2 class="serif" style="font-size:24px;margin-top:8px">Formal - Etiqueta</h2><p style="font-size:12px;color:#555;margin-top:6px">Queremos que te veas espectacular</p></div>
-
-<div class="card" id="seccion6" style="text-align:center"><span class="badge">GALERÍA</span><h2 class="serif" style="font-size:24px;margin-top:8px">Nuestros momentos</h2><p style="font-size:12px;color:#888">Agrega aquí tus fotos</p></div>
-
-<div class="card" id="seccion7"><span class="badge">MESA DE REGALOS</span><h2 class="serif" style="font-size:22px;text-align:center;margin-top:8px">Tu presencia es nuestro regalo</h2><p style="font-size:12px;text-align:center;color:#555;margin-top:6px">Pero si deseas bendecirnos con un detalle...</p><div style="display:flex;gap:10px;margin-top:16px"><button id="btnMesa" class="btn-gift active" onclick="mostrarRegalo('mesa')"><span style="font-size:20px">🎁</span><p style="font-size:12px;font-weight:600;margin-top:6px">Mesa de Regalos</p></button><button id="btnCuenta" class="btn-gift" onclick="mostrarRegalo('cuenta')"><span style="font-size:20px">💳</span><p style="font-size:12px;font-weight:600;margin-top:6px">Cuenta Bancaria</p></button></div><div id="detalleMesa" class="gift-detail"><p style="font-size:12px;text-align:center">Encuéntranos como Gina & Edy 02.01.27</p><a id="linkMesa1" target="_blank" class="btn" style="margin-top:12px">Liverpool</a><a id="linkMesa2" target="_blank" class="btn-outline">Amazon</a></div><div id="detalleCuenta" class="gift-detail"><p style="font-size:10px;color:#8a9a96;text-align:center">DATOS BANCARIOS</p><p id="bancoNombre" style="text-align:center;font-weight:600;margin-top:8px">-</p><p id="titularCuenta" style="text-align:center;font-size:12px;margin-top:4px">-</p><p id="clabeCuenta" style="text-align:center;font-size:16px;font-weight:700;letter-spacing:1px;margin-top:8px;background:white;padding:10px;border-radius:12px">-</p><button onclick="copiarClabe()" class="btn-outline" style="margin-top:10px">Copiar CLABE</button><p id="copyMsg" style="display:none;text-align:center;font-size:10px;color:#2f4a44;margin-top:8px">¡Copiado!</p></div></div>
-
-<!-- SECCION 8 PULIDA CON CANDADO V -->
+<!-- SECCION 8 FINAL INTEGRADA - TAL CUAL -->
 <div class="card" id="seccion8">
 <div style="text-align:center">
 <h2 class="serif" style="font-size:22px">Confirma tu asistencia</h2>
@@ -96,35 +91,31 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44;overflow-x:
 <div class="detail-row" style="border:none"><span style="color:#8a9a96;font-size:11px">NÚMERO DE MESA</span><b style="background:#2f4a44;color:white;padding:4px 12px;border-radius:20px;font-size:12px">Mesa <span id="mesaTxt">-</span></b></div>
 </div>
 <div id="bloqueConfirmacion" style="display:none;margin-top:20px">
-<label class="label-mini">CONFIRMACIÓN</label>
-<p id="txtCuentasCon" style="font-size:13px;margin-top:8px;line-height:1.5"></p>
-<div id="preguntaTodos" style="margin-top:14px"><p style="font-size:13px;font-weight:500">¿Vendrán todos a la fiesta?</p>
-<div style="margin-top:10px"><button id="btnSi" class="btn-small active" onclick="confirmarTodos(true)">SÍ, TODOS</button><button id="btnNo" class="btn-small" onclick="confirmarTodos(false)">NO, VAN MENOS</button></div></div>
-<div id="cajaNumero" style="display:none;margin-top:14px"><label class="label-mini">AJUSTA LA CANTIDAD</label>
-<div style="display:flex;gap:8px;margin-top:8px"><div style="flex:1"><label style="font-size:10px;color:#8a9a96">ADULTOS CONFIRMADOS</label><input id="adultosConf" type="number" class="input" min="0" value="0"></div><div style="flex:1"><label style="font-size:10px;color:#8a9a96">MENORES CONFIRMADOS</label><input id="ninosConf" type="number" class="input" min="0" value="0"></div></div>
+<label class="label-mini">CONFIRMACIÓN DE LUGARES ASIGNADOS</label>
+<p id="txtCuentasCon" style="font-size:13px;margin-top:8px;line-height:1.4"></p>
+<div id="preguntaTodos" style="margin-top:10px"><p style="font-size:12px">¿Vendrán todos a la fiesta?</p>
+<div style="margin-top:8px"><button id="btnSi" class="btn-small active" onclick="confirmarTodos(true)">SÍ, TODOS</button><button id="btnNo" class="btn-small" onclick="confirmarTodos(false)">NO, VAN MENOS</button></div></div>
+<div id="cajaNumero" style="display:none;margin-top:12px"><label class="label-mini">AJUSTA LA CANTIDAD</label>
+<div style="display:flex;gap:8px"><div style="flex:1"><label style="font-size:10px;color:#8a9a96">ADULTOS CONFIRMADOS</label><input id="adultosConf" type="number" class="input" min="0" value="0"></div><div style="flex:1"><label style="font-size:10px;color:#8a9a96">MENORES CONFIRMADOS</label><input id="ninosConf" type="number" class="input" min="0" value="0"></div></div>
 </div></div>
 <div id="bloqueNombres" style="display:none;margin-top:20px"><label class="label-mini">CONFIRMA LOS NOMBRES</label><textarea id="quienes" rows="3" class="input" placeholder="Ej: Gabriela, Kenia, Sebastian"></textarea></div>
 <button id="btnConfirmar" onclick="confirmarFinal()" class="btn">CONFIRMAR ASISTENCIA</button>
 </div>
 <div id="areaCongelada" style="display:none">
 <div class="frozen">
-<p class="serif" style="font-size:22px">¡Gracias por confirmar!</p>
-<p style="font-size:13px;margin-top:10px">Ya confirmaste el <b id="fechaConfTxt">-</b></p>
+<p class="serif" style="font-size:20px">¡Gracias por confirmar!</p>
+<p style="font-size:13px;margin-top:8px">Ya confirmaste el <b id="fechaConfTxt">-</b></p>
 <p style="font-size:13px;margin-top:8px">Confirmaste <b id="sConfTxt">0</b> de <b id="mConfTxt">0</b> lugares</p>
-<p style="font-size:13px;margin-top:12px"><small id="nombresConfTxt" style="color:#c9a88a">-</small></p>
-<div style="margin-top:18px;display:flex;gap:8px;justify-content:center"><button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="btn-small active" style="background:white;color:#2f4a44">VER INVITACIÓN</button> <button onclick="window.close()" class="btn-small" style="border-color:white;color:white;background:transparent">CERRAR</button></div>
-<p style="font-size:10px;margin-top:14px;color:#c9a88a">Si necesitas cambiar algo contacta a Gina & Edy</p>
-</div>
-<div style="background:#fdfaf6;border-radius:20px;padding:16px;margin-top:14px">
-<div class="detail-row"><span style="color:#8a9a96;font-size:11px">TITULAR</span><b id="titularTxt2">-</b></div>
-<div class="detail-row"><span style="color:#8a9a96;font-size:11px">MESA</span><b id="mesaTxt2">-</b></div>
-<div class="detail-row" style="border:none"><span style="color:#8a9a96;font-size:11px">INVITADOS CONFIRMADOS</span><b id="asistentesTxt2" style="text-align:right;max-width:200px">-</b></div>
+<p style="font-size:12px;margin-top:10px"><small id="nombresConfTxt">-</small></p>
+<div style="margin-top:16px"><button onclick="verInvitacion()" class="btn-small active" style="background:white;color:#2f4a44">VER INVITACIÓN COMPLETA</button> <button onclick="window.close()" class="btn-small" style="border-color:white;color:white;background:transparent">CERRAR</button></div>
+<p style="font-size:10px;margin-top:12px;color:#c9a88a">Si necesitas cambiar algo contacta a Gina & Edy</p>
 </div>
 </div>
 <div id="okBox" class="ok"></div>
 </div>
 
-<div class="card" id="seccionGracias" style="text-align:center;background:#2f4a44;color:white;border:none"><h2 class="serif" style="font-size:32px;margin-top:12px;color:white">¡Gracias!</h2><p style="font-size:13px;margin-top:12px;line-height:1.6;color:#c9cbc8">De corazón, gracias por ser parte de este día tan especial. Su presencia, cariño y buenos deseos hacen que nuestro amor sea aún más grande.</p><p class="serif" style="font-size:22px;margin-top:18px;color:#c9a88a;font-style:italic">Con amor,</p><p class="serif" style="font-size:28px;font-weight:700;margin-top:4px;color:white">Gina & Edy</p><p style="font-size:10px;letter-spacing:4px;color:#8a9a96;margin-top:12px">02. 01. 27</p></div>
+<div class="card" id="seccionGracias" style="text-align:center;background:#2f4a44;color:white;border:none"><span class="badge" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);color:#c9a88a">SECCIÓN AGRADECIMIENTO</span><h2 class="serif" style="font-size:32px;margin-top:12px;color:white">¡Gracias!</h2><p style="font-size:13px;margin-top:12px;line-height:1.6;color:#c9cbc8">De corazón, gracias por ser parte de este día tan especial.</p><p class="serif" style="font-size:22px;margin-top:18px;color:#c9a88a;font-style:italic">Con amor,</p><p class="serif" style="font-size:28px;font-weight:700;margin-top:4px;color:white">Gina & Edy</p><p style="font-size:10px;letter-spacing:4px;color:#8a9a96;margin-top:12px">02. 01. 27</p></div>
+</div>
 </div>
 
 <script>
@@ -139,178 +130,119 @@ document.getElementById('linkMesa2').href = mesaRegalosURL2;
 document.getElementById('bancoNombre').textContent = bancoNombre;
 document.getElementById('titularCuenta').textContent = titularCuenta;
 document.getElementById('clabeCuenta').textContent = clabeCuenta;
-function mostrarRegalo(tipo){document.getElementById('detalleMesa').style.display=tipo==='mesa'?'block':'none';document.getElementById('detalleCuenta').style.display=tipo==='cuenta'?'block':'none';document.getElementById('btnMesa').classList.toggle('active',tipo==='mesa');document.getElementById('btnCuenta').classList.toggle('active',tipo==='cuenta');}
+function mostrarRegalo(tipo){
+document.getElementById('detalleMesa').style.display = tipo==='mesa'?'block':'none';
+document.getElementById('detalleCuenta').style.display = tipo==='cuenta'?'block':'none';
+document.getElementById('btnMesa').classList.toggle('active', tipo==='mesa');
+document.getElementById('btnCuenta').classList.toggle('active', tipo==='cuenta');
+}
 function copiarClabe(){navigator.clipboard.writeText(clabeCuenta.replace(/ /g,''));document.getElementById('copyMsg').style.display='block';setTimeout(()=>document.getElementById('copyMsg').style.display='none',2000);}
 let isPlaying=false;const audio=document.getElementById('audio');
 function toggleMusic(){if(!isPlaying){audio.volume=0.7;audio.play().catch(e=>console.log(e));isPlaying=true;document.getElementById('musicBtn').textContent='🔊';}else{audio.pause();isPlaying=false;document.getElementById('musicBtn').textContent='🎵';}}
-function abrirSobre(){document.getElementById('sobre').classList.add('abierto'); if(!isPlaying) toggleMusic();}
-
-// LOGICA SECCION 8 CANDADO V PULIDA
-let K_asignados=0,L_asignados=0,M_asignados=0,AB_confirmados=0,AC_confirmados=0,S_confirmados=0,vendranTodos=true,esFamiliaActual=false,DATA_ACTUAL=null;
-function renderData(obj){
-  if(obj.status==="no encontrado"){ 
-    document.getElementById('titularTxt').textContent="ID no encontrado: "+(obj.id||""); 
-    document.getElementById('sobrePara').textContent="Invitación no encontrada";
-    return; 
+function lanzarConfetti(){
+  const overlay = document.getElementById('sobreOverlay');
+  for(let i=0;i<28;i++){
+    let p=document.createElement('div');
+    let isCircle = Math.random()>0.35;
+    p.style.position='absolute';
+    p.style.width=isCircle?'8px':'10px';
+    p.style.height=isCircle?'8px':'6px';
+    p.style.borderRadius=isCircle?'50%':'2px';
+    p.style.background=['#c9a88a','#2f4a44','#e8d5c4','#8a9a96'][Math.floor(Math.random()*4)];
+    p.style.left=(20+Math.random()*60)+'%';
+    p.style.top='60%';
+    p.style.pointerEvents='none';
+    p.style.opacity='0.9';
+    overlay.appendChild(p);
+    let tx=(Math.random()-0.5)*520;
+    let ty=-120-Math.random()*380;
+    let rot=Math.random()*720-360;
+    p.animate([
+      {transform:'translate(0,0) rotate(0deg)', opacity:1},
+      {transform:`translate(${tx}px,${ty}px) rotate(${rot}deg)`, opacity:0}
+    ],{duration:900+Math.random()*1100, easing:'cubic-bezier(0.2,0.8,0.2,1)'}).onfinish=()=>p.remove();
   }
-  if(obj.status==="ya_confirmado"){ obj.confirmado=true; obj.fechaConfirmacion=obj.fecha; obj.tConfirmado=obj.t; obj.sConfirmado=obj.s; }
-  if(obj.confirmado){
-    DATA_ACTUAL=obj;
-    document.getElementById('sobrePara').textContent="Hola "+(obj.t||"")+"!";
-    document.getElementById('areaNormal').style.display='none'; 
-    document.getElementById('areaCongelada').style.display='block';
-    document.getElementById('fechaConfTxt').textContent=obj.fechaConfirmacion||''; 
-    document.getElementById('sConfTxt').textContent=obj.sConfirmado||obj.m||0; 
-    document.getElementById('mConfTxt').textContent=obj.m||0;
-    document.getElementById('nombresConfTxt').textContent=obj.tConfirmado||obj.g||'';
-    document.getElementById('titularTxt').textContent=obj.t;
-    document.getElementById('titularTxt2').textContent=obj.t||'-';
-    document.getElementById('mesaTxt2').textContent=obj.mesa||'-';
-    document.getElementById('asistentesTxt2').textContent=obj.tConfirmado||obj.g||'';
-    document.getElementById('lugaresTxt').textContent=obj.m||0;
-    document.getElementById('mesaTxt').textContent=obj.mesa||'-';
-    document.getElementById('kTxt').textContent=obj.k||0;
-    document.getElementById('lTxt').textContent=obj.l||0;
-    return;
-  }
-  DATA_ACTUAL=obj; 
-  K_asignados=parseInt(obj.k)||0; L_asignados=parseInt(obj.l)||0; M_asignados=parseInt(obj.m)||0; 
-  esFamiliaActual=!!obj.esFamilia;
-  AB_confirmados=K_asignados; AC_confirmados=L_asignados; S_confirmados=M_asignados;
-  document.getElementById('titularTxt').textContent=obj.t; 
-  document.getElementById('sobrePara').textContent="Hola "+obj.t+"!";
-  document.getElementById('lugaresTxt').textContent=M_asignados;
-  document.getElementById('kTxt').textContent=K_asignados; 
-  document.getElementById('lTxt').textContent=L_asignados; 
-  document.getElementById('mesaTxt').textContent=obj.mesa||'-';
-  let bloqueConfirmacion=document.getElementById('bloqueConfirmacion'); 
-  let txtCuentasCon=document.getElementById('txtCuentasCon'); 
-  bloqueConfirmacion.style.display='block';
-  let nombres = obj.g||'sin acompañantes';
-  txtCuentasCon.innerHTML=`Invitados confirmados:<br><b style="font-size:14px;color:#2f4a44">${nombres}</b><br><span style="color:#8a9a96;font-size:11px;margin-top:6px;display:block">Total: ${M_asignados} lugares • Mesa ${obj.mesa}</span>`;
-  document.getElementById('adultosConf').max=K_asignados; 
-  document.getElementById('ninosConf').max=L_asignados;
-  document.getElementById('adultosConf').value=K_asignados; 
-  document.getElementById('ninosConf').value=L_asignados;
-  vendranTodos=true; 
-  document.getElementById('btnSi').classList.add('active'); 
-  document.getElementById('btnNo').classList.remove('active');
-  document.getElementById('cajaNumero').style.display='none'; 
-  document.getElementById('bloqueNombres').style.display='none'; 
-  document.getElementById('quienes').value=obj.g||'';
 }
-function confirmarTodos(si){ 
-  vendranTodos=si; 
-  let btnSi=document.getElementById('btnSi'),btnNo=document.getElementById('btnNo'),cajaNumero=document.getElementById('cajaNumero'),bloqueNombres=document.getElementById('bloqueNombres');
-  if(si){ 
-    btnSi.classList.add('active'); btnNo.classList.remove('active'); 
-    cajaNumero.style.display='none'; 
-    AB_confirmados=K_asignados; AC_confirmados=L_asignados; 
-    S_confirmados=M_asignados; 
-    document.getElementById('adultosConf').value=K_asignados; 
-    document.getElementById('ninosConf').value=L_asignados; 
-    bloqueNombres.style.display='none'; 
-  } else { 
-    btnSi.classList.remove('active'); btnNo.classList.add('active'); 
-    cajaNumero.style.display='block'; 
-    bloqueNombres.style.display='block'; 
-  } 
-}
-document.getElementById('adultosConf').addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>K_asignados)v=K_asignados; if(v<0)v=0; this.value=v; AB_confirmados=v; });
-document.getElementById('ninosConf').addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>L_asignados)v=L_asignados; if(v<0)v=0; this.value=v; AC_confirmados=v; });
-const id=new URLSearchParams(window.location.search).get('id')||'001';
-let s=document.createElement('script'); s.src=APPS_SCRIPT_URL+"?id="+id+"&callback=renderData"; document.body.appendChild(s);
-
-let confirmando = false;
-async function confirmarFinal(){
-  if(confirmando) return;
-  const listaNombres = document.getElementById('listaNombresConfirmados');
-  if(!listaNombres){ alert("Error: no se encontró lista"); return; }
-  
-  // Recolectar nombres y contar adultos/niños
-  const inputs = listaNombres.querySelectorAll('input');
-  let nombres = [];
-  let adultos = 0;
-  let ninos = 0;
-  let tieneFamilia = false;
-  
-  inputs.forEach(inp=>{
-    const v = inp.value.trim();
-    if(v){
-      nombres.push(v);
-      const tipo = inp.dataset.tipo;
-      if(tipo === 'adulto') adultos++;
-      else if(tipo === 'nino') ninos++;
-      if(tipo === 'familia') tieneFamilia = true;
-    }
-  });
-  
-  if(nombres.length === 0){
-    alert("Por favor escribe al menos 1 nombre que asistirá");
-    return;
-  }
-  
-  const totalPersonas = tieneFamilia ? (adultos+ninos) : nombres.length;
-  const tParam = encodeURIComponent(nombres.join(", "));
-  
-  confirmando = true;
-  const btn = document.getElementById('btnConfirmarFinal');
-  if(btn){ btn.disabled=true; btn.textContent="Confirmando..."; }
-  
+function beepSobre(){
   try{
-    // Guardar usando el GS que espera s, ab, ac, t
-    const url = `${APPS_SCRIPT_URL}?id=${idInvitado}&s=${totalPersonas}&ab=${adultos}&ac=${ninos}&t=${tParam}&callback=cbConfirmar&_=${Date.now()}`;
-    
-    window.cbConfirmar = function(res){
-      confirmando=false;
-      if(btn){ btn.disabled=false; btn.textContent="Confirmar Asistencia"; }
-      if(res.status === "ya_confirmado"){
-        document.getElementById('seccion8').innerHTML = `
-          <div style="text-align:center; padding:40px 20px;">
-            <div style="font-size:48px;">✅</div>
-            <h2 style="font-family:'Great Vibes',cursive; font-size:32px; color:#2f4a44;">¡Ya habías confirmado!</h2>
-            <p style="margin-top:12px;">${res.t||''}</p>
-            <p style="font-size:12px; color:#888; margin-top:8px;">${res.fecha||''}</p>
-            <p style="margin-top:20px; font-size:14px;">Si quieres modificar, contacta a los novios.</p>
-          </div>`;
-        return;
-      }
-      if(res.status === "ok" || res.status === "ok"){
-        document.getElementById('seccion8').innerHTML = `
-          <div style="text-align:center; padding:40px 20px;">
-            <div style="font-size:48px;">💌</div>
-            <h2 style="font-family:'Great Vibes',cursive; font-size:32px; color:#2f4a44;">¡Gracias por confirmar!</h2>
-            <p style="margin-top:12px;">Hemos registrado a: <strong>${res.t||nombres.join(", ")}</strong></p>
-            <p style="margin-top:8px;">Total: ${res.s||totalPersonas} personas</p>
-            <p style="font-size:12px; color:#888; margin-top:8px;">${res.fecha||''}</p>
-          </div>`;
-        return;
-      }
-      alert("Respuesta: "+JSON.stringify(res));
-    };
-    
-    const s = document.createElement('script');
-    s.src = url;
-    s.onerror = function(){
-      confirmando=false;
-      if(btn){ btn.disabled=false; btn.textContent="Confirmar Asistencia"; }
-      alert("Error de conexión. Revisa tu internet.");
-    };
-    document.body.appendChild(s);
-    setTimeout(()=>{ try{ s.remove(); }catch(e){} }, 5000);
-    
-  }catch(e){
-    confirmando=false;
-    if(btn){ btn.disabled=false; btn.textContent="Confirmar Asistencia"; }
-    alert("Error: "+e.message);
-  }
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const o=ctx.createOscillator(); const g=ctx.createGain();
+    o.type='sine'; o.frequency.value=523.25;
+    o.connect(g); g.connect(ctx.destination);
+    g.gain.setValueAtTime(0.18,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.6);
+    o.start(); o.stop(ctx.currentTime+0.6);
+  }catch(e){}
+}
+function abrirInvitacion(){
+  if(window._sobreAbriendo) return;
+  window._sobreAbriendo=true;
+  try{navigator?.vibrate?.(80);}catch(e){}
+  beepSobre(); lanzarConfetti();
+  document.getElementById('sobreBtn').textContent='ABRIENDO...';
+  setTimeout(()=>{try{navigator?.vibrate?.([40,30,60]);}catch(e){}},550);
+  setTimeout(()=>{
+    try{navigator?.vibrate?.([100,50,150]);}catch(e){}
+    document.getElementById('sobreOverlay').classList.add('abierto');
+    document.getElementById('mainContent').style.display='block';
+    document.getElementById('mainContent').classList.add('visible');
+    setTimeout(()=>{try{navigator?.vibrate?.(120);}catch(e){} window.scrollTo(0,0);},180);
+    if(!isPlaying) toggleMusic();
+  },950);
 }
 
+const v=document.getElementById('heroVideo');if(v){v.addEventListener('loadeddata',()=>{});}
+// CONTADOR - YA FUNCIONA, NO TOCAR
 const fechaBoda=new Date('2027-01-02T17:00:00').getTime();
 setInterval(()=>{const now=new Date().getTime();const dist=fechaBoda-now;if(dist<0)return;const elD=document.getElementById('d');if(elD){elD.textContent=Math.floor(dist/(1000*60*60*24));document.getElementById('h').textContent=Math.floor((dist%(1000*60*60*24))/(1000*60*60));document.getElementById('m').textContent=Math.floor((dist%(1000*60*60))/(1000*60));document.getElementById('s').textContent=Math.floor((dist%(1000*60))/1000);}},1000);
-</script>
-<script>
-if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js')});}
+
+// SECCION 8 LOGICA - INTEGRADA CON SHEET
+let K_asignados=0,L_asignados=0,M_asignados=0,AB_confirmados=0,AC_confirmados=0,S_confirmados=0,vendranTodos=true,esFamiliaActual=false,DATA_ACTUAL=null;
+function renderData(obj){
+  if(obj.status==="no encontrado"){ document.getElementById('titularTxt').textContent="ID no encontrado: "+(obj.id||""); document.getElementById('sobreTitular').textContent="ID no encontrado"; return; }
+  if(obj.status==="ya_confirmado"){ obj.confirmado=true; obj.fechaConfirmacion=obj.fecha; obj.tConfirmado=obj.t; obj.sConfirmado=obj.s; }
+  if(obj.confirmado){
+    DATA_ACTUAL=obj; 
+    document.getElementById('areaNormal').style.display='none'; document.getElementById('areaCongelada').style.display='block';
+    document.getElementById('fechaConfTxt').textContent=obj.fechaConfirmacion||''; document.getElementById('sConfTxt').textContent=obj.sConfirmado||obj.m||0; document.getElementById('mConfTxt').textContent=obj.m||0;
+    document.getElementById('nombresConfTxt').textContent=obj.tConfirmado||obj.g||''; 
+    document.getElementById('titularTxt').textContent=obj.t||obj.tConfirmado||'';
+    document.getElementById('sobreTitular').textContent=obj.t||obj.tConfirmado||'';
+    return;
+  }
+  DATA_ACTUAL=obj; K_asignados=parseInt(obj.k)||0; L_asignados=parseInt(obj.l)||0; M_asignados=parseInt(obj.m)||0; esFamiliaActual=!!obj.esFamilia;
+  AB_confirmados=K_asignados; AC_confirmados=L_asignados; S_confirmados=M_asignados;
+  document.getElementById('titularTxt').textContent=obj.t; 
+  document.getElementById('sobreTitular').textContent=obj.t;
+  document.getElementById('lugaresTxt').textContent=M_asignados;
+  document.getElementById('kTxt').textContent=K_asignados; document.getElementById('lTxt').textContent=L_asignados; document.getElementById('mesaTxt').textContent=obj.mesa||'-';
+  let bloqueConfirmacion=document.getElementById('bloqueConfirmacion'); let txtCuentasCon=document.getElementById('txtCuentasCon'); bloqueConfirmacion.style.display='block';
+  let nombres = obj.g||'sin acompañantes';
+  txtCuentasCon.innerHTML=`Invitados confirmados:<br><b style="font-size:14px">${nombres}</b><br><span style="color:#8a9a96;font-size:11px;margin-top:6px;display:block">Total: ${M_asignados} lugares</span>`;
+  document.getElementById('adultosConf').max=K_asignados; document.getElementById('ninosConf').max=L_asignados;
+  document.getElementById('adultosConf').value=K_asignados; document.getElementById('ninosConf').value=L_asignados;
+  vendranTodos=true; document.getElementById('btnSi').classList.add('active'); document.getElementById('btnNo').classList.remove('active');
+  document.getElementById('cajaNumero').style.display='none'; document.getElementById('bloqueNombres').style.display='none'; document.getElementById('quienes').value=obj.g||'';
+}
+function confirmarTodos(si){ vendranTodos=si; let btnSi=document.getElementById('btnSi'),btnNo=document.getElementById('btnNo'),cajaNumero=document.getElementById('cajaNumero'),bloqueNombres=document.getElementById('bloqueNombres');
+  if(si){ btnSi.classList.add('active'); btnNo.classList.remove('active'); cajaNumero.style.display='none'; AB_confirmados=K_asignados; AC_confirmados=L_asignados; S_confirmados=M_asignados; document.getElementById('adultosConf').value=K_asignados; document.getElementById('ninosConf').value=L_asignados; bloqueNombres.style.display='none'; }
+  else{ btnSi.classList.remove('active'); btnNo.classList.add('active'); cajaNumero.style.display='block'; bloqueNombres.style.display='block'; } }
+document.getElementById('adultosConf').addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>K_asignados)v=K_asignados; if(v<0)v=0; this.value=v; AB_confirmados=v; });
+document.getElementById('ninosConf').addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>L_asignados)v=L_asignados; if(v<0)v=0; this.value=v; AC_confirmados=v; });
+function verInvitacion(){ window.scrollTo(0,0); }
+const idParam=new URLSearchParams(window.location.search).get('id')||'001';
+let s=document.createElement('script'); s.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData"; document.body.appendChild(s);
+function confirmarFinal(){
+  if(esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=1+AB_confirmados+AC_confirmados; }
+  let q=document.getElementById('quienes').value||''; let Y=K_asignados-AB_confirmados,Z=L_asignados-AC_confirmados,AA=Y+Z,box=document.getElementById('okBox'),btn=document.getElementById('btnConfirmar');
+  if(AB_confirmados > K_asignados || AC_confirmados > L_asignados){ alert('No puedes confirmar más lugares de los asignados. Asignados: Adultos '+K_asignados+', Niños '+L_asignados); return; }
+  if(S_confirmados > M_asignados){ alert('Total confirmado excede asignado. Total asignado: '+M_asignados); return; }
+  if(!q&&!vendranTodos){ alert('Escribe los nombres'); return; }
+  let params=new URLSearchParams({id:idParam,s:S_confirmados,ab:AB_confirmados,ac:AC_confirmados,y:Y,z:Z,aa:AA,t:q||(DATA_ACTUAL?DATA_ACTUAL.g:'')});
+  box.style.display='block'; box.innerHTML=`Enviando...`; if(btn)btn.textContent='ENVIANDO...';
+  let iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=APPS_SCRIPT_URL+'?'+params.toString(); document.body.appendChild(iframe);
+  iframe.onload=function(){ setTimeout(()=>{ let s2=document.createElement('script'); s2.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData&rand="+Date.now(); document.body.appendChild(s2); box.style.display='none'; },1500); };
+}
 </script>
 </body>
 </html>
