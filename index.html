@@ -182,7 +182,12 @@ function renderData(obj){
   let kt=document.getElementById('kTxt'); if(kt) kt.textContent=K_asignados;
   let ltt=document.getElementById('lTxt'); if(ltt) ltt.textContent=L_asignados;
   let mt=document.getElementById('mesaTxt'); if(mt) mt.textContent=obj.mesa||'-';
-  let bc=document.getElementById('bloqueConfirmacion'); if(bc) bc.style.display='block';
+let sec7=document.getElementById('seccion7');
+if(sec7){
+  let tipo=(obj.tipo||obj.j||'').toString().toLowerCase();
+  if(tipo.includes('sin')) sec7.style.display='none'; else sec7.style.display='block';
+}
+let bc=document.getElementById('bloqueConfirmacion'); if(bc) bc.style.display='block';
   let txt=document.getElementById('txtCuentasCon'); if(txt){ let nombres=obj.g||'sin acompañantes'; txt.innerHTML='Invitados confirmados:<br><b style="font-size:14px">'+nombres+'</b><br><span style="color:#8a9a96;font-size:11px;margin-top:6px;display:block">Total: '+M_asignados+' lugares</span>'; }
   let ac=document.getElementById('adultosConf'); if(ac){ ac.max=K_asignados; ac.value=K_asignados; }
   let nc2=document.getElementById('ninosConf'); if(nc2){ nc2.max=L_asignados; nc2.value=L_asignados; }
