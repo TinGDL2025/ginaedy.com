@@ -30,6 +30,10 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 .countdown span{font-size:9px;letter-spacing:1px;color:#8a9a96}
 .foto-portada{width:100%;max-width:420px;height:auto;border-radius:20px;display:block;margin:20px auto 0 auto;box-shadow:0 12px 30px rgba(47,74,68,0.12);object-fit:cover}
 .texto-seccion1{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;line-height:1.6;color:#3d5a54;font-weight:400;padding:0 10px;margin-top:10px}
+ .label-mini{font-size:10px;letter-spacing:1.5px;color:#8a9a96;margin-top:18px;display:block;font-weight:500}
+.btn-small{padding:12px 22px;border-radius:30px;border:1.5px solid #2f4a44;background:white;color:#2f4a44;cursor:pointer;font-size:12px;font-weight:600;letter-spacing:0.5px;transition:all 0.2s;min-width:120px;text-align:center}
+.btn-small.active{background:#2f4a44;color:white;box-shadow:0 4px 12px rgba(47,74,68,0.2)}
+.frozen{background:#2f4a44;color:white;border-radius:20px;padding:18px;margin-top:20px;text-align:center} 
 </style>
 </head>
 
@@ -105,8 +109,8 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 <div id="bloqueConfirmacion" style="display:none;margin-top:20px">
 <label class="label-mini">CONFIRMACIÓN DE LUGARES ASIGNADOS</label>
 <p id="txtCuentasCon" style="font-size:13px;margin-top:8px;line-height:1.4"></p>
-<div id="preguntaTodos" style="margin-top:10px"><p style="font-size:12px">¿Vendrán todos a la fiesta?</p>
-<div style="margin-top:8px"><button id="btnSi" class="btn-small active" onclick="confirmarTodos(true)">SÍ, TODOS</button><button id="btnNo" class="btn-small" onclick="confirmarTodos(false)">NO, VAN MENOS</button></div></div>
+<div id="preguntaTodos" style="margin-top:16px;text-align:center"><p style="font-size:13px;text-align:center;font-weight:500">¿Vendrán todos a la fiesta?</p>
+<div style="margin-top:12px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap"><button id="btnSi" class="btn-small active" onclick="confirmarTodos(true)">SÍ, TODOS</button><button id="btnNo" class="btn-small" onclick="confirmarTodos(false)">NO, VAN MENOS</button></div></div>
 <div id="cajaNumero" style="display:none;margin-top:12px"><label class="label-mini">AJUSTA LA CANTIDAD</label>
 <div style="display:flex;gap:8px"><div style="flex:1"><label style="font-size:10px;color:#8a9a96">ADULTOS CONFIRMADOS</label><input id="adultosConf" type="number" class="input" min="0" value="0"></div><div style="flex:1"><label style="font-size:10px;color:#8a9a96">MENORES CONFIRMADOS</label><input id="ninosConf" type="number" class="input" min="0" value="0"></div></div>
 </div></div>
