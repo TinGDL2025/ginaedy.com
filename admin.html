@@ -8,103 +8,103 @@
 <body>
 <div id="login" class="min-h-screen flex items-center justify-center p-4">
 <div class="bg-white p-8 rounded-2xl shadow-sm max-w-sm w-full text-center">
-<h2 class="serif text-3xl">G&E Admin</h2><p class="text-[10px] tracking-widest mt-1">ginaedy.com/admin</p>
+<h2 class="serif text-3xl">G&E Admin</h2><p class="text-[10px] tracking-widest mt-1">ginaedy.com/admin - CONECTADO</p>
 <input id="pass" type="password" placeholder="Clave" class="w-full border rounded-full px-4 py-3 text-sm mt-6 text-center">
 <button onclick="checkPass()" class="w-full mt-3 bg-[#2f4a44] text-white py-3 rounded-full text-sm">Entrar</button>
 <p id="loginErr" class="hidden text-[10px] text-red-500 mt-2">Clave incorrecta</p>
-<p class="text-[9px] text-gray-400 mt-4">Clave inicial: ginaedy27 (cámbiala en el código)</p>
 </div>
 </div>
 
 <div id="app" class="hidden max-w-6xl mx-auto p-4">
 <div class="text-center py-5 bg-white rounded-2xl shadow-sm mb-4">
 <div class="w-20 h-20 mx-auto rounded-full border-2 border-[#c9a88a] flex items-center justify-center"><span class="serif text-2xl font-bold">G&E</span></div>
-<h2 class="tracking-[0.3em] text-xs mt-2">GINA & EDY - 02.01.27 - ADMIN</h2>
-<p class="text-[10px] text-gray-500">ginaedy.com | Miguel Bernal 3432 | Dominio propio</p>
-<div class="mt-3 flex justify-center gap-2"><a href="index.html" class="text-[10px] border px-3 py-1 rounded-full">Ver Inicio</a><a href="proyeccion.html" target="_blank" class="text-[10px] border px-3 py-1 rounded-full">Abrir Proyección</a><button onclick="logout()" class="text-[10px] border px-3 py-1 rounded-full">Salir</button></div>
+<h2 class="tracking-[0.3em] text-xs mt-2">GINA & EDY - 02.01.27 - ADMIN CONECTADO AL SHEET</h2>
+<p class="text-[10px] text-gray-500" id="statusSheet">Conectando a Sheet...</p>
+<div class="mt-3 flex justify-center gap-2"><button onclick="loadData()" class="text-[10px] border px-3 py-1 rounded-full bg-[#2f4a44] text-white">🔄 Recargar Sheet</button><a href="index.html" class="text-[10px] border px-3 py-1 rounded-full">Ver Inicio</a><button onclick="logout()" class="text-[10px] border px-3 py-1 rounded-full">Salir</button></div>
 </div>
-
-<div id="fb" class="hidden mb-3 p-2 bg-[#2f4a44] text-white text-xs rounded-lg text-center"></div>
 
 <div class="bg-white rounded-2xl p-4 shadow-sm">
-<h3 class="serif text-lg mb-2">Base de Datos - Por Grupo Familiar</h3>
+<h3 class="serif text-lg mb-2">Base de Datos - Desde Google Sheet</h3>
 <div class="grid grid-cols-4 gap-2 mb-4">
-<div class="bg-[#fdfaf6] p-2 rounded-xl text-center"><div id="ctotal" class="font-bold">0</div><div class="text-[9px]">GRUPOS</div></div>
-<div class="bg-[#fdfaf6] p-2 rounded-xl text-center"><div id="clugares" class="font-bold">0</div><div class="text-[9px]">LUGARES</div></div>
-<div class="bg-green-50 p-2 rounded-xl text-center"><div id="cent" class="font-bold">0</div><div class="text-[9px]">ENTREGADAS</div></div>
-<div class="bg-[#c9a88a]/20 p-2 rounded-xl text-center"><div id="cconf" class="font-bold">0</div><div class="text-[9px]">CONFIRMADOS</div></div>
-</div>
-
-<div class="bg-[#f9f6f1] p-3 rounded-xl mb-4">
-<p class="text-xs font-bold mb-2">+ Agregar Grupo Familiar</p>
-<div class="grid md:grid-cols-6 gap-2">
-<input id="nTitular" placeholder="Titular Ej: Sandra López" class="border rounded-full px-3 py-2 text-xs col-span-2">
-<input id="nCel" placeholder="Celular" class="border rounded-full px-2 py-2 text-xs">
-<input id="nMesa" placeholder="Mesa Ej: 10" class="border rounded-full px-2 py-2 text-xs">
-<select id="nFamilia" class="border rounded-full px-2 py-2 text-xs"><option>Gina</option><option>Edy</option><option>Ambos</option><option>Amigos</option></select>
-<input id="nLugares" type="number" value="2" min="1" placeholder="Lugares" class="border rounded-full px-2 py-2 text-xs">
-<input id="nGrupo" placeholder="Acompañantes: Martín esposo, Irene mamá" class="border rounded-full px-3 py-2 text-xs col-span-3">
-</div>
-<button onclick="addGrupo()" class="mt-2 bg-[#2f4a44] text-white px-5 py-2 rounded-full text-xs">+ Guardar Grupo</button>
+<div class="bg-[#fdfaf6] p-2 rounded-xl text-center"><div id="ctotal" class="font-bold">-</div><div class="text-[9px]">GRUPOS</div></div>
+<div class="bg-[#fdfaf6] p-2 rounded-xl text-center"><div id="clugares" class="font-bold">-</div><div class="text-[9px]">LUGARES</div></div>
+<div class="bg-green-50 p-2 rounded-xl text-center"><div id="cent" class="font-bold">-</div><div class="text-[9px]">CONFIRMADOS</div></div>
+<div class="bg-[#c9a88a]/20 p-2 rounded-xl text-center"><div id="cconf" class="font-bold">-</div><div class="text-[9px]">PERSONAS CONFIRM.</div></div>
 </div>
 
 <div class="flex gap-2 mb-3 flex-wrap">
-<button onclick="addEjemplo()" class="border px-3 py-2 rounded-full text-[10px]">Cargar ejemplo Sandra/Martín/Irene</button>
-<button onclick="expCSV()" class="border px-3 py-2 rounded-full text-[10px]">Exportar Excel CSV</button>
-<select id="filtroFam" onchange="render()" class="border rounded-full px-3 py-2 text-xs"><option value="">Todas familias</option><option>Gina</option><option>Edy</option><option>Ambos</option><option>Amigos</option></select>
-<input id="busc" oninput="render()" placeholder="Buscar titular o mesa..." class="border rounded-full px-3 py-2 text-xs flex-1 min-w-[150px]">
+<select id="filtroFam" onchange="render()" class="border rounded-full px-3 py-2 text-xs"><option value="">Todas</option><option value="confirmado">Solo Confirmados</option><option value="pendiente">Solo Pendientes</option></select>
+<input id="busc" oninput="render()" placeholder="Buscar por ID, titular, mesa..." class="border rounded-full px-3 py-2 text-xs flex-1 min-w-[150px]">
+<button onclick="expCSV()" class="border px-3 py-2 rounded-full text-[10px]">Exportar CSV</button>
 </div>
 
-<div class="overflow-x-auto"><table class="w-full text-[11px]"><thead class="border-b text-[9px] text-gray-400"><tr><th class="text-left">Titular</th><th>Familia</th><th>Cel</th><th>Lugares</th><th>Grupo</th><th>Mesa</th><th>Entreg.</th><th>Confirmados</th><th>Link</th><th></th></tr></thead><tbody id="tbody"></tbody></table></div>
+<div class="overflow-x-auto"><table class="w-full text-[11px]"><thead class="border-b text-[9px] text-gray-400"><tr><th class="text-left">ID</th><th>Titular</th><th>Mesa</th><th>Lugares</th><th>Tipo</th><th>Confirmado</th><th>Fecha</th><th>Links</th></tr></thead><tbody id="tbody"></tbody></table></div>
 </div>
 </div>
 
 <script>
 const CLAVE = "ginaedy27";
+const GS_URL = "https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYToJd8tgpmw/exec";
+
 function checkPass(){ if(document.getElementById('pass').value===CLAVE){ localStorage.setItem('ge_admin','ok'); showApp(); } else { document.getElementById('loginErr').classList.remove('hidden'); } }
 function logout(){ localStorage.removeItem('ge_admin'); location.reload(); }
-function showApp(){ document.getElementById('login').classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); render(); }
+function showApp(){ document.getElementById('login').classList.add('hidden'); document.getElementById('app').classList.remove('hidden'); loadData(); }
 if(localStorage.getItem('ge_admin')==='ok') showApp();
 
-let invitados = JSON.parse(localStorage.getItem('ge_inv')||'[]');
-let fotos = JSON.parse(localStorage.getItem('ge_fotos')||'[]');
-function save(){ localStorage.setItem('ge_inv', JSON.stringify(invitados)); localStorage.setItem('ge_fotos', JSON.stringify(fotos)); }
-function fb(m){ const el=document.getElementById('fb'); el.textContent=m; el.classList.remove('hidden'); setTimeout(()=>el.classList.add('hidden'),3000); }
-function tab(n){}
+let invitados = [];
+
+function loadData(){
+  document.getElementById('statusSheet').textContent = "Cargando desde Sheet...";
+  // Usamos JSONP para evitar CORS
+  const cbName = "cb_" + Date.now();
+  window[cbName] = function(res){
+    delete window[cbName];
+    document.body.removeChild(script);
+    if(res.error){ document.getElementById('statusSheet').textContent = "Error: "+res.error; return; }
+    if(res.status==="ok" && res.data){
+      invitados = res.data;
+      document.getElementById('statusSheet').textContent = "Conectado - " + res.total + " grupos - Sheet ID: 1GoD1...PkI";
+      render();
+    }
+  };
+  const script = document.createElement('script');
+  script.src = GS_URL + "?action=list&callback=" + cbName + "&_=" + Date.now();
+  document.body.appendChild(script);
+}
+
 function render(){
- const filtro = document.getElementById('filtroFam').value; const b = document.getElementById('busc').value.toLowerCase();
- let list = invitados.filter(i=> (!filtro || i.familia===filtro) && (!b || i.titular.toLowerCase().includes(b) || i.mesa.toString().includes(b)));
+ const filtro = document.getElementById('filtroFam').value; 
+ const b = document.getElementById('busc').value.toLowerCase();
+ let list = invitados.filter(i=>{
+   let okFiltro = true;
+   if(filtro==="confirmado") okFiltro = i.confirmado;
+   if(filtro==="pendiente") okFiltro = !i.confirmado;
+   let okBusca = !b || i.id.toLowerCase().includes(b) || i.t.toLowerCase().includes(b) || i.mesa.toString().toLowerCase().includes(b) || i.g.toLowerCase().includes(b);
+   return okFiltro && okBusca;
+ });
  const tb=document.getElementById('tbody'); tb.innerHTML='';
- list.forEach((inv,idx)=>{
-   const realIdx = invitados.indexOf(inv);
-   tb.innerHTML+=`<tr class="border-b"><td class="py-2 font-medium">${inv.titular}</td><td>${inv.familia||''}</td><td>${inv.celular||''}</td><td>${inv.lugares}</td><td class="text-[10px]">${inv.grupo}</td><td class="font-bold text-[#c9a88a]">${inv.mesa}</td><td><input type="checkbox" ${inv.entregada?'checked':''} onchange="togE(${realIdx})"></td><td><input type="number" value="${inv.confirmados}" onchange="setConf(${realIdx},this.value)" class="w-12 border rounded px-1"></td><td><a href="invitacion.html?id=${inv.id}" target="_blank" class="text-blue-600 underline text-[10px]">ginaedy.com/invitacion.html?id=${inv.id}</a></td><td><button onclick="del(${realIdx})" class="text-red-400">x</button></td></tr>`;
+ list.forEach(inv=>{
+   tb.innerHTML+=`<tr class="border-b">
+   <td class="py-2 font-bold">${inv.id}</td>
+   <td class="font-medium">${inv.t}<div class="text-[9px] text-gray-400">${inv.g}</div></td>
+   <td class="font-bold text-[#c9a88a]">${inv.mesa}</td>
+   <td>${inv.m} <span class="text-[9px]">(${inv.k}A+${inv.l}N)</span></td>
+   <td class="text-[9px]">${inv.tipo}</td>
+   <td>${inv.confirmado?'<span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-[9px]">SI - '+inv.s+'p</span>':'<span class="bg-gray-100 px-2 py-1 rounded-full text-[9px]">No</span>'}</td>
+   <td class="text-[9px]">${inv.fecha||''}<div class="text-[8px]">${inv.tConfirmado||''}</div></td>
+   <td class="text-[9px]"><a href="sobre.html?id=${inv.id}" target="_blank" class="text-blue-600 underline block">Sobre</a><a href="invitacion.html?id=${inv.id}" target="_blank" class="text-blue-600 underline block">Invitación</a></td>
+   </tr>`;
  });
  document.getElementById('ctotal').textContent=invitados.length;
- document.getElementById('clugares').textContent=invitados.reduce((s,i)=>s+ (parseInt(i.lugares)||0),0);
- document.getElementById('cent').textContent=invitados.filter(i=>i.entregada).length;
- document.getElementById('cconf').textContent=invitados.reduce((s,i)=>s+ (parseInt(i.confirmados)||0),0);
+ document.getElementById('clugares').textContent=invitados.reduce((s,i)=>s+ (parseInt(i.m)||0),0);
+ document.getElementById('cent').textContent=invitados.filter(i=>i.confirmado).length;
+ document.getElementById('cconf').textContent=invitados.reduce((s,i)=>s+ (parseInt(i.s)||0),0);
 }
-function addGrupo(){
- const titular=document.getElementById('nTitular').value.trim();
- const cel=document.getElementById('nCel').value.trim();
- const mesa=document.getElementById('nMesa').value.trim()||'S/A'; const familia=document.getElementById('nFamilia').value;
- const lugares=parseInt(document.getElementById('nLugares').value)||1;
- const grupo=document.getElementById('nGrupo').value.trim()||titular;
- if(!titular){fb('Escribe titular'); return;}
- invitados.push({id:Date.now().toString().slice(-4),titular,familia,celular:cel,mesa,lugares,grupo,entregada:false,confirmados:0,confirmadosNombres:''});
- save(); render(); fb('Grupo agregado: '+titular+' - Mesa '+mesa);
-}
-function addEjemplo(){
- invitados.push({id:'010',titular:'Sandra López',celular:'3334445555',lugares:3,grupo:'Sandra, Martín esposo, Irene mamá',mesa:'10',familia:'Gina',entregada:true,confirmados:0,confirmadosNombres:''});
- save(); render(); fb('Ejemplo agregado');
-}
+
 function expCSV(){
- let csv='Titular,Familia,Celular,Lugares,Grupo,Mesa,Entregada,Confirmados,Link\n';
- invitados.forEach(i=>csv+=`"${i.titular}","${i.familia}","${i.celular}",${i.lugares},"${i.grupo}","${i.mesa}",${i.entregada?'SI':'NO'},${i.confirmados},ginaedy.com/invitacion.html?id=${i.id}\n`);
- const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='Boda_Gina_Edy_ginaedy.com.csv'; a.click();
+ let csv='ID,Titular,Mesa,Lugares,Tipo,Confirmado,Fecha,ConfirmadosNombres,Link Sobre,Link Invitacion\n';
+ invitados.forEach(i=>csv+=`"${i.id}","${i.t}","${i.mesa}",${i.m},"${i.tipo}",${i.confirmado?'SI':'NO'},"${i.fecha}","${i.tConfirmado}",ginaedy.com/sobre.html?id=${i.id},ginaedy.com/invitacion.html?id=${i.id}\n`);
+ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='Boda_Gina_Edy_SHEET.csv'; a.click();
 }
-function togE(i){invitados[i].entregada=!invitados[i].entregada; save(); render();}
-function setConf(i,val){invitados[i].confirmados=parseInt(val)||0; save(); render();}
-function del(i){if(confirm('Borrar?')){invitados.splice(i,1); save(); render();}}
 </script>
 </body></html>
