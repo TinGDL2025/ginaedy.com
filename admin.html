@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin - Gina & Edy - ginaedy.com</title>
+<title>Admin - Gina & Edy</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>body{font-family:Inter,sans-serif;background:#fdfaf6}.serif{font-family:'Cormorant Garamond',serif}</style>
@@ -8,43 +8,60 @@
 <body>
 <div id="login" class="min-h-screen flex items-center justify-center p-4">
 <div class="bg-white p-8 rounded-2xl shadow-sm max-w-sm w-full text-center">
-<h2 class="serif text-3xl">G&E Admin</h2><p class="text-[10px] tracking-widest mt-1">ginaedy.com/admin - CONECTADO</p>
+<h2 class="serif text-3xl">G&E Admin</h2><p class="text-[10px] tracking-widest mt-1">Para Gina y Edy</p>
 <input id="pass" type="password" placeholder="Clave" class="w-full border rounded-full px-4 py-3 text-sm mt-6 text-center">
 <button onclick="checkPass()" class="w-full mt-3 bg-[#2f4a44] text-white py-3 rounded-full text-sm">Entrar</button>
 <p id="loginErr" class="hidden text-[10px] text-red-500 mt-2">Clave incorrecta</p>
+<p class="text-[9px] text-gray-400 mt-4">Clave: 1234567</p>
 </div>
 </div>
 
 <div id="app" class="hidden max-w-6xl mx-auto p-4">
 <div class="text-center py-5 bg-white rounded-2xl shadow-sm mb-4">
 <div class="w-20 h-20 mx-auto rounded-full border-2 border-[#c9a88a] flex items-center justify-center"><span class="serif text-2xl font-bold">G&E</span></div>
-<h2 class="tracking-[0.3em] text-xs mt-2">GINA & EDY - 02.01.27 - ADMIN CONECTADO AL SHEET</h2>
-<p class="text-[10px] text-gray-500" id="statusSheet">Conectando a Sheet...</p>
-<div class="mt-3 flex justify-center gap-2"><button onclick="loadData()" class="text-[10px] border px-3 py-1 rounded-full bg-[#2f4a44] text-white">🔄 Recargar Sheet</button><a href="index.html" class="text-[10px] border px-3 py-1 rounded-full">Ver Inicio</a><button onclick="logout()" class="text-[10px] border px-3 py-1 rounded-full">Salir</button></div>
+<h2 class="tracking-[0.3em] text-xs mt-2">ADMIN - GINA & EDY - 02.01.27</h2>
+<p class="text-[10px] text-gray-500" id="statusSheet">Conectando...</p>
+<div class="mt-3 flex justify-center gap-2"><button onclick="loadData()" class="text-[10px] border px-3 py-1 rounded-full bg-[#2f4a44] text-white">🔄 Actualizar</button><button onclick="logout()" class="text-[10px] border px-3 py-1 rounded-full">Salir</button></div>
+</div>
+
+<div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+<h3 class="serif text-lg mb-2">+ Agregar Invitado / Familia</h3>
+<p class="text-[10px] text-gray-400 mb-3">Se guarda automático en el Google Sheet y genera el link de envío</p>
+<div class="grid md:grid-cols-6 gap-2">
+<input id="nTitular" placeholder="Titular Ej: Sandra López" class="border rounded-full px-3 py-2 text-xs col-span-2">
+<input id="nCel" placeholder="Celular (opcional)" class="border rounded-full px-2 py-2 text-xs">
+<input id="nMesa" placeholder="Mesa Ej: 10" class="border rounded-full px-2 py-2 text-xs">
+<input id="nK" type="number" value="0" min="0" placeholder="Adultos extra" class="border rounded-full px-2 py-2 text-xs">
+<input id="nL" type="number" value="0" min="0" placeholder="Niños extra" class="border rounded-full px-2 py-2 text-xs">
+<input id="nGrupo" placeholder="Acompañantes: Martín esposo, Irene mamá" class="border rounded-full px-3 py-2 text-xs col-span-3">
+<select id="nTipo" class="border rounded-full px-2 py-2 text-xs"><option>con mesa de regalo</option><option>sin mesa de regalo</option></select>
+</div>
+<button onclick="addGrupo()" id="btnAdd" class="mt-3 bg-[#2f4a44] text-white px-6 py-2 rounded-full text-xs w-full md:w-auto">+ Guardar en Sheet y Generar Link</button>
+<div id="lastLink" class="hidden mt-3 p-3 bg-green-50 rounded-xl text-xs"></div>
 </div>
 
 <div class="bg-white rounded-2xl p-4 shadow-sm">
-<h3 class="serif text-lg mb-2">Base de Datos - Desde Google Sheet</h3>
+<div class="flex justify-between items-center mb-2"><h3 class="serif text-lg">Lista del Sheet</h3><span id="totalTxt" class="text-[10px] bg-[#fdfaf6] px-2 py-1 rounded-full">0 grupos</span></div>
 <div class="grid grid-cols-4 gap-2 mb-4">
 <div class="bg-[#fdfaf6] p-2 rounded-xl text-center"><div id="ctotal" class="font-bold">-</div><div class="text-[9px]">GRUPOS</div></div>
 <div class="bg-[#fdfaf6] p-2 rounded-xl text-center"><div id="clugares" class="font-bold">-</div><div class="text-[9px]">LUGARES</div></div>
 <div class="bg-green-50 p-2 rounded-xl text-center"><div id="cent" class="font-bold">-</div><div class="text-[9px]">CONFIRMADOS</div></div>
-<div class="bg-[#c9a88a]/20 p-2 rounded-xl text-center"><div id="cconf" class="font-bold">-</div><div class="text-[9px]">PERSONAS CONFIRM.</div></div>
+<div class="bg-[#c9a88a]/20 p-2 rounded-xl text-center"><div id="cconf" class="font-bold">-</div><div class="text-[9px]">PERSONAS</div></div>
 </div>
 
 <div class="flex gap-2 mb-3 flex-wrap">
-<select id="filtroFam" onchange="render()" class="border rounded-full px-3 py-2 text-xs"><option value="">Todas</option><option value="confirmado">Solo Confirmados</option><option value="pendiente">Solo Pendientes</option></select>
-<input id="busc" oninput="render()" placeholder="Buscar por ID, titular, mesa..." class="border rounded-full px-3 py-2 text-xs flex-1 min-w-[150px]">
-<button onclick="expCSV()" class="border px-3 py-2 rounded-full text-[10px]">Exportar CSV</button>
+<input id="busc" oninput="render()" placeholder="Buscar..." class="border rounded-full px-3 py-2 text-xs flex-1 min-w-[150px]">
+<button onclick="expCSV()" class="border px-3 py-2 rounded-full text-[10px]">Exportar Excel</button>
 </div>
 
-<div class="overflow-x-auto"><table class="w-full text-[11px]"><thead class="border-b text-[9px] text-gray-400"><tr><th class="text-left">ID</th><th>Titular</th><th>Mesa</th><th>Lugares</th><th>Tipo</th><th>Confirmado</th><th>Fecha</th><th>Links</th></tr></thead><tbody id="tbody"></tbody></table></div>
+<div class="overflow-x-auto"><table class="w-full text-[11px]"><thead class="border-b text-[9px] text-gray-400"><tr><th>ID</th><th class="text-left">Titular</th><th>Mesa</th><th>Lugares</th><th>Estado</th><th>Enviar</th></tr></thead><tbody id="tbody"></tbody></table></div>
 </div>
 </div>
 
 <script>
-const CLAVE = "ginaedy27";
+const CLAVE = "1234567";
 const GS_URL = "https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYToJd8tgpmw/exec";
+const BASE_URL = "https://tingdl2025.github.io/ginaedy.com/sobre.html";
 
 function checkPass(){ if(document.getElementById('pass').value===CLAVE){ localStorage.setItem('ge_admin','ok'); showApp(); } else { document.getElementById('loginErr').classList.remove('hidden'); } }
 function logout(){ localStorage.removeItem('ge_admin'); location.reload(); }
@@ -53,58 +70,87 @@ if(localStorage.getItem('ge_admin')==='ok') showApp();
 
 let invitados = [];
 
+function jsonp(url, cb){
+  const cbName = "cb_" + Date.now() + Math.random().toString().slice(2);
+  window[cbName] = function(res){ delete window[cbName]; document.body.removeChild(s); cb(res); };
+  const s = document.createElement('script');
+  s.src = url + (url.includes('?')?'&':'?') + "callback=" + cbName + "&_=" + Date.now();
+  document.body.appendChild(s);
+}
+
 function loadData(){
-  document.getElementById('statusSheet').textContent = "Cargando desde Sheet...";
-  // Usamos JSONP para evitar CORS
-  const cbName = "cb_" + Date.now();
-  window[cbName] = function(res){
-    delete window[cbName];
-    document.body.removeChild(script);
+  document.getElementById('statusSheet').textContent = "Cargando...";
+  jsonp(GS_URL+"?action=list", function(res){
     if(res.error){ document.getElementById('statusSheet').textContent = "Error: "+res.error; return; }
-    if(res.status==="ok" && res.data){
-      invitados = res.data;
-      document.getElementById('statusSheet').textContent = "Conectado - " + res.total + " grupos - Sheet ID: 1GoD1...PkI";
-      render();
-    }
-  };
-  const script = document.createElement('script');
-  script.src = GS_URL + "?action=list&callback=" + cbName + "&_=" + Date.now();
-  document.body.appendChild(script);
+    invitados = res.data || [];
+    document.getElementById('statusSheet').textContent = "Conectado - " + res.total + " grupos en Sheet";
+    render();
+  });
 }
 
 function render(){
- const filtro = document.getElementById('filtroFam').value; 
  const b = document.getElementById('busc').value.toLowerCase();
- let list = invitados.filter(i=>{
-   let okFiltro = true;
-   if(filtro==="confirmado") okFiltro = i.confirmado;
-   if(filtro==="pendiente") okFiltro = !i.confirmado;
-   let okBusca = !b || i.id.toLowerCase().includes(b) || i.t.toLowerCase().includes(b) || i.mesa.toString().toLowerCase().includes(b) || i.g.toLowerCase().includes(b);
-   return okFiltro && okBusca;
- });
+ let list = invitados.filter(i=> !b || i.id.includes(b) || i.t.toLowerCase().includes(b) || i.mesa.toString().toLowerCase().includes(b));
  const tb=document.getElementById('tbody'); tb.innerHTML='';
  list.forEach(inv=>{
+   const linkSobre = `${BASE_URL}?id=${inv.id}`;
+   const msg = `Hola ${inv.t}! Gina y Edy te invitan a su boda. Abre tu invitación: ${linkSobre}`;
+   const waLink = `https://wa.me/?text=${encodeURIComponent(msg)}`;
    tb.innerHTML+=`<tr class="border-b">
-   <td class="py-2 font-bold">${inv.id}</td>
-   <td class="font-medium">${inv.t}<div class="text-[9px] text-gray-400">${inv.g}</div></td>
-   <td class="font-bold text-[#c9a88a]">${inv.mesa}</td>
-   <td>${inv.m} <span class="text-[9px]">(${inv.k}A+${inv.l}N)</span></td>
-   <td class="text-[9px]">${inv.tipo}</td>
-   <td>${inv.confirmado?'<span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-[9px]">SI - '+inv.s+'p</span>':'<span class="bg-gray-100 px-2 py-1 rounded-full text-[9px]">No</span>'}</td>
-   <td class="text-[9px]">${inv.fecha||''}<div class="text-[8px]">${inv.tConfirmado||''}</div></td>
-   <td class="text-[9px]"><a href="sobre.html?id=${inv.id}" target="_blank" class="text-blue-600 underline block">Sobre</a><a href="invitacion.html?id=${inv.id}" target="_blank" class="text-blue-600 underline block">Invitación</a></td>
+   <td class="py-3 font-bold text-center">${inv.id}</td>
+   <td><div class="font-medium">${inv.t}</div><div class="text-[9px] text-gray-400">${inv.g||''}</div></td>
+   <td class="text-center font-bold text-[#c9a88a]">${inv.mesa}</td>
+   <td class="text-center">${inv.m} <span class="text-[8px]">(${inv.k}A/${inv.l}N)</span></td>
+   <td class="text-center">${inv.confirmado?`<span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-[9px]">✓ ${inv.s}p<br>${inv.fecha}</span>`:`<span class="bg-gray-100 px-2 py-1 rounded-full text-[9px]">Pendiente</span>`}</td>
+   <td class="text-center"><a href="${waLink}" target="_blank" class="bg-[#25D366] text-white px-3 py-1 rounded-full text-[9px] inline-block mb-1">WhatsApp</a><br><a href="${linkSobre}" target="_blank" class="text-blue-600 underline text-[8px]">Ver Sobre</a></td>
    </tr>`;
  });
+ document.getElementById('totalTxt').textContent = invitados.length + " grupos";
  document.getElementById('ctotal').textContent=invitados.length;
  document.getElementById('clugares').textContent=invitados.reduce((s,i)=>s+ (parseInt(i.m)||0),0);
  document.getElementById('cent').textContent=invitados.filter(i=>i.confirmado).length;
  document.getElementById('cconf').textContent=invitados.reduce((s,i)=>s+ (parseInt(i.s)||0),0);
 }
 
+function addGrupo(){
+ const titular=document.getElementById('nTitular').value.trim();
+ const cel=document.getElementById('nCel').value.trim();
+ const mesa=document.getElementById('nMesa').value.trim()||'S/A';
+ const k=parseInt(document.getElementById('nK').value)||0;
+ const l=parseInt(document.getElementById('nL').value)||0;
+ const grupo=document.getElementById('nGrupo').value.trim()||titular;
+ const tipo=document.getElementById('nTipo').value;
+ if(!titular){ alert('Escribe titular'); return; }
+ document.getElementById('btnAdd').textContent="Guardando...";
+ document.getElementById('btnAdd').disabled=true;
+ 
+ const url = `${GS_URL}?action=add&t=${encodeURIComponent(titular)}&k=${k}&l=${l}&mesa=${encodeURIComponent(mesa)}&g=${encodeURIComponent(grupo)}&tipo=${encodeURIComponent(tipo)}&cel=${encodeURIComponent(cel)}`;
+ jsonp(url, function(res){
+   document.getElementById('btnAdd').textContent="+ Guardar en Sheet y Generar Link";
+   document.getElementById('btnAdd').disabled=false;
+   if(res.status==="ok"){
+     const newId = res.id;
+     const link = `${BASE_URL}?id=${newId}`;
+     const waMsg = `Hola ${titular}! Gina y Edy te invitan a su boda. Abre tu invitación: ${link}`;
+     document.getElementById('lastLink').classList.remove('hidden');
+     document.getElementById('lastLink').innerHTML = `
+       <b>✅ Guardado en Sheet como ID ${newId}</b><br>
+       Link: <a href="${link}" target="_blank" class="text-blue-600 underline">${link}</a><br><br>
+       <a href="https://wa.me/?text=${encodeURIComponent(waMsg)}" target="_blank" class="bg-[#25D366] text-white px-4 py-2 rounded-full inline-block">📲 Enviar por WhatsApp</a>
+       <button onclick="navigator.clipboard.writeText('${link}');alert('Copiado')" class="ml-2 border px-3 py-2 rounded-full bg-white">Copiar link</button>
+     `;
+     document.getElementById('nTitular').value=''; document.getElementById('nGrupo').value='';
+     loadData();
+   } else {
+     alert('Error: '+JSON.stringify(res));
+   }
+ });
+}
+
 function expCSV(){
- let csv='ID,Titular,Mesa,Lugares,Tipo,Confirmado,Fecha,ConfirmadosNombres,Link Sobre,Link Invitacion\n';
- invitados.forEach(i=>csv+=`"${i.id}","${i.t}","${i.mesa}",${i.m},"${i.tipo}",${i.confirmado?'SI':'NO'},"${i.fecha}","${i.tConfirmado}",ginaedy.com/sobre.html?id=${i.id},ginaedy.com/invitacion.html?id=${i.id}\n`);
- const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='Boda_Gina_Edy_SHEET.csv'; a.click();
+ let csv='ID,Titular,Mesa,Lugares,Confirmado,Fecha,Link\n';
+ invitados.forEach(i=>csv+=`"${i.id}","${i.t}","${i.mesa}",${i.m},"${i.confirmado?'SI':'NO'}","${i.fecha}",${BASE_URL}?id=${i.id}\n`);
+ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='Boda_Gina_Edy.csv'; a.click();
 }
 </script>
 </body></html>
