@@ -168,6 +168,11 @@ function renderData(obj){
   if(!obj) return;
   if(obj.status==="no encontrado"){ let tt=document.getElementById('titularTxt'); if(tt) tt.textContent="ID no encontrado: "+(obj.id||""); return; }
   if(obj.status==="ya_confirmado"){ obj.confirmado=true; obj.fechaConfirmacion=obj.fecha; obj.tConfirmado=obj.t; obj.sConfirmado=obj.s; }
+  let sec7=document.getElementById('seccion7');
+  if(sec7){
+    let tipo=(obj.tipo||obj.j||'').toString().toLowerCase();
+    if(tipo.includes('sin')) sec7.style.display='none'; else sec7.style.display='block';
+  }
   if(obj.confirmado){
     DATA_ACTUAL=obj;
     let an=document.getElementById('areaNormal'); if(an) an.style.display='none';
