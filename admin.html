@@ -15,6 +15,9 @@ label{font-size:10px;font-weight:700;text-transform:uppercase;color:#666;margin:
 .btn{background:#1f3d2b;color:#fff;border:none;padding:11px 20px;border-radius:20px;cursor:pointer;font-weight:600}
 .btn2{background:#fff;border:1px solid #ddd;border-radius:20px;padding:7px 14px;cursor:pointer;font-size:12px}
 .btn-green{background:#2ecc71;color:#fff;border:none;padding:6px 14px;border-radius:12px;font-size:12px;cursor:pointer}
+.btn-yellow{background:#f1c40f;color:#111;border:none;padding:6px 14px;border-radius:12px;font-size:12px;cursor:pointer}
+.btn-orange{background:#e67e22;color:#fff;border:none;padding:6px 14px;border-radius:12px;font-size:12px;cursor:pointer}
+.btn-red{background:#e74c3c;color:#fff;border:none;padding:6px 14px;border-radius:12px;font-size:12px;cursor:pointer}
 .acom-row{display:flex;gap:6px;margin-bottom:6px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
 .stat{background:#fbf3e8;padding:16px;border-radius:12px;text-align:center}
@@ -26,17 +29,14 @@ td{padding:10px 8px;border-top:1px solid #f0e8db;font-size:13px;vertical-align:t
 </style>
 </head>
 <body>
-
 <div class="card" style="text-align:center">
 <div style="letter-spacing:4px;font-size:12px">ADMIN - GINA & EDY - 02.01.27</div>
 <div class="small" id="status">Conectado - 0 grupos en Sheet</div>
 <div style="margin-top:10px"><button class="btn2" onclick="cargar()" style="background:#0f2b1f;color:#fff">↻ Actualizar</button> <button class="btn2" onclick="location.href='index.html'">Salir</button></div>
 </div>
-
 <div class="card">
 <h3>+ Agregar Invitado / Familia</h3>
 <div class="small">Se guarda automático en el Google Sheet y genera el link de envio</div>
-
 <div class="row" style="margin-top:14px">
 <div><label>Titular *</label><input id="titular" placeholder="Titular Ej: Sandra López"></div>
 <div><label>Celular WhatsApp *</label><input id="celular" placeholder="Celular (obligatorio)"></div>
@@ -44,7 +44,6 @@ td{padding:10px 8px;border-top:1px solid #f0e8db;font-size:13px;vertical-align:t
 <div><label>Adultos invitados</label><input id="adultos" type="number" min="0" value="0"></div>
 <div><label>Niños invitados</label><input id="ninos" type="number" min="0" value="0"></div>
 </div>
-
 <div class="row" style="margin-top:12px">
 <div style="flex:2">
 <label>Acompañantes (agrega renglones)</label>
@@ -54,31 +53,25 @@ td{padding:10px 8px;border-top:1px solid #f0e8db;font-size:13px;vertical-align:t
 <div><label>Tipo invitación</label><select id="tipo"><option>con mesa de regalo</option><option>sin mesa de regalo</option></select></div>
 <div><label>Categoría (C a G)</label><select id="cat"><option>Familia Gina</option><option>Familia Edy</option><option>Amigos Gina</option><option>Amigos Edy</option><option>Amigos en Común / Otros</option></select></div>
 </div>
-
 <div style="margin-top:14px"><button class="btn" onclick="guardar()">+ Guardar en Sheet y Generar Link</button> <span id="msg" style="font-size:12px;margin-left:8px"></span></div>
 </div>
-
 <div class="card">
 <div style="display:flex;justify-content:space-between;align-items:center"><div><b>Lista del Sheet</b></div><div class="small" id="countGrupos">0 grupos</div></div>
-
 <div class="stats">
 <div class="stat"><b id="sGrupos">8</b><span>GRUPOS</span></div>
 <div class="stat"><b id="sLugares">26</b><span>LUGARES</span></div>
 <div class="stat"><b id="sConf">1</b><span>CONFIRMADOS</span></div>
 <div class="stat"><b id="sPers">23</b><span>PERSONAS</span></div>
 </div>
-
 <div class="row" style="margin-top:14px">
 <div style="flex:3"><input id="busc" placeholder="Buscar..." onkeyup="filtrar()"></div>
 <div style="flex:0 0 120px"><button class="btn2" style="width:100%" onclick="exportar()">Exportar Excel</button></div>
 </div>
-
 <table>
 <thead><tr><th>ID</th><th>Titular</th><th>Mesa</th><th>Lugares</th><th>Estado</th><th>Enviar</th></tr></thead>
 <tbody id="tbody"></tbody>
 </table>
 </div>
-
 <script>
 const GS_URL="https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYToJd8tgpmw/exec";
 let DATA=[];
@@ -94,11 +87,15 @@ function render(list){
     conf+= (it.estatus||'').toLowerCase().includes('confirm')?1:0;
     pers+= (it.grupo? it.grupo.split(',').filter(Boolean).length:0) + 1;
     const esConf=(it.estatus||it.estado||'').toLowerCase().includes('confirm');
-    let btnHtml;
+    const envios=parseInt(it.envios||0);
+    let btnHtml='';
     if(esConf){
       btnHtml='<span style="background:#fff;border:1px solid #ddd;color:#999;padding:6px 14px;border-radius:12px;font-size:11px;display:inline-block">Enviado ✓</span>';
     }else{
-      btnHtml='<button class="btn-green" onclick="wa(\''+it.id+'\')">WhatsApp</button>';
+      if(envios===0) btnHtml='<button class="btn-green" onclick="wa(\''+it.id+'\')">WhatsApp</button>';
+      else if(envios===1) btnHtml='<button class="btn-yellow" onclick="wa(\''+it.id+'\')">WhatsApp (1)</button>';
+      else if(envios===2) btnHtml='<button class="btn-orange" onclick="wa(\''+it.id+'\')">WhatsApp (2)</button>';
+      else btnHtml='<button class="btn-red" onclick="wa(\''+it.id+'\')">WhatsApp ('+envios+')</button> <button class="btn2" onclick="cancelar(\''+it.id+'\')">Cancelar</button>';
     }
     const tr=document.createElement('tr');
     tr.innerHTML='<td><b>'+it.id+'</b></td>'+
@@ -121,9 +118,16 @@ function wa(id){
   if(!it) return;
   let tel=(it.celular||'').toString().replace(/\D/g,'');
   if(tel.length===10) tel='52'+tel;
-  const msg='Hola '+it.titular+' aquí tu invitación: '+(it.link||'');
-  const url='https://wa.me/'+tel+'?text='+encodeURIComponent(msg);
+  const texto='Hola '+it.titular+' aquí tu invitación: '+(it.link||'');
+  const url='https://wa.me/'+tel+'?text='+encodeURIComponent(texto);
   window.open(url,'_blank');
+  it.envios=(parseInt(it.envios||0)+1);
+  render(DATA);
+  jsonp(GS_URL+'?action=envio&id='+encodeURIComponent(id),function(){});
+}
+function cancelar(id){
+  if(!confirm('¿Cancelar y liberar lugares de '+id+'?')) return;
+  jsonp(GS_URL+'?action=cancelar&id='+encodeURIComponent(id),function(r){cargar();});
 }
 function exportar(){let csv="ID,Titular,Grupo,Mesa,Lugares,Estado,Link\n";DATA.forEach(r=>{csv+=`"${r.id}","${r.titular}","${(r.grupo||'').replace(/"/g,'""')}","${r.mesa||''}","${r.lugaresM||r.lugares||''}","${r.estatus||''}","${r.link||''}"\n`;});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='invitados.csv';a.click();}
 function guardar(){
