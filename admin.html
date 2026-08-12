@@ -93,13 +93,20 @@ function render(list){
     lug+=parseInt(it.lugaresM||it.lugares||0)||0;
     conf+= (it.estatus||'').toLowerCase().includes('confirm')?1:0;
     pers+= (it.grupo? it.grupo.split(',').filter(Boolean).length:0) + 1;
+    const esConf=(it.estatus||it.estado||'').toLowerCase().includes('confirm');
+    let btnHtml;
+    if(esConf){
+      btnHtml='<span style="background:#fff;border:1px solid #ddd;color:#999;padding:6px 14px;border-radius:12px;font-size:11px;display:inline-block">Enviado ✓</span>';
+    }else{
+      btnHtml='<button class="btn-green" onclick="wa(\''+it.id+'\')">WhatsApp</button>';
+    }
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td><b>${it.id}</b></td>
-    <td><b>${it.titular}</b><br><span style="color:#999;font-size:11px">${it.grupo||''}</span></td>
-    <td>${it.mesa||''}</td>
-    <td>${it.lugaresM||it.lugares||0} <small style="color:#999">(${it.adultos||0}A/${it.ninos||0}N)</small></td>
-<td><span style="background:#eee;padding:4px 8px;border-radius:10px;font-size:11px">${it.estatus||it.estado||'Pendiente'}</span></td>
-    <td>${(it.estatus||it.estado||'').toLowerCase().includes('confirm')?'<span style="background:#fff;border:1px solid #ddd;color:#999;padding:6px 14px;border-radius:12px;font-size:11px;display:inline-block">Enviado ✓</span>':`<button class="btn-green" onclick="wa('${it.id}')">WhatsApp</button>`}<br><a href="${it.link||'#'}" target="_blank" style="font-size:11px;color:#2a7a5a">Ver Sobre</a></td>`;
+    tr.innerHTML='<td><b>'+it.id+'</b></td>'+
+    '<td><b>'+it.titular+'</b><br><span style="color:#999;font-size:11px">'+(it.grupo||'')+'</span></td>'+
+    '<td>'+(it.mesa||'')+'</td>'+
+    '<td>'+(it.lugaresM||it.lugares||0)+' <small style="color:#999">('+(it.adultos||0)+'A/'+(it.ninos||0)+'N)</small></td>'+
+    '<td><span style="background:#eee;padding:4px 8px;border-radius:10px;font-size:11px">'+(it.estatus||it.estado||'Pendiente')+'</span></td>'+
+    '<td>'+btnHtml+'<br><a href="'+(it.link||'#')+'" target="_blank" style="font-size:11px;color:#2a7a5a">Ver Sobre</a></td>';
     tb.appendChild(tr);
   });
   document.getElementById('sGrupos').textContent=g;
@@ -109,7 +116,15 @@ function render(list){
   document.getElementById('countGrupos').textContent=g+' grupos';
 }
 function filtrar(){const q=document.getElementById('busc').value.toLowerCase();render(DATA.filter(r=>(r.titular+r.grupo+(r.mesa||'')).toLowerCase().includes(q)));}
-function wa(id){const it=DATA.find(x=>x.id==id);if(!it)return;let tel=(it.celular||'').replace(/\D/g,'');if(tel.length===10)tel='52'+tel;const url=`https://wa.me/${tel}?text=${encodeURIComponent('Hola '+it.titular+' aquí tu invitación: '+(it.link||''))}`;window.open(url,'_blank');}
+function wa(id){
+  const it=DATA.find(x=>x.id==id);
+  if(!it) return;
+  let tel=(it.celular||'').toString().replace(/\D/g,'');
+  if(tel.length===10) tel='52'+tel;
+  const msg='Hola '+it.titular+' aquí tu invitación: '+(it.link||'');
+  const url='https://wa.me/'+tel+'?text='+encodeURIComponent(msg);
+  window.open(url,'_blank');
+}
 function exportar(){let csv="ID,Titular,Grupo,Mesa,Lugares,Estado,Link\n";DATA.forEach(r=>{csv+=`"${r.id}","${r.titular}","${(r.grupo||'').replace(/"/g,'""')}","${r.mesa||''}","${r.lugaresM||r.lugares||''}","${r.estatus||''}","${r.link||''}"\n`;});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='invitados.csv';a.click();}
 function guardar(){
   const t=document.getElementById('titular').value.trim();
