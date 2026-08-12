@@ -26,13 +26,14 @@ label{font-size:10px;font-weight:700;text-transform:uppercase;color:#666;margin:
 table{width:100%;border-collapse:collapse;margin-top:10px}
 th{font-size:10px;color:#999;text-transform:uppercase;font-weight:600;padding:8px;text-align:left}
 td{padding:10px 8px;border-top:1px solid #f0e8db;font-size:13px;vertical-align:top}
+.id-small{color:#999;font-size:11px;font-weight:400;margin-left:4px}
 </style>
 </head>
 <body>
 
 <div class="card" style="text-align:center">
 <div style="letter-spacing:4px;font-size:12px">ADMIN - GINA & EDY - 02.01.27</div>
-<div class="small" id="status">Conectado - 0 grupos en Sheet</div>
+<div class="small" id="status">Conectado - 0 invitaciones en Sheet</div>
 <div style="margin-top:10px"><button class="btn2" onclick="cargar()" style="background:#0f2b1f;color:#fff">↻ Actualizar</button> <button class="btn2" onclick="location.href='index.html'">Salir</button></div>
 </div>
 
@@ -62,36 +63,32 @@ td{padding:10px 8px;border-top:1px solid #f0e8db;font-size:13px;vertical-align:t
 </div>
 
 <div class="card">
-<div style="display:flex;justify-content:space-between;align-items:center"><div><b>Lista del Sheet</b></div><div class="small" id="countGrupos">0 grupos</div></div>
+<div style="display:flex;justify-content:space-between;align-items:center"><div><b>Lista del Sheet</b></div><div class="small" id="countGrupos">0 invitaciones</div></div>
 
 <div class="stats">
-<div class="stat"><b id="sGrupos">0</b><span>GRUPOS</span></div>
+<div class="stat"><b id="sGrupos">0</b><span>INVITACIONES</span></div>
 <div class="stat"><b id="sLugares">0</b><span>LUGARES</span></div>
 <div class="stat"><b id="sConf">0</b><span>CONFIRMADOS</span></div>
 <div class="stat"><b id="sPers">0</b><span>PERSONAS</span></div>
 </div>
 
 <div class="row" style="margin-top:14px">
-<div style="flex:3"><input id="busc" placeholder="Buscar..." onkeyup="filtrar()"></div>
+<div style="flex:3"><input id="busc" placeholder="Buscar por nombre o ID (001)..." onkeyup="filtrar()"></div>
 <div style="flex:0 0 120px"><button class="btn2" style="width:100%" onclick="exportar()">Exportar Excel</button></div>
 </div>
 
 <table>
-<thead><tr><th>ID</th><th>Titular</th><th>Mesa</th><th>Lugares</th><th>Estado</th><th>Enviar</th></tr></thead>
+<thead><tr><th>#</th><th>Titular</th><th>Mesa</th><th>Lugares</th><th>Estado</th><th>Enviar</th></tr></thead>
 <tbody id="tbody"></tbody>
 </table>
 </div>
 
 <script>
 const GS_URL="https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYToJd8tgpmw/exec";
-// CONFIGURA AQUI EL SOBRE CORRECTO - si tu sobre con nombre es index.html?id= cambia abajo
 const SOBRE_BASE = location.href.replace(/admin\.html.*$/,'sobre.html?id=');
-// Si tu sobre bueno es index.html? usa esta linea en su lugar:
-// const SOBRE_BASE = location.href.replace(/admin\.html.*$/,'index.html?id=');
 
 let DATA=[];
 
-// --- PERSISTENCIA LOCAL DE COLORES ---
 const LS_KEY='envios_ginaedy_v2';
 function getLS(){ try{ return JSON.parse(localStorage.getItem(LS_KEY)||'{}'); }catch(e){ return {}; } }
 function saveLS(o){ localStorage.setItem(LS_KEY, JSON.stringify(o)); }
@@ -103,7 +100,6 @@ function getAcom(){return [...document.querySelectorAll('#acomList input')].map(
 function jsonp(u,cb){const n='cb_'+Date.now();window[n]=d=>{cb(d);delete window[n];s.remove()};const s=document.createElement('script');s.src=u+(u.includes('?')?'&':'?')+'callback='+n;document.body.appendChild(s);}
 function cargar(){jsonp(GS_URL+'?action=list',r=>{
   DATA=r||[];
-  // si viene confirmado desde Sheet, limpia su contador local para que no estorbe
   const ls=getLS();
   let changed=false;
   DATA.forEach(it=>{
@@ -112,13 +108,11 @@ function cargar(){jsonp(GS_URL+'?action=list',r=>{
   });
   if(changed) saveLS(ls);
   render(DATA);
-  document.getElementById('status').textContent=`Conectado - ${r.length} grupos en Sheet`;
+  document.getElementById('status').textContent=`Conectado - ${r.length} invitaciones en Sheet`;
 });}
 
 function getLinkCorrecto(it){
-  // Si el link del Sheet ya tiene id y no es generico, usalo, si no construye el bueno
   const linkSheet = (it.link||'');
-  // Detecta si es generico sin nombre: si no contiene ?id= o ?i= o contiene admin
   const esGenerico = !linkSheet.includes('?id=') && !linkSheet.includes('?i=') || linkSheet.toLowerCase().includes('admin');
   if(!esGenerico && linkSheet) return linkSheet;
   return SOBRE_BASE + it.id;
@@ -128,7 +122,7 @@ function render(list){
   const tb=document.getElementById('tbody');tb.innerHTML='';
   const ls=getLS();
   let g=list.length, lug=0, conf=0, pers=0;
-  list.forEach(it=>{
+  list.forEach((it,idx)=>{
     lug+=parseInt(it.lugaresM||it.lugares||0)||0;
     conf+= (it.estatus||'').toLowerCase().includes('confirm')?1:0;
     pers+= (it.grupo? it.grupo.split(',').filter(Boolean).length:0) + 1;
@@ -144,9 +138,10 @@ function render(list){
       else btnHtml='<button class="btn-red" onclick="wa(\''+it.id+'\')">WhatsApp ('+envios+')</button> <button class="btn2" style="background:#000;color:#fff" onclick="cancelar(\''+it.id+'\')">Cancelar</button>';
     }
     const linkOK = getLinkCorrecto(it);
+    const numContinuo = idx+1;
     const tr=document.createElement('tr');
-    tr.innerHTML='<td><b>'+it.id+'</b></td>'+
-    '<td><b>'+it.titular+'</b><br><span style="color:#999;font-size:11px">'+(it.grupo||'')+'</span></td>'+
+    tr.innerHTML='<td><b>'+numContinuo+'</b></td>'+
+    '<td><b>'+it.titular+'</b><span class="id-small">('+it.id+')</span><br><span style="color:#999;font-size:11px">'+(it.grupo||'')+'</span></td>'+
     '<td>'+(it.mesa||'')+'</td>'+
     '<td>'+(it.lugaresM||it.lugares||0)+' <small style="color:#999">('+(it.adultos||0)+'A/'+(it.ninos||0)+'N)</small></td>'+
     '<td><span style="background:#eee;padding:4px 8px;border-radius:10px;font-size:11px">'+(it.estatus||it.estado||'Pendiente')+' '+(envios>0?'('+envios+')':'')+'</span></td>'+
@@ -157,9 +152,12 @@ function render(list){
   document.getElementById('sLugares').textContent=lug;
   document.getElementById('sConf').textContent=conf;
   document.getElementById('sPers').textContent=pers;
-  document.getElementById('countGrupos').textContent=g+' grupos';
+  document.getElementById('countGrupos').textContent=g+' invitaciones';
 }
-function filtrar(){const q=document.getElementById('busc').value.toLowerCase();render(DATA.filter(r=>(r.titular+r.grupo+(r.mesa||'')).toLowerCase().includes(q)));}
+function filtrar(){
+  const q=document.getElementById('busc').value.toLowerCase();
+  render(DATA.filter(r=>(r.titular+' '+(r.grupo||'')+' '+(r.mesa||'')+' '+r.id).toLowerCase().includes(q)));
+}
 
 function wa(id){
   const it=DATA.find(x=>x.id==id);
@@ -176,19 +174,16 @@ function wa(id){
 
 function cancelar(id){
   if(!confirm('¿Seguro? Se borrará el renglón '+id+' de admin y del Sheet para liberar lugares.')) return;
-  // borra local primero
   DATA = DATA.filter(x=>x.id!=id);
   delLS(id);
   render(DATA);
-  // manda señal a Sheet para borrar linea completa
   jsonp(GS_URL+'?action=delete&id='+encodeURIComponent(id),function(r){
-    // por compatibilidad mandamos tambien action=cancelar y action=borrar
     jsonp(GS_URL+'?action=cancelar&id='+encodeURIComponent(id),function(){});
     jsonp(GS_URL+'?action=borrar&id='+encodeURIComponent(id),function(){ cargar(); });
   });
 }
 
-function exportar(){let csv="ID,Titular,Grupo,Mesa,Lugares,Estado,Link\n";DATA.forEach(r=>{csv+=`"${r.id}","${r.titular}","${(r.grupo||'').replace(/"/g,'""')}","${r.mesa||''}","${r.lugaresM||r.lugares||''}","${r.estatus||''}","${r.link||''}"\n`;});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='invitados.csv';a.click();}
+function exportar(){let csv="Num,ID,Titular,Grupo,Mesa,Lugares,Estado,Link\n";DATA.forEach((r,i)=>{csv+=`"${i+1}","${r.id}","${r.titular}","${(r.grupo||'').replace(/"/g,'""')}","${r.mesa||''}","${r.lugaresM||r.lugares||''}","${r.estatus||''}","${r.link||''}"\n`;});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='invitados.csv';a.click();}
 function guardar(){
   const t=document.getElementById('titular').value.trim();
   const c=document.getElementById('celular').value.trim();
