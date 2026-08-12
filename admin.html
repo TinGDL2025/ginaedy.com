@@ -109,7 +109,7 @@ function render(list){
   document.getElementById('countGrupos').textContent=g+' grupos';
 }
 function filtrar(){const q=document.getElementById('busc').value.toLowerCase();render(DATA.filter(r=>(r.titular+r.grupo+(r.mesa||'')).toLowerCase().includes(q)));}
-function wa(id){const it=DATA.find(x=>x.id==id);if(!it)return;const url=`https://wa.me/${(it.celular||'').replace(/[^0-9]/g,'')}?text=${encodeURIComponent('Hola '+it.titular+' aquí tu invitación: '+(it.link||''))}`;window.open(url,'_blank');}
+function wa(id){const it=DATA.find(x=>x.id==id);if(!it)return;let tel=(it.celular||'').replace(/\D/g,'');if(tel.length===10)tel='52'+tel;const url=`https://wa.me/${tel}?text=${encodeURIComponent('Hola '+it.titular+' aquí tu invitación: '+(it.link||''))}`;window.open(url,'_blank');}
 function exportar(){let csv="ID,Titular,Grupo,Mesa,Lugares,Estado,Link\n";DATA.forEach(r=>{csv+=`"${r.id}","${r.titular}","${(r.grupo||'').replace(/"/g,'""')}","${r.mesa||''}","${r.lugaresM||r.lugares||''}","${r.estatus||''}","${r.link||''}"\n`;});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='invitados.csv';a.click();}
 function guardar(){
   const t=document.getElementById('titular').value.trim();
