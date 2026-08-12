@@ -99,7 +99,7 @@ function render(list){
     <td>${it.mesa||''}</td>
     <td>${it.lugaresM||it.lugares||0} <small style="color:#999">(${it.adultos||0}A/${it.ninos||0}N)</small></td>
     <td><span style="background:#eee;padding:4px 8px;border-radius:10px;font-size:11px">${it.estatus||it.estado||'Pendiente'}</span></td>
-    <td><button class="btn-green" onclick="wa('${it.id}')">WhatsApp</button><br><a href="${it.link||'#'}" target="_blank" style="font-size:11px;color:#2a7a5a">Ver Sobre</a></td>`;
+    <td>${(it.estatus||it.estado||'').toLowerCase().includes('confirm')?'<span style="background:#fff;border:1px solid #ddd;color:#999;padding:6px 14px;border-radius:12px;font-size:11px;display:inline-block">Enviado ✓</span>':'<button class="btn-green" onclick="wa(\''+it.id+'\')">WhatsApp</button>'}<br><a href="${it.link||'#'}" target="_blank" style="font-size:11px;color:#2a7a5a">Ver Sobre</a></td>`;
     tb.appendChild(tr);
   });
   document.getElementById('sGrupos').textContent=g;
