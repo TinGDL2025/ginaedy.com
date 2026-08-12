@@ -29,14 +29,17 @@ td{padding:10px 8px;border-top:1px solid #f0e8db;font-size:13px;vertical-align:t
 </style>
 </head>
 <body>
+
 <div class="card" style="text-align:center">
 <div style="letter-spacing:4px;font-size:12px">ADMIN - GINA & EDY - 02.01.27</div>
 <div class="small" id="status">Conectado - 0 grupos en Sheet</div>
 <div style="margin-top:10px"><button class="btn2" onclick="cargar()" style="background:#0f2b1f;color:#fff">↻ Actualizar</button> <button class="btn2" onclick="location.href='index.html'">Salir</button></div>
 </div>
+
 <div class="card">
 <h3>+ Agregar Invitado / Familia</h3>
 <div class="small">Se guarda automático en el Google Sheet y genera el link de envio</div>
+
 <div class="row" style="margin-top:14px">
 <div><label>Titular *</label><input id="titular" placeholder="Titular Ej: Sandra López"></div>
 <div><label>Celular WhatsApp *</label><input id="celular" placeholder="Celular (obligatorio)"></div>
@@ -44,6 +47,7 @@ td{padding:10px 8px;border-top:1px solid #f0e8db;font-size:13px;vertical-align:t
 <div><label>Adultos invitados</label><input id="adultos" type="number" min="0" value="0"></div>
 <div><label>Niños invitados</label><input id="ninos" type="number" min="0" value="0"></div>
 </div>
+
 <div class="row" style="margin-top:12px">
 <div style="flex:2">
 <label>Acompañantes (agrega renglones)</label>
@@ -53,41 +57,83 @@ td{padding:10px 8px;border-top:1px solid #f0e8db;font-size:13px;vertical-align:t
 <div><label>Tipo invitación</label><select id="tipo"><option>con mesa de regalo</option><option>sin mesa de regalo</option></select></div>
 <div><label>Categoría (C a G)</label><select id="cat"><option>Familia Gina</option><option>Familia Edy</option><option>Amigos Gina</option><option>Amigos Edy</option><option>Amigos en Común / Otros</option></select></div>
 </div>
+
 <div style="margin-top:14px"><button class="btn" onclick="guardar()">+ Guardar en Sheet y Generar Link</button> <span id="msg" style="font-size:12px;margin-left:8px"></span></div>
 </div>
+
 <div class="card">
 <div style="display:flex;justify-content:space-between;align-items:center"><div><b>Lista del Sheet</b></div><div class="small" id="countGrupos">0 grupos</div></div>
+
 <div class="stats">
-<div class="stat"><b id="sGrupos">8</b><span>GRUPOS</span></div>
-<div class="stat"><b id="sLugares">26</b><span>LUGARES</span></div>
-<div class="stat"><b id="sConf">1</b><span>CONFIRMADOS</span></div>
-<div class="stat"><b id="sPers">23</b><span>PERSONAS</span></div>
+<div class="stat"><b id="sGrupos">0</b><span>GRUPOS</span></div>
+<div class="stat"><b id="sLugares">0</b><span>LUGARES</span></div>
+<div class="stat"><b id="sConf">0</b><span>CONFIRMADOS</span></div>
+<div class="stat"><b id="sPers">0</b><span>PERSONAS</span></div>
 </div>
+
 <div class="row" style="margin-top:14px">
 <div style="flex:3"><input id="busc" placeholder="Buscar..." onkeyup="filtrar()"></div>
 <div style="flex:0 0 120px"><button class="btn2" style="width:100%" onclick="exportar()">Exportar Excel</button></div>
 </div>
+
 <table>
 <thead><tr><th>ID</th><th>Titular</th><th>Mesa</th><th>Lugares</th><th>Estado</th><th>Enviar</th></tr></thead>
 <tbody id="tbody"></tbody>
 </table>
 </div>
+
 <script>
 const GS_URL="https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYToJd8tgpmw/exec";
+// CONFIGURA AQUI EL SOBRE CORRECTO - si tu sobre con nombre es index.html?id= cambia abajo
+const SOBRE_BASE = location.href.replace(/admin\.html.*$/,'sobre.html?id=');
+// Si tu sobre bueno es index.html? usa esta linea en su lugar:
+// const SOBRE_BASE = location.href.replace(/admin\.html.*$/,'index.html?id=');
+
 let DATA=[];
+
+// --- PERSISTENCIA LOCAL DE COLORES ---
+const LS_KEY='envios_ginaedy_v2';
+function getLS(){ try{ return JSON.parse(localStorage.getItem(LS_KEY)||'{}'); }catch(e){ return {}; } }
+function saveLS(o){ localStorage.setItem(LS_KEY, JSON.stringify(o)); }
+function incLS(id){ const m=getLS(); m[id]=(m[id]||0)+1; saveLS(m); return m[id]; }
+function delLS(id){ const m=getLS(); delete m[id]; saveLS(m); }
+
 function addAcom(v=""){const d=document.createElement('div');d.className='acom-row';d.innerHTML=`<input value="${v}" placeholder="Nombre"><button class="btn2" onclick="this.parentElement.remove()">✕</button>`;document.getElementById('acomList').appendChild(d);}
 function getAcom(){return [...document.querySelectorAll('#acomList input')].map(i=>i.value.trim()).filter(Boolean).join(', ');}
 function jsonp(u,cb){const n='cb_'+Date.now();window[n]=d=>{cb(d);delete window[n];s.remove()};const s=document.createElement('script');s.src=u+(u.includes('?')?'&':'?')+'callback='+n;document.body.appendChild(s);}
-function cargar(){jsonp(GS_URL+'?action=list',r=>{DATA=r||[];render(DATA);document.getElementById('status').textContent=`Conectado - ${r.length} grupos en Sheet`;});}
+function cargar(){jsonp(GS_URL+'?action=list',r=>{
+  DATA=r||[];
+  // si viene confirmado desde Sheet, limpia su contador local para que no estorbe
+  const ls=getLS();
+  let changed=false;
+  DATA.forEach(it=>{
+    const esConf=(it.estatus||it.estado||'').toLowerCase().includes('confirm');
+    if(esConf && ls[it.id]){ delete ls[it.id]; changed=true; }
+  });
+  if(changed) saveLS(ls);
+  render(DATA);
+  document.getElementById('status').textContent=`Conectado - ${r.length} grupos en Sheet`;
+});}
+
+function getLinkCorrecto(it){
+  // Si el link del Sheet ya tiene id y no es generico, usalo, si no construye el bueno
+  const linkSheet = (it.link||'');
+  // Detecta si es generico sin nombre: si no contiene ?id= o ?i= o contiene admin
+  const esGenerico = !linkSheet.includes('?id=') && !linkSheet.includes('?i=') || linkSheet.toLowerCase().includes('admin');
+  if(!esGenerico && linkSheet) return linkSheet;
+  return SOBRE_BASE + it.id;
+}
+
 function render(list){
   const tb=document.getElementById('tbody');tb.innerHTML='';
+  const ls=getLS();
   let g=list.length, lug=0, conf=0, pers=0;
   list.forEach(it=>{
     lug+=parseInt(it.lugaresM||it.lugares||0)||0;
     conf+= (it.estatus||'').toLowerCase().includes('confirm')?1:0;
     pers+= (it.grupo? it.grupo.split(',').filter(Boolean).length:0) + 1;
     const esConf=(it.estatus||it.estado||'').toLowerCase().includes('confirm');
-    const envios=parseInt(it.envios||0);
+    const envios= esConf ? 0 : parseInt(it.envios||0) || parseInt(ls[it.id]||0);
     let btnHtml='';
     if(esConf){
       btnHtml='<span style="background:#fff;border:1px solid #ddd;color:#999;padding:6px 14px;border-radius:12px;font-size:11px;display:inline-block">Enviado ✓</span>';
@@ -95,15 +141,16 @@ function render(list){
       if(envios===0) btnHtml='<button class="btn-green" onclick="wa(\''+it.id+'\')">WhatsApp</button>';
       else if(envios===1) btnHtml='<button class="btn-yellow" onclick="wa(\''+it.id+'\')">WhatsApp (1)</button>';
       else if(envios===2) btnHtml='<button class="btn-orange" onclick="wa(\''+it.id+'\')">WhatsApp (2)</button>';
-      else btnHtml='<button class="btn-red" onclick="wa(\''+it.id+'\')">WhatsApp ('+envios+')</button> <button class="btn2" onclick="cancelar(\''+it.id+'\')">Cancelar</button>';
+      else btnHtml='<button class="btn-red" onclick="wa(\''+it.id+'\')">WhatsApp ('+envios+')</button> <button class="btn2" style="background:#000;color:#fff" onclick="cancelar(\''+it.id+'\')">Cancelar</button>';
     }
+    const linkOK = getLinkCorrecto(it);
     const tr=document.createElement('tr');
     tr.innerHTML='<td><b>'+it.id+'</b></td>'+
     '<td><b>'+it.titular+'</b><br><span style="color:#999;font-size:11px">'+(it.grupo||'')+'</span></td>'+
     '<td>'+(it.mesa||'')+'</td>'+
     '<td>'+(it.lugaresM||it.lugares||0)+' <small style="color:#999">('+(it.adultos||0)+'A/'+(it.ninos||0)+'N)</small></td>'+
-    '<td><span style="background:#eee;padding:4px 8px;border-radius:10px;font-size:11px">'+(it.estatus||it.estado||'Pendiente')+'</span></td>'+
-    '<td>'+btnHtml+'<br><a href="'+(it.link||'#')+'" target="_blank" style="font-size:11px;color:#2a7a5a">Ver Sobre</a></td>';
+    '<td><span style="background:#eee;padding:4px 8px;border-radius:10px;font-size:11px">'+(it.estatus||it.estado||'Pendiente')+' '+(envios>0?'('+envios+')':'')+'</span></td>'+
+    '<td>'+btnHtml+'<br><a href="'+linkOK+'" target="_blank" style="font-size:11px;color:#2a7a5a">Ver Sobre</a></td>';
     tb.appendChild(tr);
   });
   document.getElementById('sGrupos').textContent=g;
@@ -113,22 +160,34 @@ function render(list){
   document.getElementById('countGrupos').textContent=g+' grupos';
 }
 function filtrar(){const q=document.getElementById('busc').value.toLowerCase();render(DATA.filter(r=>(r.titular+r.grupo+(r.mesa||'')).toLowerCase().includes(q)));}
+
 function wa(id){
   const it=DATA.find(x=>x.id==id);
   if(!it) return;
   let tel=(it.celular||'').toString().replace(/\D/g,'');
   if(tel.length===10) tel='52'+tel;
-  const texto='Hola '+it.titular+' aquí tu invitación: '+(it.link||'');
+  const linkOK = getLinkCorrecto(it);
+  const texto='Hola '+it.titular+' aquí tu invitación: '+linkOK;
   const url='https://wa.me/'+tel+'?text='+encodeURIComponent(texto);
   window.open(url,'_blank');
-  it.envios=(parseInt(it.envios||0)+1);
+  incLS(id);
   render(DATA);
-  jsonp(GS_URL+'?action=envio&id='+encodeURIComponent(id),function(){});
 }
+
 function cancelar(id){
-  if(!confirm('¿Cancelar y liberar lugares de '+id+'?')) return;
-  jsonp(GS_URL+'?action=cancelar&id='+encodeURIComponent(id),function(r){cargar();});
+  if(!confirm('¿Seguro? Se borrará el renglón '+id+' de admin y del Sheet para liberar lugares.')) return;
+  // borra local primero
+  DATA = DATA.filter(x=>x.id!=id);
+  delLS(id);
+  render(DATA);
+  // manda señal a Sheet para borrar linea completa
+  jsonp(GS_URL+'?action=delete&id='+encodeURIComponent(id),function(r){
+    // por compatibilidad mandamos tambien action=cancelar y action=borrar
+    jsonp(GS_URL+'?action=cancelar&id='+encodeURIComponent(id),function(){});
+    jsonp(GS_URL+'?action=borrar&id='+encodeURIComponent(id),function(){ cargar(); });
+  });
 }
+
 function exportar(){let csv="ID,Titular,Grupo,Mesa,Lugares,Estado,Link\n";DATA.forEach(r=>{csv+=`"${r.id}","${r.titular}","${(r.grupo||'').replace(/"/g,'""')}","${r.mesa||''}","${r.lugaresM||r.lugares||''}","${r.estatus||''}","${r.link||''}"\n`;});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='invitados.csv';a.click();}
 function guardar(){
   const t=document.getElementById('titular').value.trim();
