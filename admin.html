@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Admin V11 - Fix Renglones y Sobre</title>
+<title>Admin V12 - Sin prefijos y sin pregunta</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 :root{--green:#1f3d2b;--beige:#fdfaf3;--line:#f0e8db}
@@ -14,7 +14,7 @@ input,select{width:100%;padding:12px 12px;border:1px solid #e8ddd0;border-radius
 .form-grid-4{display:grid;grid-template-columns:120px 120px 1fr 1fr;gap:16px;margin-bottom:12px}
 .btn{background:var(--green);color:#fff;border:none;padding:11px 20px;border-radius:22px;cursor:pointer;font-weight:700}
 .btn:disabled{opacity:.4}
-.btn2{background:#fff;border:1px solid #ddd;border-radius:18px;padding:6px 10px;cursor:pointer;font-size:11px}
+.btn2{background:#fff;border:1px solid #ddd;border-radius:18px;padding:6px 12px;cursor:pointer;font-size:11px}
 .btn-green{background:#2ecc71;color:#fff;border:none;padding:6px 12px;border-radius:10px;font-size:11px;cursor:pointer}
 .acom-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
 .acom-row select{width:110px;flex-shrink:0}
@@ -33,28 +33,26 @@ input,select{width:100%;padding:12px 12px;border:1px solid #e8ddd0;border-radius
 .mesas-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
 .mesa{border-radius:10px;padding:10px 4px;text-align:center;border:1px solid var(--line);background:#fff}
 .mesa .m-label{font-size:11px;color:#333;font-weight:600}
-.mesa .m-num{font-size:18px;font-weight:800;color:var(--green);margin-top:2px}
-.mesa .m-free{font-size:10px;color:#888;margin-top:2px}
+.mesa .m-num{font-size:18px;font-weight:800;color:var(--green)}
+.mesa .m-free{font-size:10px;color:#888}
 .mesa.full{background:#fdedec;border-color:#e74c3c}
 table{width:100%;border-collapse:collapse;margin-top:8px}
 th{font-size:9px;color:#999;text-transform:uppercase;padding:6px;text-align:left}
 td{padding:8px 6px;border-top:1px solid var(--line);font-size:11px;vertical-align:top}
 .small{color:#999;font-size:10px}
 .sobre-link{font-size:11px;color:#2a7a5a;display:block;margin-top:4px;text-decoration:none}
-.sobre-link:hover{text-decoration:underline}
 </style>
 </head>
 <body>
 
 <div class="card" style="text-align:center">
-<div style="letter-spacing:4px;font-size:10px;font-weight:700">ADMIN V11 - FIX RENGLONES + SOBRE</div>
+<div style="letter-spacing:4px;font-size:10px;font-weight:700">ADMIN V12 - SIN PREFIJOS Y SIN BOTON PREGUNTA</div>
 <div class="small" id="status">Cargando...</div>
 <button class="btn2" onclick="cargar()" style="background:#1f3d2b;color:#fff;margin-top:6px">↻ Actualizar</button>
-<div class="small" id="gsInfo"></div>
 </div>
 
 <div class="card">
-<h3 style="margin-bottom:12px">+ Agregar Invitado</h3>
+<h3>+ Agregar Invitado</h3>
 <div class="form-grid-3">
 <div><label>Titular *</label><input id="titular" oninput="onTitularChange()" placeholder="Familia / Nombre"></div>
 <div><label>Celular *</label><input id="celular" placeholder="10 dígitos"></div>
@@ -68,12 +66,11 @@ td{padding:8px 6px;border-top:1px solid var(--line);font-size:11px;vertical-alig
 </div>
 <div id="warnMesa" class="warn"></div><div id="okMesa" class="ok"></div>
 <div style="margin-top:10px">
-<label>Acompañantes - los renglones mandan, si agregas te pregunto Adulto/Niño y ajusto K/L</label>
+<label>Acompañantes - elige Adulto/Niño y se ajusta K/L arriba automáticamente</label>
 <div id="acomList"></div>
 <div style="display:flex;gap:8px;margin-top:8px">
-<button class="btn2" onclick="addAcomPrompt('adulto')">+ Adulto</button>
-<button class="btn2" onclick="addAcomPrompt('nino')">+ Niño</button>
-<button class="btn2" onclick="addAcomPrompt()">+ Renglón (pregunta)</button>
+<button class="btn2" onclick="addAcomPrompt('adulto')" style="background:#1f3d2b;color:#fff">+ Adulto</button>
+<button class="btn2" onclick="addAcomPrompt('nino')" style="background:#1f3d2b;color:#fff">+ Niño</button>
 </div>
 <div class="small" id="acomInfo" style="margin-top:6px"></div>
 </div>
@@ -112,14 +109,19 @@ function getLS(){try{return JSON.parse(localStorage.getItem('envios_ginaedy_v2')
 function saveLS(o){localStorage.setItem('envios_ginaedy_v2',JSON.stringify(o))}
 function incLS(id){const m=getLS();m[id]=(m[id]||0)+1;saveLS(m)}
 function esFamilia(t){return String(t||'').toLowerCase().trim().startsWith('fam')}
-function jsonp(u,cb){const n='cb_'+Date.now();window[n]=d=>{cb(d);delete window[n];s.remove()};const s=document.createElement('script');s.src=u+(u.includes('?')?'&':'?')+'callback='+n;document.body.appendChild(s);}
+function jsonp(u,cb){
+  const n='cb_'+Date.now()+Math.random().toString(36).slice(2);
+  window[n]=d=>{try{cb(d);}finally{delete window[n];s.remove();}};
+  const s=document.createElement('script');
+  s.onerror=()=>{document.getElementById('msg').textContent='Error red'; delete window[n]; s.remove();};
+  s.src=u+(u.includes('?')?'&':'?')+'callback='+n;
+  document.body.appendChild(s);
+}
 function cargar(){
   jsonp(GS_URL+'?action=list',r=>{
     DATA=r||[];
     calcularMesas(); poblarSelectMesas(); render(DATA);
     document.getElementById('status').textContent='Conectado '+r.length+' filas';
-    const trae = r[0] && ('ab' in r[0] || 'y' in r[0]);
-    document.getElementById('gsInfo').textContent = trae ? 'GS V10.4 OK' : 'GS viejo';
   });
 }
 function calcularMesas(){mesasM={};for(let i=1;i<=TOTAL_MESAS;i++) mesasM[i]=0; DATA.forEach(it=>{const m=parseInt(it.lugaresM||it.lugares||0)||0;const mesa=parseInt(it.mesa)||0;if(mesa>=1&&mesa<=TOTAL_MESAS) mesasM[mesa]+=m;});}
@@ -143,7 +145,6 @@ function syncKInputs(){
 function getTotalesNecesitados(){
   const {k,l}=getTotalesFromRows();
   const ad=esFamilia(document.getElementById('titular').value)?0:1;
-  // Si no hay renglones, usa inputs
   const kInput=parseInt(document.getElementById('adultos').value)||0;
   const lInput=parseInt(document.getElementById('ninos').value)||0;
   const hasRows=document.querySelectorAll('#acomList .acom-row').length>0;
@@ -154,7 +155,6 @@ function getTotalesNecesitados(){
 function onTitularChange(){updateMesaInfo();}
 function onMesaChange(){updateMesaInfo();}
 function onKLChangeManual(){
-  // Cuando cambias K/L manualmente, regenera renglones
   const k=parseInt(document.getElementById('adultos').value)||0;
   const l=parseInt(document.getElementById('ninos').value)||0;
   regenerarRows(k,l);
@@ -172,13 +172,12 @@ function updateMesaInfo(){
   warn.style.display='none';ok.style.display='none';
   if(!mesaVal){document.getElementById('acomInfo').textContent=`Necesitas ${m} lugares (K${k}+L${l}+AD${ad}) - elige mesa`;return;}
   const ocup=mesasM[mesaVal]||0, libres=CAP-ocup;
-  if(m>libres){warn.style.display='block';warn.textContent=`Mesa ${mesaVal} solo ${libres} libres, necesitas ${m}. Reduce o cambia mesa.`;btn.disabled=true;}
-  else{ok.style.display='block';ok.textContent=`Mesa ${mesaVal}: ${ocup} ocupados, quedan ${libres}, tu invitación ${m} OK (K${k}+L${l}+AD${ad})`;btn.disabled=false;}
+  if(m>libres){warn.style.display='block';warn.textContent=`Mesa ${mesaVal} solo ${libres} libres, necesitas ${m}.`;btn.disabled=true;}
+  else{ok.style.display='block';ok.textContent=`Mesa ${mesaVal}: ${ocup} ocupados, quedan ${libres}, tu invitación ${m} OK`;btn.disabled=false;}
   document.getElementById('acomInfo').textContent=`Renglones: ${k} adultos + ${l} niños = ${k+l} acompañantes, total con titular ${m}`;
 }
 function addAcomRowDirect(tipo,nombre=''){
   const list=document.getElementById('acomList');
-  if(list.querySelector('.small')) list.innerHTML='';
   const d=document.createElement('div');d.className='acom-row';
   d.innerHTML=`<select onchange="syncKInputs()"><option value="adulto" ${tipo==='adulto'?'selected':''}>Adulto</option><option value="nino" ${tipo==='nino'?'selected':''}>Niño</option></select><input value="${nombre}" placeholder="Nombre"><button class="btn2" onclick="this.parentElement.remove();syncKInputs()">✕</button>`;
   list.appendChild(d);
@@ -186,20 +185,17 @@ function addAcomRowDirect(tipo,nombre=''){
 function addAcomPrompt(tipo){
   const mesaVal=parseInt(document.getElementById('mesa').value)||0;
   if(!mesaVal){alert('Elige mesa primero');return;}
-  if(!tipo){
-    tipo=prompt('¿Adulto o Niño? escribe A o N','A');
-    if(!tipo) return;
-    tipo=tipo.toLowerCase().startsWith('a')?'adulto':'nino';
-  }
   const {ad,m}=getTotalesNecesitados();
   const libres=CAP-(mesasM[mesaVal]||0);
-  if(m>=libres){alert(`Mesa ${mesaVal} solo ${libres} libres, ya tienes ${m}. No cabe más.`);return;}
-  addAcomRowDirect(tipo, tipo==='adulto' ? `Adulto ${document.querySelectorAll('#acomList .acom-row').length+1}` : `Niño ${document.querySelectorAll('#acomList .acom-row').length+1}`);
+  if(m>=libres){alert(`Mesa ${mesaVal} solo ${libres} libres, ya tienes ${m}.`);return;}
+  addAcomRowDirect(tipo, '');
   syncKInputs();
 }
-function getAcom(){return [...document.querySelectorAll('#acomList .acom-row')].map(r=>{const t=r.querySelector('select').value==='adulto'?'Adulto':'Niño';const n=r.querySelector('input').value.trim();return n?`${t}: ${n}`:''}).filter(Boolean).join(', ');}
+function getAcom(){
+  // Solo nombres, sin prefijo Adulto:/Niño: y sin titular
+  return [...document.querySelectorAll('#acomList .acom-row')].map(r=>r.querySelector('input').value.trim()).filter(Boolean).join(', ');
+}
 function getLinkCorrecto(it){const l=it.link||'';return l.includes('?id=')?l:SOBRE_BASE+it.id;}
-
 function render(list){
   const tb=document.getElementById('tbody');tb.innerHTML='';
   const ls=getLS();
@@ -242,12 +238,8 @@ function render(list){
     const esConf=(it.estatus||'').toLowerCase().includes('confirm');
     const envios=esConf?0:parseInt(it.envios||0)||parseInt(ls[it.id]||0);
     let btnHtml='';
-    if(esConf){
-      btnHtml=`<span style="background:#eee;padding:4px 8px;border-radius:10px;font-size:10px;display:inline-block">Conf</span><a href="${getLinkCorrecto(it)}" target="_blank" class="sobre-link">🔍 Ver Sobre</a>`;
-    }else{
-      if(envios===0) btnHtml=`<button class="btn-green" onclick="wa('${it.id}')">WA</button><a href="${getLinkCorrecto(it)}" target="_blank" class="sobre-link">Ver Sobre</a>`;
-      else btnHtml=`<button class="btn-green" style="background:#f1c40f;color:#111" onclick="wa('${it.id}')">WA (${envios})</button><a href="${getLinkCorrecto(it)}" target="_blank" class="sobre-link">Ver Sobre</a>`;
-    }
+    if(esConf){btnHtml=`<span style="background:#eee;padding:4px 8px;border-radius:10px;font-size:10px;display:inline-block">Conf</span><a href="${getLinkCorrecto(it)}" target="_blank" class="sobre-link">🔍 Ver Sobre</a>`;}
+    else{if(envios===0) btnHtml=`<button class="btn-green" onclick="wa('${it.id}')">WA</button><a href="${getLinkCorrecto(it)}" target="_blank" class="sobre-link">Ver Sobre</a>`; else btnHtml=`<button class="btn-green" style="background:#f1c40f;color:#111" onclick="wa('${it.id}')">WA (${envios})</button><a href="${getLinkCorrecto(it)}" target="_blank" class="sobre-link">Ver Sobre</a>`;}
     const tr=document.createElement('tr');
     tr.innerHTML=`<td>${idx+1}</td><td><b>${it.titular}</b> <span class="small">(${it.id})</span><br><span class="small">${it.grupo||''}</span></td><td>Mesa ${it.mesa||''}</td><td>${it.estatus||''}</td><td>${btnHtml}</td>`;
     tb.appendChild(tr);
@@ -264,7 +256,18 @@ function guardar(){
   const p={action:'add',titular:t,celular:c,mesa:mesa,adultos:k,ninos:l,grupo:getAcom(),tipo:document.getElementById('tipo').value,categoria:document.getElementById('cat').value};
   const qs=Object.keys(p).map(k=>k+'='+encodeURIComponent(p[k])).join('&');
   document.getElementById('msg').textContent='Guardando...';
-  jsonp(GS_URL+'?'+qs,r=>{document.getElementById('msg').textContent='OK '+r.id;cargar();document.getElementById('acomList').innerHTML='';document.getElementById('titular').value='';document.getElementById('celular').value='';});
+  document.getElementById('btnGuardar').disabled=true;
+  jsonp(GS_URL+'?'+qs,r=>{
+    document.getElementById('msg').textContent='OK '+r.id+' guardado';
+    document.getElementById('btnGuardar').disabled=false;
+    setTimeout(()=>{document.getElementById('msg').textContent='';},2000);
+    cargar();
+    document.getElementById('acomList').innerHTML='';
+    document.getElementById('titular').value='';
+    document.getElementById('celular').value='';
+    document.getElementById('adultos').value=0;
+    document.getElementById('ninos').value=0;
+  });
 }
 window.onload=cargar;
 </script>
