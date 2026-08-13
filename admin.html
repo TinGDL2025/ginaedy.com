@@ -2,22 +2,21 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Admin V16 - Mesas liberan Y/Z + Fix Y/Z Dashboard</title>
+<title>Admin V17 - Fix Y/Z SiVan Real</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 :root{--green:#1f3d2b;--beige:#fdfaf3;--line:#f0e8db}
 body{background:var(--beige);font-family:Inter,sans-serif;padding:16px;max-width:1150px;margin:0 auto}
 .card{background:#fff;border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 4px 16px rgba(0,0,0,.05);border:1px solid #f3eadc}
 label{font-size:9px;font-weight:700;text-transform:uppercase;color:#777;margin:0 0 6px 6px;display:block}
-input,select{width:100%;padding:12px 12px;border:1px solid #e8ddd0;border-radius:10px;background:#fffaf3;font-size:13px;box-sizing:border-box;height:44px}
-.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:12px}
-.form-grid-4{display:grid;grid-template-columns:120px 120px 1fr 1fr;gap:16px;margin-bottom:12px}
+input,select{width:100%;padding:12px;border:1px solid #e8ddd0;border-radius:10px;background:#fffaf3;font-size:13px;box-sizing:border-box;height:44px}
 .btn{background:var(--green);color:#fff;border:none;padding:11px 20px;border-radius:22px;cursor:pointer;font-weight:700}
-.btn:disabled{opacity:.4}
 .btn2{background:#fff;border:1px solid #ddd;border-radius:18px;padding:6px 12px;cursor:pointer;font-size:11px}
 .btn-wa{color:#fff;border:none;padding:6px 12px;border-radius:10px;font-size:11px;cursor:pointer;min-width:60px}
 .btn-wa-green{background:#2ecc71}.btn-wa-yellow{background:#f1c40f;color:#111}.btn-wa-red{background:#e74c3c}
 .btn-cancel{background:#fff;border:1px solid #e74c3c;color:#e74c3c;border-radius:10px;padding:4px 8px;font-size:11px;cursor:pointer;margin-left:6px}
+.acom-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+.acom-row select{width:110px;flex-shrink:0}.acom-row input{flex:1}
 .warn{background:#fdedec;border:1px solid #f5b7b1;color:#922b21;padding:8px 10px;border-radius:8px;font-size:11px;margin-top:6px;display:none}
 .ok{background:#eafaf1;border:1px solid #a9dfbf;color:#1e8449;padding:8px 10px;border-radius:8px;font-size:11px;margin-top:6px;display:none}
 .dash-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
@@ -31,9 +30,7 @@ input,select{width:100%;padding:12px 12px;border:1px solid #e8ddd0;border-radius
 .p-box .sub{font-size:9px;color:#999;margin-top:3px}
 .mesas-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
 .mesa{border-radius:10px;padding:10px 4px;text-align:center;border:1px solid var(--line);background:#fff}
-.mesa .m-label{font-size:11px;color:#333;font-weight:600}
-.mesa .m-num{font-size:18px;font-weight:800;color:var(--green)}
-.mesa .m-free{font-size:10px;color:#888}
+.mesa .m-label{font-size:11px;color:#333;font-weight:600}.mesa .m-num{font-size:18px;font-weight:800;color:var(--green)}.mesa .m-free{font-size:10px;color:#888}
 .mesa.full{background:#fdedec;border-color:#e74c3c}.mesa.full .m-num{color:#e74c3c}
 .mesa.warn-yellow{background:#fef9e7;border-color:#f1c40f}.mesa.warn-yellow .m-num{color:#b7950b}
 .mesa.confirmed{background:#eafaf1;border-color:#2ecc71}
@@ -43,25 +40,26 @@ td{padding:8px 6px;border-top:1px solid var(--line);font-size:11px;vertical-alig
 .small{color:#999;font-size:10px}
 .sobre-link{font-size:11px;color:#2a7a5a;display:block;margin-top:6px;text-decoration:none}
 .envio-box{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+.debug{font-size:9px;background:#f8f9fa;padding:4px;border-radius:4px;margin-top:2px}
 </style>
 </head>
 <body>
 
 <div class="card" style="text-align:center">
-<div style="letter-spacing:4px;font-size:10px;font-weight:700">ADMIN V16 - MESA LIBERA Y/Z - FIX DASHBOARD</div>
+<div style="letter-spacing:4px;font-size:10px;font-weight:700">ADMIN V17 - Y/Z + SI VAN REAL = S + PENDIENTES</div>
 <div class="small" id="status">Cargando...</div>
 <button class="btn2" onclick="cargar()" style="background:#1f3d2b;color:#fff;margin-top:6px">↻ Actualizar</button>
-<div class="small">Mesa ahora ocupa S si confirmado, libera Y+Z. Y/Z dashboard suma real K-AB y L-AC</div>
+<div class="small" id="debugGS" style="margin-top:6px"></div>
 </div>
 
 <div class="card">
 <h3>+ Agregar Invitado</h3>
-<div class="form-grid-3">
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:12px">
 <div><label>Titular *</label><input id="titular" oninput="onTitularChange()" placeholder="Familia / Nombre"></div>
-<div><label>Celular *</label><input id="celular" placeholder="10 dígitos"></div>
+<div><label>Celular *</label><input id="celular"></div>
 <div><label>Mesa 1-21 *</label><select id="mesa" onchange="onMesaChange()"></select></div>
 </div>
-<div class="form-grid-4">
+<div style="display:grid;grid-template-columns:120px 120px 1fr 1fr;gap:16px;margin-bottom:12px">
 <div><label>Adultos K</label><input id="adultos" type="number" min="0" value="0" oninput="onKLChangeManual()"></div>
 <div><label>Niños L</label><input id="ninos" type="number" min="0" value="0" oninput="onKLChangeManual()"></div>
 <div><label>Tipo</label><select id="tipo"><option>con mesa de regalo</option><option>sin mesa de regalo</option></select></div>
@@ -69,13 +67,13 @@ td{padding:8px 6px;border-top:1px solid var(--line);font-size:11px;vertical-alig
 </div>
 <div id="warnMesa" class="warn"></div><div id="okMesa" class="ok"></div>
 <div style="margin-top:10px">
-<label>Acompañantes - Fam no incluye titular, No Fam sí incluye</label>
+<label>Acompañantes</label>
 <div id="acomList"></div>
 <div style="display:flex;gap:8px;margin-top:8px">
 <button class="btn2" onclick="addAcomPrompt('adulto')" style="background:#1f3d2b;color:#fff">+ Adulto</button>
 <button class="btn2" onclick="addAcomPrompt('nino')" style="background:#1f3d2b;color:#fff">+ Niño</button>
 </div>
-<div class="small" id="acomInfo"></div><div class="small" id="reglaInfo" style="background:#eaf2f8;padding:6px;border-radius:6px;margin-top:4px"></div>
+<div class="small" id="acomInfo"></div>
 </div>
 <div style="margin-top:14px"><button class="btn" id="btnGuardar" onclick="guardar()">+ Guardar</button> <span id="msg" class="small"></span></div>
 </div>
@@ -88,26 +86,26 @@ td{padding:8px 6px;border-top:1px solid var(--line);font-size:11px;vertical-alig
 <div class="dash-grid-3">
 <div class="p-box"><div class="head">INVITADAS M=K+L+AD</div><div class="line"><span id="pInvA">0</span>A + <span id="pInvN">0</span>N = <b id="pInvT">0</b></div><div class="sub" id="pInvSub"></div></div>
 <div class="p-box" style="border-color:#2ecc71"><div class="head">CONFIRMADAS S=AB+AD+AC</div><div class="line"><span id="pConfA">0</span>A + <span id="pConfN">0</span>N = <b id="pConfT">0</b></div><div class="sub" id="pConfSub"></div></div>
-<div class="p-box" style="background:#eaf2f8;border-color:#3498db"><div class="head">SI VAN = CONF + PORCONF</div><div class="line"><span id="pSiA">0</span>A + <span id="pSiN">0</span>N = <b id="pSiT">0</b></div><div class="sub">Ocupa mesa</div></div>
+<div class="p-box" style="background:#eaf2f8;border-color:#3498db"><div class="head">SI VAN = S + PENDIENTES M</div><div class="line"><span id="pSiA">0</span>A + <span id="pSiN">0</span>N = <b id="pSiT">0</b></div><div class="sub" id="pSiSub"></div></div>
 </div>
 <div class="dash-grid-3">
-<div class="p-box" style="border-color:#e74c3c"><div class="head">Y ADULTOS SOBRANTES (K-AB)</div><div class="line"><b id="dY">0</b></div><div class="sub" id="dYDetail"></div></div>
-<div class="p-box" style="border-color:#e74c3c"><div class="head">Z NIÑOS SOBRANTES (L-AC)</div><div class="line"><b id="dZ">0</b></div><div class="sub" id="dZDetail"></div></div>
+<div class="p-box" style="border-color:#e74c3c"><div class="head">Y ADULTOS SOBRANTES K-AB</div><div class="line"><b id="dY">0</b></div><div class="sub" id="dYDetail"></div></div>
+<div class="p-box" style="border-color:#e74c3c"><div class="head">Z NIÑOS SOBRANTES L-AC</div><div class="line"><b id="dZ">0</b></div><div class="sub" id="dZDetail"></div></div>
 <div class="p-box"><div class="head">DISP REAL 210 - SI VAN</div><div class="line"><b id="dDispTot">0</b></div><div class="sub" id="totalDispSub"></div></div>
 </div>
-<div style="margin-top:16px"><b style="font-size:10px;letter-spacing:2px;text-transform:uppercase">ASIGNADOS POR MESA (SI VAN) - Total <span id="totalM"></span> - M si pendiente, S si confirmado | Amarillo 9 Rojo 10+</b><div class="mesas-grid" id="gridM" style="margin-top:8px"></div></div>
+<div style="margin-top:16px"><b style="font-size:10px;letter-spacing:2px;text-transform:uppercase">ASIGNADAS POR MESA (SI VAN) - TOTAL <span id="totalM"></span> | M si pendiente, S si confirmado</b><div class="mesas-grid" id="gridM" style="margin-top:8px"></div></div>
 </div>
 
 <div class="card">
-<input id="busc" placeholder="Buscar mesa 13..." onkeyup="filtrar()" style="max-width:220px;margin-bottom:6px">
-<table><thead><tr><th>#</th><th>TITULAR</th><th>MESA M/S Y/Z</th><th>ESTADO</th><th>ENVIAR / CANCELAR</th></tr></thead><tbody id="tbody"></tbody></table>
+<input id="busc" placeholder="Buscar mesa 10..." onkeyup="filtrar()" style="max-width:220px;margin-bottom:6px">
+<table><thead><tr><th>#</th><th>TITULAR / GRUPO</th><th>MESA M/S Y/Z AB/AC</th><th>ESTADO</th><th>ENVIAR / CANCELAR</th></tr></thead><tbody id="tbody"></tbody></table>
 </div>
 
 <script>
 const GS_URL="https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYToJd8tgpmw/exec";
 const SOBRE_BASE=location.href.replace(/admin\.html.*$/,'sobre.html?id=');
 const CAP=10, TOTAL_MESAS=21;
-let DATA=[], mesasM={}, mesasSiVan={};
+let DATA=[], mesasSiVan={};
 function getLS(){try{return JSON.parse(localStorage.getItem('envios_ginaedy_v2')||'{}')}catch(e){return{}}}
 function saveLS(o){localStorage.setItem('envios_ginaedy_v2',JSON.stringify(o))}
 function incLS(id){const m=getLS();m[id]=(m[id]||0)+1;saveLS(m)}
@@ -123,18 +121,21 @@ function cargar(){
     DATA=r||[];
     calcularMesas(); poblarSelectMesas(); render(DATA);
     document.getElementById('status').textContent='Conectado '+r.length+' filas';
+    document.getElementById('debugGS').textContent='GS campos: '+(r[0]?Object.keys(r[0]).join(', '):'vacio');
+  });
+  jsonp(GS_URL+'?action=stats',s=>{
+    document.getElementById('debugGS').textContent+=' | Stats: SiVan '+s.siVan+' Y'+s.y+' Z'+s.z;
   });
 }
 function calcularMesas(){
-  mesasM={}; mesasSiVan={};
-  for(let i=1;i<=TOTAL_MESAS;i++){mesasM[i]=0; mesasSiVan[i]=0;}
+  mesasSiVan={};
+  for(let i=1;i<=TOTAL_MESAS;i++) mesasSiVan[i]=0;
   DATA.forEach(it=>{
-    const m=parseInt(it.lugaresM||it.lugares||0)||0;
-    const s=parseInt(it.lugaresConf||it.lugares||0)||0;
     const mesa=parseInt(it.mesa)||0;
     if(mesa>=1&&mesa<=TOTAL_MESAS){
-      mesasM[mesa]+=m;
-      const esConf=(it.estatus||'').toLowerCase().includes('confirm');
+      const esConf=String(it.estatus||'').toLowerCase().includes('confirm');
+      const m=parseInt(it.lugaresM||it.lugares||0)||0;
+      const s=parseInt(it.lugaresConf||it.s||0)||0;
       mesasSiVan[mesa]+= esConf ? (s||m) : m;
     }
   });
@@ -142,10 +143,10 @@ function calcularMesas(){
 function poblarSelectMesas(){
   const sel=document.getElementById('mesa');const act=sel.value;sel.innerHTML='<option value="">-- Mesa --</option>';
   for(let i=1;i<=TOTAL_MESAS;i++){
-    const ocupM=mesasM[i]||0; const ocupS=mesasSiVan[i]||0; const libres=CAP-ocupS;
+    const ocup=mesasSiVan[i]||0; const libres=CAP-ocup;
     const opt=document.createElement('option');opt.value=i;
-    opt.textContent=`Mesa ${i} - M:${ocupM} SiVan:${ocupS} libres:${libres}`;
-    if(libres<=0){opt.textContent=`Mesa ${i} - LLENA M${ocupM} S${ocupS} libres ${libres}`;opt.disabled=true;}
+    opt.textContent=`Mesa ${i} - SiVan ${ocup} libres ${libres}`;
+    if(libres<=0){opt.textContent=`Mesa ${i} - LLENA SiVan ${ocup}`;opt.disabled=true;}
     sel.appendChild(opt);
   }
   if(act) sel.value=act;
@@ -153,7 +154,7 @@ function poblarSelectMesas(){
 function getTotalesFromRows(){
   const rows=[...document.querySelectorAll('#acomList .acom-row')];
   let k=0,l=0;
-  rows.forEach(r=>{const tipo=r.querySelector('select').value; if(tipo==='adulto') k++; else l++;});
+  rows.forEach(r=>{if(r.querySelector('select').value==='adulto') k++; else l++;});
   return {k,l};
 }
 function syncKInputs(){
@@ -186,18 +187,14 @@ function regenerarRows(k,l){
   for(let i=0;i<l;i++) addAcomRowDirect('nino',`Niño ${i+1}`);
 }
 function updateMesaInfo(){
-  const {k,l,ad,m}=getTotalesNecesitados();
-  const titular=document.getElementById('titular').value.trim();
-  const fam=esFamilia(titular);
+  const {k,l,m}=getTotalesNecesitados();
   const mesaVal=parseInt(document.getElementById('mesa').value)||0;
   const warn=document.getElementById('warnMesa'), ok=document.getElementById('okMesa'), btn=document.getElementById('btnGuardar');
   warn.style.display='none';ok.style.display='none';
-  document.getElementById('reglaInfo').textContent = titular ? (fam ? `FAM: M=K+L=${m} (no incluye titular)` : `No FAM: M=K+L+AD=${m} incluye titular`) : '';
-  if(!mesaVal){document.getElementById('acomInfo').textContent=`Necesitas ${m} lugares`;return;}
+  if(!mesaVal){document.getElementById('acomInfo').textContent=`Necesitas ${m}`;return;}
   const ocup=mesasSiVan[mesaVal]||0; const libres=CAP-ocup;
-  if(m>libres){warn.style.display='block';warn.textContent=`Mesa ${mesaVal} SiVan ${ocup}, libres ${libres}, necesitas ${m}.`;btn.disabled=true;}
-  else{ok.style.display='block';ok.textContent=`Mesa ${mesaVal}: SiVan ${ocup}, libres ${libres}, invitación ${m} OK`;btn.disabled=false;}
-  document.getElementById('acomInfo').textContent=`Renglones: ${k} adultos + ${l} niños, total ${m}`;
+  if(m>libres){warn.style.display='block';warn.textContent=`Mesa ${mesaVal} SiVan ${ocup} libres ${libres} necesitas ${m}`;btn.disabled=true;}
+  else{ok.style.display='block';ok.textContent=`Mesa ${mesaVal} SiVan ${ocup} libres ${libres} OK`;btn.disabled=false;}
 }
 function addAcomRowDirect(tipo,nombre=''){
   const list=document.getElementById('acomList');
@@ -207,114 +204,113 @@ function addAcomRowDirect(tipo,nombre=''){
 }
 function addAcomPrompt(tipo){
   const mesaVal=parseInt(document.getElementById('mesa').value)||0;
-  if(!mesaVal){alert('Elige mesa primero');return;}
+  if(!mesaVal){alert('Elige mesa');return;}
   const {m}=getTotalesNecesitados();
   const libres=CAP-(mesasSiVan[mesaVal]||0);
-  if(m>=libres){alert(`Mesa ${mesaVal} solo ${libres} libres, ya tienes ${m}.`);return;}
-  addAcomRowDirect(tipo, '');
-  syncKInputs();
+  if(m>=libres){alert(`Mesa ${mesaVal} libres ${libres} tienes ${m}`);return;}
+  addAcomRowDirect(tipo,'');syncKInputs();
 }
 function getAcom(){
   const titular=document.getElementById('titular').value.trim();
   const fam=esFamilia(titular);
-  const nombresAcom=[...document.querySelectorAll('#acomList .acom-row')].map(r=>r.querySelector('input').value.trim()).filter(Boolean);
-  if(fam){return nombresAcom.join(', ');}
-  else{
-    let todos=[...nombresAcom];
-    if(titular && !todos.includes(titular)){todos.unshift(titular);}
-    return todos.join(', ');
-  }
+  const nombres=[...document.querySelectorAll('#acomList .acom-row')].map(r=>r.querySelector('input').value.trim()).filter(Boolean);
+  if(fam) return nombres.join(', ');
+  let todos=[...nombres];
+  if(titular && !todos.includes(titular)) todos.unshift(titular);
+  return todos.join(', ');
 }
 function getLinkCorrecto(it){const l=it.link||'';return l.includes('?id=')?l:SOBRE_BASE+it.id;}
 function render(list){
   const tb=document.getElementById('tbody');tb.innerHTML='';
   let invitaciones=list.length, confirmadas=0;
-  let kTotal=0,lTotal=0,adTotal=0,mTotal=0,sTotal=0,yTotal=0,zTotal=0,abTotal=0,acTotal=0,adConf=0,kPor=0,lPor=0,adPor=0;
-  let mesasLocalM={}, mesasLocalS={};
-  for(let i=1;i<=TOTAL_MESAS;i++){mesasLocalM[i]=0; mesasLocalS[i]=0;}
-  
+  let kTotal=0,lTotal=0,adTotal=0,mTotal=0,sTotal=0,yTotal=0,zTotal=0,abTotal=0,acTotal=0,adConf=0;
+  let kPor=0,lPor=0,adPor=0,mPor=0;
+  let mesasM={}, mesasS={};
+  for(let i=1;i<=TOTAL_MESAS;i++){mesasM[i]=0; mesasS[i]=0;}
+
   list.forEach(it=>{
-    const k=parseInt(it.adultos||0)||0, l=parseInt(it.ninos||0)||0;
+    const k=parseInt(it.k!=null?it.k:it.adultos)||0;
+    const l=parseInt(it.l!=null?it.l:it.ninos)||0;
     const m=parseInt(it.lugaresM||it.lugares||0)||0;
-    let s=parseInt(it.lugaresConf||0)||0;
-    let y=parseInt(it.y), z=parseInt(it.z), ab=parseInt(it.ab), ac=parseInt(it.ac);
-    const ad=esFamilia(it.titular)?0:1;
+    const s=parseInt(it.s!=null?it.s:it.lugaresConf)||0;
+    const ad=parseInt(it.ad!=null?it.ad:(esFamilia(it.titular)?0:1))||0;
+    const abRaw=it.ab, acRaw=it.ac, yRaw=it.y, zRaw=it.z;
+    const ab=abRaw!=null?parseInt(abRaw):null;
+    const ac=acRaw!=null?parseInt(acRaw):null;
+    const y=yRaw!=null?parseInt(yRaw):null;
+    const z=zRaw!=null?parseInt(zRaw):null;
     const mesa=parseInt(it.mesa)||0;
-    const esConf=(it.estatus||'').toLowerCase().includes('confirm');
-    
-    // FIX Y/Z: si viene NaN pero tenemos K,L,AB,AC calculamos Y=K-AB Z=L-AC solo para confirmados
-    if(esConf){
-      if(isNaN(ab)) ab=k;
-      if(isNaN(ac)) ac=l;
-      if(isNaN(y)) y=Math.max(0,k-ab);
-      if(isNaN(z)) z=Math.max(0,l-ac);
-      if(isNaN(s) || s===0) s=ab+ad+ac;
-    }else{
-      y=0; z=0;
-    }
-    
+    const esConf=String(it.estatus||'').toLowerCase().includes('confirm');
+
     kTotal+=k; lTotal+=l; adTotal+=ad; mTotal+=m;
     if(mesa>=1&&mesa<=TOTAL_MESAS){
-      mesasLocalM[mesa]+=m;
-      mesasLocalS[mesa]+= esConf ? (s||m) : m;
+      mesasM[mesa]+=m;
+      mesasS[mesa]+= esConf ? (s||m) : m;
     }
+
     if(esConf){
       confirmadas++;
-      sTotal+=s; yTotal+=y; zTotal+=z; abTotal+=ab; acTotal+=ac; adConf+=ad;
+      const abEff=ab!=null?ab:k;
+      const acEff=ac!=null?ac:l;
+      const yEff=y!=null?y:Math.max(0,k-abEff);
+      const zEff=z!=null?z:Math.max(0,l-acEff);
+      const sEff=s||(abEff+ad+acEff);
+      sTotal+=sEff;
+      yTotal+=yEff; zTotal+=zEff;
+      abTotal+=abEff; acTotal+=acEff; adConf+=ad;
     }else{
-      kPor+=k; lPor+=l; adPor+=ad;
+      kPor+=k; lPor+=l; adPor+=ad; mPor+=m;
     }
   });
-  
-  // Dashboard fix Y/Z
+
+  // Dashboards FIX: si Y/Z vienen null, usa K-AB y L-AC
   document.getElementById('dInv').textContent=invitaciones;
   document.getElementById('dConf').textContent=confirmadas;
   document.getElementById('pInvA').textContent=kTotal+adTotal; document.getElementById('pInvN').textContent=lTotal; document.getElementById('pInvT').textContent=mTotal;
-  document.getElementById('pInvSub').textContent=`K${kTotal}+AD${adTotal} / L${lTotal}`;
+  document.getElementById('pInvSub').textContent=`K${kTotal}+AD${adTotal} L${lTotal}`;
   document.getElementById('pConfA').textContent=abTotal+adConf; document.getElementById('pConfN').textContent=acTotal; document.getElementById('pConfT').textContent=sTotal;
-  document.getElementById('pConfSub').textContent=`AB${abTotal}+AD${adConf} / AC${acTotal}`;
-  const adultosSi=abTotal+adConf+kPor+adPor, ninosSi=acTotal+lPor;
-  document.getElementById('pSiA').textContent=adultosSi; document.getElementById('pSiN').textContent=ninosSi; document.getElementById('pSiT').textContent=adultosSi+ninosSi;
+  document.getElementById('pConfSub').textContent=`AB${abTotal}+AD${adConf} AC${acTotal}`;
+  const siVanTotal=sTotal+mPor;
+  const adultosSi=abTotal+adConf+kPor+adPor;
+  const ninosSi=acTotal+lPor;
+  document.getElementById('pSiA').textContent=adultosSi; document.getElementById('pSiN').textContent=ninosSi; document.getElementById('pSiT').textContent=siVanTotal;
+  document.getElementById('pSiSub').textContent=`S${sTotal}+Mpor${mPor}=${siVanTotal}`;
   document.getElementById('dY').textContent=yTotal; document.getElementById('dZ').textContent=zTotal;
   document.getElementById('dYDetail').textContent=`K${kTotal}-AB${abTotal}=${yTotal}`;
   document.getElementById('dZDetail').textContent=`L${lTotal}-AC${acTotal}=${zTotal}`;
-  const siVanTotal=adultosSi+ninosSi;
-  document.getElementById('dDispTot').textContent=(TOTAL_MESAS*CAP - siVanTotal);
+  document.getElementById('dDispTot').textContent=210-siVanTotal;
+  document.getElementById('totalDispSub').textContent=`210-${siVanTotal}=${210-siVanTotal}`;
   document.getElementById('totalM').textContent=siVanTotal;
-  document.getElementById('totalDispSub').textContent=`210-${siVanTotal}=${TOTAL_MESAS*CAP - siVanTotal} (Si Van)`;
-  
+
   const gridM=document.getElementById('gridM');gridM.innerHTML='';
   for(let i=1;i<=TOTAL_MESAS;i++){
-    const m=mesasLocalM[i]||0; const s=mesasLocalS[i]||0; const libres=CAP-s;
-    let cls='mesa '; let extra=`M:${m} S:${s}`;
-    if(s>=CAP){cls+='full'; extra+=` ¡Llena!`;}
-    else if(s>=9){cls+='warn-yellow'; extra+=` ¡Casi!`;}
-    else if(m!==s){cls+='confirmed'; extra+=` liberó ${m-s}`;}
+    const m=mesasM[i]||0; const s=mesasS[i]||0; const libres=CAP-s;
+    let cls='mesa '; let extra=`M${m} S${s}`;
+    if(s>=CAP) cls+='full';
+    else if(s>=9) cls+='warn-yellow';
+    else if(m!=s) cls+='confirmed';
     const d=document.createElement('div');d.className=cls;
-    d.innerHTML=`<div class="m-label">Mesa ${i}</div><div class="m-num">${s}</div><div class="m-free">${libres} libres</div><div class="m-free" style="font-size:8px">${extra}</div>`;
+    d.innerHTML=`<div class="m-label">Mesa ${i}</div><div class="m-num">${s}</div><div class="m-free">${libres} libres</div><div class="m-free" style="font-size:8px">${extra}${m!=s?` libera ${m-s}`:''}</div>`;
     gridM.appendChild(d);
   }
-  
+
   list.forEach((it,idx)=>{
-    const esConf=(it.estatus||'').toLowerCase().includes('confirm');
+    const esConf=String(it.estatus||'').toLowerCase().includes('confirm');
     const envios=getEnvios(it.id,it);
     let waClass='btn-wa-green', waText='WA';
     if(envios===1){waClass='btn-wa-yellow'; waText=`WA (${envios})`;}
     else if(envios>=2){waClass='btn-wa-red'; waText=`WA (${envios})`;}
-    const k=parseInt(it.adultos||0)||0, l=parseInt(it.ninos||0)||0, m=parseInt(it.lugaresM||it.lugares||0)||0;
-    const s=parseInt(it.lugaresConf||0)||0;
-    const ab=parseInt(it.ab)||0, ac=parseInt(it.ac)||0, y=parseInt(it.y)||0, z=parseInt(it.z)||0;
+    const k=it.k||it.adultos||0, l=it.l||it.ninos||0, m=it.lugaresM||0, s=it.s||it.lugaresConf||0;
+    const ab=it.ab, ac=it.ac, y=it.y, z=it.z;
     let mesaInfo=`Mesa ${it.mesa||''} M${m}`;
-    if(esConf) mesaInfo+=` S${s} Y${y} Z${z}`;
+    if(esConf) mesaInfo+=` S${s} Y${y!=null?y:'?'} Z${z!=null?z:'?'} AB${ab!=null?ab:'?'} AC${ac!=null?ac:'?'}`;
     
     let btnHtml='';
-    if(esConf){
-      btnHtml=`<div class="envio-box"><span style="background:#eee;padding:4px 8px;border-radius:10px;font-size:10px">Conf S${s}</span><a href="${getLinkCorrecto(it)}" target="_blank" class="sobre-link">Ver Sobre</a><button class="btn-cancel" onclick="cancelar('${it.id}')">🗑️</button></div>`;
-    }else{
-      btnHtml=`<div class="envio-box"><button class="btn-wa ${waClass}" onclick="wa('${it.id}')">${waText}</button><a href="${getLinkCorrecto(it)}" target="_blank" class="sobre-link">Ver Sobre</a><button class="btn-cancel" onclick="cancelar('${it.id}')">🗑️ Cancelar</button></div>`;
-    }
+    if(esConf) btnHtml=`<div class="envio-box"><span style="background:#eee;padding:4px 8px;border-radius:10px;font-size:10px">Conf S${s}</span><a href="${getLinkCorrecto(it)}" target="_blank" class="sobre-link">Ver</a><button class="btn-cancel" onclick="cancelar('${it.id}')">🗑️</button></div>`;
+    else btnHtml=`<div class="envio-box"><button class="btn-wa ${waClass}" onclick="wa('${it.id}')">${waText}</button><a href="${getLinkCorrecto(it)}" target="_blank" class="sobre-link">Ver</a><button class="btn-cancel" onclick="cancelar('${it.id}')">🗑️</button></div>`;
+
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${idx+1}</td><td><b>${it.titular}</b> <span class="small">(${it.id})</span><br><span class="small">${it.grupo||''}</span></td><td>${mesaInfo}<br><small style="color:#999">K${k} L${l} AB${ab} AC${ac}</small></td><td>${it.estatus||''} ${envios>0?`<br><small style="color:${envios>=2?'#e74c3c':envios===1?'#f39c12':'#999'}">Envios:${envios}</small>`:''}</td><td>${btnHtml}</td>`;
+    tr.innerHTML=`<td>${idx+1}</td><td><b>${it.titular}</b> <span class="small">(${it.id})</span><br><span class="small">${it.grupo||''}</span><div class="debug">K${k} L${l} AB${ab} AC${ac} Y${y} Z${z}</div></td><td>${mesaInfo}</td><td>${it.estatus||''} ${envios>0?`<br><small>Env:${envios}</small>`:''}</td><td>${btnHtml}</td>`;
     tb.appendChild(tr);
   });
 }
@@ -326,9 +322,9 @@ function wa(id){
   incLS(id);render(DATA);
 }
 function cancelar(id){
-  if(!confirm(`¿Eliminar invitación ${id}? Libera mesa.`)) return;
+  if(!confirm(`¿Eliminar ${id}?`)) return;
   jsonp(GS_URL+`?action=delete&id=${id}`,r=>{
-    alert(r.ok ? `Eliminada ${id}` : JSON.stringify(r));
+    alert(r.ok?'Eliminada':'Error '+JSON.stringify(r));
     const ls=getLS(); delete ls[id]; saveLS(ls);
     cargar();
   });
@@ -338,7 +334,7 @@ function guardar(){
   if(!t||!c||!mesa){alert('Faltan datos');return;}
   const {k,l,ad,m}=getTotalesNecesitados();
   const libres=CAP-(mesasSiVan[parseInt(mesa)]||0);
-  if(m>libres){alert(`Mesa ${mesa} solo ${libres} libres SiVan, necesitas ${m}`);return;}
+  if(m>libres){alert(`Mesa ${mesa} libres ${libres} necesitas ${m}`);return;}
   const p={action:'add',titular:t,celular:c,mesa:mesa,adultos:k,ninos:l,grupo:getAcom(),tipo:document.getElementById('tipo').value,categoria:document.getElementById('cat').value};
   const qs=Object.keys(p).map(k=>k+'='+encodeURIComponent(p[k])).join('&');
   document.getElementById('msg').textContent='Guardando...';
@@ -346,7 +342,6 @@ function guardar(){
   jsonp(GS_URL+'?'+qs,r=>{
     document.getElementById('msg').textContent='OK '+r.id;
     document.getElementById('btnGuardar').disabled=false;
-    setTimeout(()=>{document.getElementById('msg').textContent='';},2000);
     cargar();
     document.getElementById('acomList').innerHTML='';
     document.getElementById('titular').value='';document.getElementById('celular').value='';
