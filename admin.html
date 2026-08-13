@@ -2,11 +2,11 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Admin V13 - Titular y Mesas Amarillo</title>
+<title>Admin V15 - WA Rojo + Cancelar Permanente</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 :root{--green:#1f3d2b;--beige:#fdfaf3;--line:#f0e8db}
-body{background:var(--beige);font-family:Inter,sans-serif;padding:16px;max-width:1100px;margin:0 auto}
+body{background:var(--beige);font-family:Inter,sans-serif;padding:16px;max-width:1150px;margin:0 auto}
 .card{background:#fff;border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 4px 16px rgba(0,0,0,.05);border:1px solid #f3eadc}
 label{font-size:9px;font-weight:700;text-transform:uppercase;color:#777;margin:0 0 6px 6px;display:block}
 input,select{width:100%;padding:12px 12px;border:1px solid #e8ddd0;border-radius:10px;background:#fffaf3;font-size:13px;box-sizing:border-box;height:44px}
@@ -15,7 +15,12 @@ input,select{width:100%;padding:12px 12px;border:1px solid #e8ddd0;border-radius
 .btn{background:var(--green);color:#fff;border:none;padding:11px 20px;border-radius:22px;cursor:pointer;font-weight:700}
 .btn:disabled{opacity:.4}
 .btn2{background:#fff;border:1px solid #ddd;border-radius:18px;padding:6px 12px;cursor:pointer;font-size:11px}
-.btn-green{background:#2ecc71;color:#fff;border:none;padding:6px 12px;border-radius:10px;font-size:11px;cursor:pointer}
+.btn-wa{color:#fff;border:none;padding:6px 12px;border-radius:10px;font-size:11px;cursor:pointer;display:inline-block;min-width:60px;text-align:center}
+.btn-wa-green{background:#2ecc71}
+.btn-wa-yellow{background:#f1c40f;color:#111}
+.btn-wa-red{background:#e74c3c}
+.btn-cancel{background:#fff;border:1px solid #e74c3c;color:#e74c3c;border-radius:10px;padding:4px 8px;font-size:11px;cursor:pointer;margin-left:6px}
+.btn-cancel:hover{background:#fdedec}
 .acom-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
 .acom-row select{width:110px;flex-shrink:0}
 .acom-row input{flex:1}
@@ -31,7 +36,7 @@ input,select{width:100%;padding:12px 12px;border:1px solid #e8ddd0;border-radius
 .p-box .line{font-size:14px;margin-top:6px;color:var(--green);font-weight:700}
 .p-box .sub{font-size:9px;color:#999;margin-top:3px}
 .mesas-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
-.mesa{border-radius:10px;padding:10px 4px;text-align:center;border:1px solid var(--line);background:#fff;transition:.2s}
+.mesa{border-radius:10px;padding:10px 4px;text-align:center;border:1px solid var(--line);background:#fff}
 .mesa .m-label{font-size:11px;color:#333;font-weight:600}
 .mesa .m-num{font-size:18px;font-weight:800;color:var(--green)}
 .mesa .m-free{font-size:10px;color:#888}
@@ -43,15 +48,18 @@ table{width:100%;border-collapse:collapse;margin-top:8px}
 th{font-size:9px;color:#999;text-transform:uppercase;padding:6px;text-align:left}
 td{padding:8px 6px;border-top:1px solid var(--line);font-size:11px;vertical-align:top}
 .small{color:#999;font-size:10px}
-.sobre-link{font-size:11px;color:#2a7a5a;display:block;margin-top:4px;text-decoration:none}
+.sobre-link{font-size:11px;color:#2a7a5a;display:block;margin-top:6px;text-decoration:none}
+.sobre-link:hover{text-decoration:underline}
+.envio-box{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
 </style>
 </head>
 <body>
 
 <div class="card" style="text-align:center">
-<div style="letter-spacing:4px;font-size:10px;font-weight:700">ADMIN V13 - TITULAR + AMARILLO 9</div>
+<div style="letter-spacing:4px;font-size:10px;font-weight:700">ADMIN V15 - WA SEMAFORO + CANCELAR PERMANENTE</div>
 <div class="small" id="status">Cargando...</div>
 <button class="btn2" onclick="cargar()" style="background:#1f3d2b;color:#fff;margin-top:6px">↻ Actualizar</button>
+<div class="small">0 envíos=verde | 1 envío=amarillo | 2+ envíos=rojo (3er envío). Papelera siempre visible.</div>
 </div>
 
 <div class="card">
@@ -69,7 +77,7 @@ td{padding:8px 6px;border-top:1px solid var(--line);font-size:11px;vertical-alig
 </div>
 <div id="warnMesa" class="warn"></div><div id="okMesa" class="ok"></div>
 <div style="margin-top:10px">
-<label>Acompañantes - Si es Fam solo acompañantes, si no es Fam incluye titular automáticamente en M</label>
+<label>Acompañantes</label>
 <div id="acomList"></div>
 <div style="display:flex;gap:8px;margin-top:8px">
 <button class="btn2" onclick="addAcomPrompt('adulto')" style="background:#1f3d2b;color:#fff">+ Adulto</button>
@@ -87,21 +95,22 @@ td{padding:8px 6px;border-top:1px solid var(--line);font-size:11px;vertical-alig
 <div class="dash-card"><b id="dConf">0</b><span>CONFIRMADAS</span></div>
 </div>
 <div class="dash-grid-3">
-<div class="p-box"><div class="head">INVITADAS M=K+L+AD</div><div class="line"><span id="pInvA">0</span>A + <span id="pInvN">0</span>N = <b id="pInvT">0</b></div><div class="sub" id="pInvSub"></div></div>
-<div class="p-box" style="border-color:#2ecc71"><div class="head">CONFIRMADAS S=AB+AD+AC</div><div class="line"><span id="pConfA">0</span>A + <span id="pConfN">0</span>N = <b id="pConfT">0</b></div><div class="sub" id="pConfSub"></div></div>
-<div class="p-box" style="background:#eaf2f8;border-color:#3498db"><div class="head">SI VAN = CONF + PORCONF</div><div class="line"><span id="pSiA">0</span>A + <span id="pSiN">0</span>N = <b id="pSiT">0</b></div><div class="sub">Sin sobrantes</div></div>
+<div class="p-box"><div class="head">INVITADAS M</div><div class="line"><span id="pInvA">0</span>A + <span id="pInvN">0</span>N = <b id="pInvT">0</b></div><div class="sub" id="pInvSub"></div></div>
+<div class="p-box"><div class="head">CONFIRMADAS S</div><div class="line"><span id="pConfA">0</span>A + <span id="pConfN">0</span>N = <b id="pConfT">0</b></div><div class="sub" id="pConfSub"></div></div>
+<div class="p-box"><div class="head">SI VAN</div><div class="line"><span id="pSiA">0</span>A + <span id="pSiN">0</span>N = <b id="pSiT">0</b></div></div>
 </div>
 <div class="dash-grid-3">
-<div class="p-box" style="border-color:#e74c3c"><div class="head">Y ADULTOS SOBRANTES</div><div class="line"><b id="dY">0</b></div><div class="sub">K-AB</div></div>
-<div class="p-box" style="border-color:#e74c3c"><div class="head">Z NIÑOS SOBRANTES</div><div class="line"><b id="dZ">0</b></div><div class="sub">L-AC</div></div>
+<div class="p-box" style="border-color:#e74c3c"><div class="head">Y SOBRANTES</div><div class="line"><b id="dY">0</b></div></div>
+<div class="p-box" style="border-color:#e74c3c"><div class="head">Z SOBRANTES</div><div class="line"><b id="dZ">0</b></div></div>
 <div class="p-box"><div class="head">DISP 21 MESAS</div><div class="line"><b id="dDispTot">0</b></div><div class="sub" id="totalDispSub"></div></div>
 </div>
-<div style="margin-top:16px"><b style="font-size:10px;letter-spacing:2px;text-transform:uppercase">ASIGNADOS POR MESA (M) - Total <span id="totalM"></span> | Amarillo=9 (1 libre) Rojo=10+ (llena/sobrecupo)</b><div class="mesas-grid" id="gridM" style="margin-top:8px"></div></div>
+<div style="margin-top:16px"><b style="font-size:10px;letter-spacing:2px;text-transform:uppercase">ASIGNADOS POR MESA (M) - Total <span id="totalM"></span></b><div class="mesas-grid" id="gridM" style="margin-top:8px"></div></div>
 </div>
 
 <div class="card">
 <input id="busc" placeholder="Buscar..." onkeyup="filtrar()" style="max-width:200px;margin-bottom:6px">
-<table><thead><tr><th>#</th><th>TITULAR</th><th>MESA</th><th>ESTADO</th><th>ENVIAR</th></tr></thead><tbody id="tbody"></tbody></table>
+<table><thead><tr><th>#</th><th>TITULAR</th><th>MESA</th><th>ESTADO</th><th>ENVIAR / CANCELAR</th></tr></thead><tbody id="tbody"></tbody></table>
+<div class="small" style="margin-top:10px;background:#f9f9f9;padding:8px;border-radius:8px">WA: 0=verde, 1=amarillo, 2+=rojo. Papelera 🗑️ siempre visible para borrar duplicadas sin esperar 3 envíos. Al borrar se libera la mesa.</div>
 </div>
 
 <script>
@@ -112,6 +121,7 @@ let DATA=[], mesasM={};
 function getLS(){try{return JSON.parse(localStorage.getItem('envios_ginaedy_v2')||'{}')}catch(e){return{}}}
 function saveLS(o){localStorage.setItem('envios_ginaedy_v2',JSON.stringify(o))}
 function incLS(id){const m=getLS();m[id]=(m[id]||0)+1;saveLS(m)}
+function getEnvios(id,it){const ls=getLS();return parseInt(it.envios||0)||parseInt(ls[id]||0)||0;}
 function esFamilia(t){return String(t||'').toLowerCase().trim().startsWith('fam')}
 function jsonp(u,cb){
   const n='cb_'+Date.now()+Math.random().toString(36).slice(2);
@@ -173,12 +183,12 @@ function updateMesaInfo(){
   const mesaVal=parseInt(document.getElementById('mesa').value)||0;
   const warn=document.getElementById('warnMesa'), ok=document.getElementById('okMesa'), btn=document.getElementById('btnGuardar');
   warn.style.display='none';ok.style.display='none';
-  document.getElementById('reglaInfo').textContent = titular ? (fam ? `FAM detectado (empieza con Fam): NO incluye titular en lista, M=K+L=${k}+${l}=${m}` : `No Fam: SÍ incluye titular "${titular}" en M, M=K+L+AD=${k}+${l}+1=${m}`) : '';
-  if(!mesaVal){document.getElementById('acomInfo').textContent=`Necesitas ${m} lugares (K${k}+L${l}+AD${ad})`;return;}
+  document.getElementById('reglaInfo').textContent = titular ? (fam ? `FAM: M=K+L=${m}` : `No FAM: M=K+L+AD=${m} incluye titular`) : '';
+  if(!mesaVal){document.getElementById('acomInfo').textContent=`Necesitas ${m} lugares`;return;}
   const ocup=mesasM[mesaVal]||0, libres=CAP-ocup;
   if(m>libres){warn.style.display='block';warn.textContent=`Mesa ${mesaVal} solo ${libres} libres, necesitas ${m}.`;btn.disabled=true;}
-  else{ok.style.display='block';ok.textContent=`Mesa ${mesaVal}: ${ocup} ocupados, quedan ${libres}, tu invitación ${m} OK`;btn.disabled=false;}
-  document.getElementById('acomInfo').textContent=`Renglones: ${k} adultos + ${l} niños = ${k+l} acompañantes, total con titular ${m}`;
+  else{ok.style.display='block';ok.textContent=`Mesa ${mesaVal}: ${ocup} ocupados, quedan ${libres}, invitación ${m} OK`;btn.disabled=false;}
+  document.getElementById('acomInfo').textContent=`Renglones: ${k} adultos + ${l} niños = ${k+l} acompañantes, total ${m}`;
 }
 function addAcomRowDirect(tipo,nombre=''){
   const list=document.getElementById('acomList');
@@ -196,25 +206,19 @@ function addAcomPrompt(tipo){
   syncKInputs();
 }
 function getAcom(){
-  // Regla: si Fam, solo acompañantes. Si no Fam, incluye titular + acompañantes sin prefijo Adulto:/Niño:
   const titular=document.getElementById('titular').value.trim();
   const fam=esFamilia(titular);
   const nombresAcom=[...document.querySelectorAll('#acomList .acom-row')].map(r=>r.querySelector('input').value.trim()).filter(Boolean);
-  if(fam){
-    return nombresAcom.join(', ');
-  }else{
-    // No Fam: incluye titular al inicio si no está ya
+  if(fam){return nombresAcom.join(', ');}
+  else{
     let todos=[...nombresAcom];
-    if(titular && !todos.includes(titular)){
-      todos.unshift(titular);
-    }
+    if(titular && !todos.includes(titular)){todos.unshift(titular);}
     return todos.join(', ');
   }
 }
 function getLinkCorrecto(it){const l=it.link||'';return l.includes('?id=')?l:SOBRE_BASE+it.id;}
 function render(list){
   const tb=document.getElementById('tbody');tb.innerHTML='';
-  const ls=getLS();
   let invitaciones=list.length, confirmadas=0;
   let kTotal=0,lTotal=0,adTotal=0,mTotal=0,sTotal=0,yTotal=0,zTotal=0,abTotal=0,acTotal=0,adConf=0,kPor=0,lPor=0,adPor=0;
   let mesasLocal={};for(let i=1;i<=TOTAL_MESAS;i++) mesasLocal[i]=0;
@@ -227,17 +231,13 @@ function render(list){
     const esConf=(it.estatus||'').toLowerCase().includes('confirm');
     if(esConf){confirmadas++; if(isNaN(ab)) ab=k; if(isNaN(ac)) ac=l; if(isNaN(y)) y=Math.max(0,k-ab); if(isNaN(z)) z=Math.max(0,l-ac); if(!isNaN(s) && s!==0 && list[0] && !('ab' in list[0])){ab=Math.max(0,s-ac-ad); y=Math.max(0,k-ab);} sTotal+=s; yTotal+=y; zTotal+=z; abTotal+=ab; acTotal+=ac; adConf+=ad;}else{kPor+=k; lPor+=l; adPor+=ad;}
   });
-  const adultosInv=kTotal+adTotal, ninosInv=lTotal;
-  const adultosConf=abTotal+adConf, ninosConf=acTotal;
-  const adultosPor=kPor+adPor, ninosPor=lPor;
-  const adultosSi=adultosConf+adultosPor, ninosSi=ninosConf+ninosPor;
   document.getElementById('dInv').textContent=invitaciones;
   document.getElementById('dConf').textContent=confirmadas;
-  document.getElementById('pInvA').textContent=adultosInv; document.getElementById('pInvN').textContent=ninosInv; document.getElementById('pInvT').textContent=mTotal;
+  document.getElementById('pInvA').textContent=kTotal+adTotal; document.getElementById('pInvN').textContent=lTotal; document.getElementById('pInvT').textContent=mTotal;
   document.getElementById('pInvSub').textContent=`K${kTotal}+AD${adTotal} / L${lTotal}`;
-  document.getElementById('pConfA').textContent=adultosConf; document.getElementById('pConfN').textContent=ninosConf; document.getElementById('pConfT').textContent=sTotal;
+  document.getElementById('pConfA').textContent=abTotal+adConf; document.getElementById('pConfN').textContent=acTotal; document.getElementById('pConfT').textContent=sTotal;
   document.getElementById('pConfSub').textContent=`AB${abTotal}+AD${adConf} / AC${acTotal}`;
-  document.getElementById('pSiA').textContent=adultosSi; document.getElementById('pSiN').textContent=ninosSi; document.getElementById('pSiT').textContent=adultosSi+ninosSi;
+  document.getElementById('pSiA').textContent=(abTotal+adConf+kPor+adPor); document.getElementById('pSiN').textContent=(acTotal+lPor); document.getElementById('pSiT').textContent=(abTotal+adConf+kPor+adPor+acTotal+lPor);
   document.getElementById('dY').textContent=yTotal; document.getElementById('dZ').textContent=zTotal;
   document.getElementById('dDispTot').textContent=(TOTAL_MESAS*CAP - mTotal);
   document.getElementById('totalM').textContent=mTotal;
@@ -246,7 +246,7 @@ function render(list){
   for(let i=1;i<=TOTAL_MESAS;i++){
     const v=mesasLocal[i]||0; const libres=CAP-v;
     let cls='mesa '; let extra='';
-    if(v>=CAP){cls+='full'; extra='¡Llena/Sobrecupo!';}
+    if(v>=CAP){cls+='full'; extra='¡Llena!';}
     else if(v>=9){cls+='warn-yellow'; extra='¡Casi llena!';}
     const d=document.createElement('div');d.className=cls;
     d.innerHTML=`<div class="m-label">Mesa ${i}</div><div class="m-num">${v}</div><div class="m-free">${libres} libres</div>${extra?`<div class="m-free" style="font-weight:700">${extra}</div>`:''}`;
@@ -254,17 +254,49 @@ function render(list){
   }
   list.forEach((it,idx)=>{
     const esConf=(it.estatus||'').toLowerCase().includes('confirm');
-    const envios=esConf?0:parseInt(it.envios||0)||parseInt(ls[it.id]||0);
+    const envios=getEnvios(it.id,it);
+    let waClass='btn-wa-green', waText='WA';
+    if(envios===1){waClass='btn-wa-yellow'; waText=`WA (${envios})`;}
+    else if(envios>=2){waClass='btn-wa-red'; waText=`WA (${envios})`;}
+    else if(envios>0){waText=`WA (${envios})`;}
+    
     let btnHtml='';
-    if(esConf){btnHtml=`<span style="background:#eee;padding:4px 8px;border-radius:10px;font-size:10px;display:inline-block">Conf</span><a href="${getLinkCorrecto(it)}" target="_blank" class="sobre-link">🔍 Ver Sobre</a>`;}
-    else{if(envios===0) btnHtml=`<button class="btn-green" onclick="wa('${it.id}')">WA</button><a href="${getLinkCorrecto(it)}" target="_blank" class="sobre-link">Ver Sobre</a>`; else btnHtml=`<button class="btn-green" style="background:#f1c40f;color:#111" onclick="wa('${it.id}')">WA (${envios})</button><a href="${getLinkCorrecto(it)}" target="_blank" class="sobre-link">Ver Sobre</a>`;}
+    if(esConf){
+      btnHtml=`<div class="envio-box"><span style="background:#eee;padding:4px 8px;border-radius:10px;font-size:10px;display:inline-block">Conf</span><a href="${getLinkCorrecto(it)}" target="_blank" class="sobre-link">🔍 Ver Sobre</a><button class="btn-cancel" onclick="cancelar('${it.id}')">🗑️</button></div>`;
+    }else{
+      btnHtml=`<div class="envio-box"><button class="btn-wa ${waClass}" onclick="wa('${it.id}')">${waText}</button><a href="${getLinkCorrecto(it)}" target="_blank" class="sobre-link">Ver Sobre</a><button class="btn-cancel" title="Cancelar/Eliminar invitación permanente" onclick="cancelar('${it.id}')">🗑️ Cancelar</button></div>`;
+    }
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${idx+1}</td><td><b>${it.titular}</b> <span class="small">(${it.id})</span><br><span class="small">${it.grupo||''}</span></td><td>Mesa ${it.mesa||''}</td><td>${it.estatus||''}</td><td>${btnHtml}</td>`;
+    tr.innerHTML=`<td>${idx+1}</td><td><b>${it.titular}</b> <span class="small">(${it.id})</span><br><span class="small">${it.grupo||''}</span></td><td>Mesa ${it.mesa||''}</td><td>${it.estatus||''} ${envios>0?`<br><small style="color:${envios>=2?'#e74c3c':envios===1?'#f39c12':'#999'}">Envios:${envios}</small>`:''}</td><td>${btnHtml}</td>`;
     tb.appendChild(tr);
   });
 }
 function filtrar(){const q=document.getElementById('busc').value.toLowerCase();render(DATA.filter(r=>(r.titular+' '+r.grupo+' '+r.mesa).toLowerCase().includes(q)));}
-function wa(id){const it=DATA.find(x=>x.id==id);if(!it)return;let tel=(it.celular||'').toString().replace(/\D/g,'');if(tel.length==10)tel='52'+tel;window.open('https://wa.me/'+tel+'?text='+encodeURIComponent('Hola '+it.titular+' '+getLinkCorrecto(it)),'_blank');incLS(id);render(DATA);}
+function wa(id){
+  const it=DATA.find(x=>x.id==id);if(!it)return;
+  let tel=(it.celular||'').toString().replace(/\D/g,'');
+  window.open('https://wa.me/'+tel+'?text='+encodeURIComponent('Hola '+it.titular+' '+getLinkCorrecto(it)),'_blank');
+  incLS(id);render(DATA);
+}
+function cancelar(id){
+  if(!confirm(`¿Cancelar/Eliminar la invitación ${id}? Esto libera la mesa y no se puede deshacer.`)) return;
+  // Intenta borrar en GS y local
+  const it=DATA.find(x=>x.id==id);
+  jsonp(GS_URL+`?action=delete&id=${id}`,r=>{
+    alert(r.ok ? `Invitación ${id} eliminada de Sheet` : `Respuesta: ${JSON.stringify(r)} - borrando local`);
+    // Borra envíos locales
+    const ls=getLS(); delete ls[id]; saveLS(ls);
+    cargar();
+  });
+  // Fallback: si GS no tiene delete, borra visual y avisa
+  setTimeout(()=>{
+    if(DATA.find(x=>x.id==id)){
+      // Si sigue, marca como eliminada localmente
+      const ls=getLS(); delete ls[id]; saveLS(ls);
+      // No recarga hasta que usuario confirme que no existe en GS
+    }
+  },2000);
+}
 function guardar(){
   const t=document.getElementById('titular').value.trim(),c=document.getElementById('celular').value.trim(),mesa=document.getElementById('mesa').value;
   if(!t||!c||!mesa){alert('Faltan datos');return;}
