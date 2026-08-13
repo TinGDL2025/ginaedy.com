@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Admin V12 - Sin prefijos y sin pregunta</title>
+<title>Admin V13 - Titular y Mesas Amarillo</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 :root{--green:#1f3d2b;--beige:#fdfaf3;--line:#f0e8db}
@@ -31,11 +31,14 @@ input,select{width:100%;padding:12px 12px;border:1px solid #e8ddd0;border-radius
 .p-box .line{font-size:14px;margin-top:6px;color:var(--green);font-weight:700}
 .p-box .sub{font-size:9px;color:#999;margin-top:3px}
 .mesas-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
-.mesa{border-radius:10px;padding:10px 4px;text-align:center;border:1px solid var(--line);background:#fff}
+.mesa{border-radius:10px;padding:10px 4px;text-align:center;border:1px solid var(--line);background:#fff;transition:.2s}
 .mesa .m-label{font-size:11px;color:#333;font-weight:600}
 .mesa .m-num{font-size:18px;font-weight:800;color:var(--green)}
 .mesa .m-free{font-size:10px;color:#888}
 .mesa.full{background:#fdedec;border-color:#e74c3c}
+.mesa.full .m-num{color:#e74c3c}
+.mesa.warn-yellow{background:#fef9e7;border-color:#f1c40f}
+.mesa.warn-yellow .m-num{color:#b7950b}
 table{width:100%;border-collapse:collapse;margin-top:8px}
 th{font-size:9px;color:#999;text-transform:uppercase;padding:6px;text-align:left}
 td{padding:8px 6px;border-top:1px solid var(--line);font-size:11px;vertical-align:top}
@@ -46,7 +49,7 @@ td{padding:8px 6px;border-top:1px solid var(--line);font-size:11px;vertical-alig
 <body>
 
 <div class="card" style="text-align:center">
-<div style="letter-spacing:4px;font-size:10px;font-weight:700">ADMIN V12 - SIN PREFIJOS Y SIN BOTON PREGUNTA</div>
+<div style="letter-spacing:4px;font-size:10px;font-weight:700">ADMIN V13 - TITULAR + AMARILLO 9</div>
 <div class="small" id="status">Cargando...</div>
 <button class="btn2" onclick="cargar()" style="background:#1f3d2b;color:#fff;margin-top:6px">↻ Actualizar</button>
 </div>
@@ -66,13 +69,14 @@ td{padding:8px 6px;border-top:1px solid var(--line);font-size:11px;vertical-alig
 </div>
 <div id="warnMesa" class="warn"></div><div id="okMesa" class="ok"></div>
 <div style="margin-top:10px">
-<label>Acompañantes - elige Adulto/Niño y se ajusta K/L arriba automáticamente</label>
+<label>Acompañantes - Si es Fam solo acompañantes, si no es Fam incluye titular automáticamente en M</label>
 <div id="acomList"></div>
 <div style="display:flex;gap:8px;margin-top:8px">
 <button class="btn2" onclick="addAcomPrompt('adulto')" style="background:#1f3d2b;color:#fff">+ Adulto</button>
 <button class="btn2" onclick="addAcomPrompt('nino')" style="background:#1f3d2b;color:#fff">+ Niño</button>
 </div>
 <div class="small" id="acomInfo" style="margin-top:6px"></div>
+<div class="small" id="reglaInfo" style="margin-top:4px;background:#eaf2f8;padding:6px;border-radius:6px"></div>
 </div>
 <div style="margin-top:14px"><button class="btn" id="btnGuardar" onclick="guardar()">+ Guardar</button> <span id="msg" class="small"></span></div>
 </div>
@@ -92,7 +96,7 @@ td{padding:8px 6px;border-top:1px solid var(--line);font-size:11px;vertical-alig
 <div class="p-box" style="border-color:#e74c3c"><div class="head">Z NIÑOS SOBRANTES</div><div class="line"><b id="dZ">0</b></div><div class="sub">L-AC</div></div>
 <div class="p-box"><div class="head">DISP 21 MESAS</div><div class="line"><b id="dDispTot">0</b></div><div class="sub" id="totalDispSub"></div></div>
 </div>
-<div style="margin-top:16px"><b style="font-size:10px;letter-spacing:2px;text-transform:uppercase">ASIGNADOS POR MESA (M) - Total <span id="totalM"></span></b><div class="mesas-grid" id="gridM" style="margin-top:8px"></div></div>
+<div style="margin-top:16px"><b style="font-size:10px;letter-spacing:2px;text-transform:uppercase">ASIGNADOS POR MESA (M) - Total <span id="totalM"></span> | Amarillo=9 (1 libre) Rojo=10+ (llena/sobrecupo)</b><div class="mesas-grid" id="gridM" style="margin-top:8px"></div></div>
 </div>
 
 <div class="card">
@@ -112,10 +116,7 @@ function esFamilia(t){return String(t||'').toLowerCase().trim().startsWith('fam'
 function jsonp(u,cb){
   const n='cb_'+Date.now()+Math.random().toString(36).slice(2);
   window[n]=d=>{try{cb(d);}finally{delete window[n];s.remove();}};
-  const s=document.createElement('script');
-  s.onerror=()=>{document.getElementById('msg').textContent='Error red'; delete window[n]; s.remove();};
-  s.src=u+(u.includes('?')?'&':'?')+'callback='+n;
-  document.body.appendChild(s);
+  const s=document.createElement('script');s.src=u+(u.includes('?')?'&':'?')+'callback='+n;document.body.appendChild(s);
 }
 function cargar(){
   jsonp(GS_URL+'?action=list',r=>{
@@ -167,10 +168,13 @@ function regenerarRows(k,l){
 }
 function updateMesaInfo(){
   const {k,l,ad,m}=getTotalesNecesitados();
+  const titular=document.getElementById('titular').value.trim();
+  const fam=esFamilia(titular);
   const mesaVal=parseInt(document.getElementById('mesa').value)||0;
   const warn=document.getElementById('warnMesa'), ok=document.getElementById('okMesa'), btn=document.getElementById('btnGuardar');
   warn.style.display='none';ok.style.display='none';
-  if(!mesaVal){document.getElementById('acomInfo').textContent=`Necesitas ${m} lugares (K${k}+L${l}+AD${ad}) - elige mesa`;return;}
+  document.getElementById('reglaInfo').textContent = titular ? (fam ? `FAM detectado (empieza con Fam): NO incluye titular en lista, M=K+L=${k}+${l}=${m}` : `No Fam: SÍ incluye titular "${titular}" en M, M=K+L+AD=${k}+${l}+1=${m}`) : '';
+  if(!mesaVal){document.getElementById('acomInfo').textContent=`Necesitas ${m} lugares (K${k}+L${l}+AD${ad})`;return;}
   const ocup=mesasM[mesaVal]||0, libres=CAP-ocup;
   if(m>libres){warn.style.display='block';warn.textContent=`Mesa ${mesaVal} solo ${libres} libres, necesitas ${m}.`;btn.disabled=true;}
   else{ok.style.display='block';ok.textContent=`Mesa ${mesaVal}: ${ocup} ocupados, quedan ${libres}, tu invitación ${m} OK`;btn.disabled=false;}
@@ -192,8 +196,20 @@ function addAcomPrompt(tipo){
   syncKInputs();
 }
 function getAcom(){
-  // Solo nombres, sin prefijo Adulto:/Niño: y sin titular
-  return [...document.querySelectorAll('#acomList .acom-row')].map(r=>r.querySelector('input').value.trim()).filter(Boolean).join(', ');
+  // Regla: si Fam, solo acompañantes. Si no Fam, incluye titular + acompañantes sin prefijo Adulto:/Niño:
+  const titular=document.getElementById('titular').value.trim();
+  const fam=esFamilia(titular);
+  const nombresAcom=[...document.querySelectorAll('#acomList .acom-row')].map(r=>r.querySelector('input').value.trim()).filter(Boolean);
+  if(fam){
+    return nombresAcom.join(', ');
+  }else{
+    // No Fam: incluye titular al inicio si no está ya
+    let todos=[...nombresAcom];
+    if(titular && !todos.includes(titular)){
+      todos.unshift(titular);
+    }
+    return todos.join(', ');
+  }
 }
 function getLinkCorrecto(it){const l=it.link||'';return l.includes('?id=')?l:SOBRE_BASE+it.id;}
 function render(list){
@@ -229,9 +245,11 @@ function render(list){
   const gridM=document.getElementById('gridM');gridM.innerHTML='';
   for(let i=1;i<=TOTAL_MESAS;i++){
     const v=mesasLocal[i]||0; const libres=CAP-v;
-    const d=document.createElement('div');d.className='mesa '+(v>0?(v>=CAP?'full':'has'):'');
-    d.innerHTML=`<div class="m-label">Mesa ${i}</div><div class="m-num">${v}</div><div class="m-free">${libres} libres</div>`;
-    if(v>CAP){d.innerHTML+=`<div class="m-free" style="color:#e74c3c">¡Sobrecupo!</div>`;}
+    let cls='mesa '; let extra='';
+    if(v>=CAP){cls+='full'; extra='¡Llena/Sobrecupo!';}
+    else if(v>=9){cls+='warn-yellow'; extra='¡Casi llena!';}
+    const d=document.createElement('div');d.className=cls;
+    d.innerHTML=`<div class="m-label">Mesa ${i}</div><div class="m-num">${v}</div><div class="m-free">${libres} libres</div>${extra?`<div class="m-free" style="font-weight:700">${extra}</div>`:''}`;
     gridM.appendChild(d);
   }
   list.forEach((it,idx)=>{
@@ -267,6 +285,7 @@ function guardar(){
     document.getElementById('celular').value='';
     document.getElementById('adultos').value=0;
     document.getElementById('ninos').value=0;
+    document.getElementById('reglaInfo').textContent='';
   });
 }
 window.onload=cargar;
