@@ -2,22 +2,23 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Admin V10 - Final sin duplicado</title>
+<title>Admin V11 - Fix Renglones y Sobre</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 :root{--green:#1f3d2b;--beige:#fdfaf3;--line:#f0e8db}
 body{background:var(--beige);font-family:Inter,sans-serif;padding:16px;max-width:1100px;margin:0 auto}
 .card{background:#fff;border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 4px 16px rgba(0,0,0,.05);border:1px solid #f3eadc}
-label{font-size:9px;font-weight:700;text-transform:uppercase;color:#777;margin:0 0 6px 6px;display:block;letter-spacing:.6px}
+label{font-size:9px;font-weight:700;text-transform:uppercase;color:#777;margin:0 0 6px 6px;display:block}
 input,select{width:100%;padding:12px 12px;border:1px solid #e8ddd0;border-radius:10px;background:#fffaf3;font-size:13px;box-sizing:border-box;height:44px}
 .form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:12px}
 .form-grid-4{display:grid;grid-template-columns:120px 120px 1fr 1fr;gap:16px;margin-bottom:12px}
-@media(max-width:800px){.form-grid-3,.form-grid-4{grid-template-columns:1fr 1fr;gap:12px}}
 .btn{background:var(--green);color:#fff;border:none;padding:11px 20px;border-radius:22px;cursor:pointer;font-weight:700}
 .btn:disabled{opacity:.4}
 .btn2{background:#fff;border:1px solid #ddd;border-radius:18px;padding:6px 10px;cursor:pointer;font-size:11px}
-.btn-green{background:#2ecc71;color:#fff;border:none;padding:5px 10px;border-radius:10px;font-size:11px;cursor:pointer}
-.acom-row{display:flex;gap:6px;margin-bottom:6px}
+.btn-green{background:#2ecc71;color:#fff;border:none;padding:6px 12px;border-radius:10px;font-size:11px;cursor:pointer}
+.acom-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+.acom-row select{width:110px;flex-shrink:0}
+.acom-row input{flex:1}
 .warn{background:#fdedec;border:1px solid #f5b7b1;color:#922b21;padding:8px 10px;border-radius:8px;font-size:11px;margin-top:6px;display:none}
 .ok{background:#eafaf1;border:1px solid #a9dfbf;color:#1e8449;padding:8px 10px;border-radius:8px;font-size:11px;margin-top:6px;display:none}
 .dash-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
@@ -35,17 +36,18 @@ input,select{width:100%;padding:12px 12px;border:1px solid #e8ddd0;border-radius
 .mesa .m-num{font-size:18px;font-weight:800;color:var(--green);margin-top:2px}
 .mesa .m-free{font-size:10px;color:#888;margin-top:2px}
 .mesa.full{background:#fdedec;border-color:#e74c3c}
-.mesa.full .m-num{color:#e74c3c}
 table{width:100%;border-collapse:collapse;margin-top:8px}
 th{font-size:9px;color:#999;text-transform:uppercase;padding:6px;text-align:left}
 td{padding:8px 6px;border-top:1px solid var(--line);font-size:11px;vertical-align:top}
 .small{color:#999;font-size:10px}
+.sobre-link{font-size:11px;color:#2a7a5a;display:block;margin-top:4px;text-decoration:none}
+.sobre-link:hover{text-decoration:underline}
 </style>
 </head>
 <body>
 
 <div class="card" style="text-align:center">
-<div style="letter-spacing:4px;font-size:10px;font-weight:700">ADMIN V10 FINAL - SIN DUPLICADO</div>
+<div style="letter-spacing:4px;font-size:10px;font-weight:700">ADMIN V11 - FIX RENGLONES + SOBRE</div>
 <div class="small" id="status">Cargando...</div>
 <button class="btn2" onclick="cargar()" style="background:#1f3d2b;color:#fff;margin-top:6px">↻ Actualizar</button>
 <div class="small" id="gsInfo"></div>
@@ -59,13 +61,22 @@ td{padding:8px 6px;border-top:1px solid var(--line);font-size:11px;vertical-alig
 <div><label>Mesa 1-21 *</label><select id="mesa" onchange="onMesaChange()"></select></div>
 </div>
 <div class="form-grid-4">
-<div><label>Adultos K</label><input id="adultos" type="number" min="0" value="0" oninput="onKLChange()"></div>
-<div><label>Niños L</label><input id="ninos" type="number" min="0" value="0" oninput="onKLChange()"></div>
+<div><label>Adultos K</label><input id="adultos" type="number" min="0" value="0" oninput="onKLChangeManual()"></div>
+<div><label>Niños L</label><input id="ninos" type="number" min="0" value="0" oninput="onKLChangeManual()"></div>
 <div><label>Tipo</label><select id="tipo"><option>con mesa de regalo</option><option>sin mesa de regalo</option></select></div>
 <div><label>Categoría</label><select id="cat"><option>Familia Gina</option><option>Familia Edy</option><option>Amigos Gina</option><option>Amigos Edy</option><option>Amigos en Común / Otros</option></select></div>
 </div>
 <div id="warnMesa" class="warn"></div><div id="okMesa" class="ok"></div>
-<div style="margin-top:10px"><label>Acompañantes (limitado a libres)</label><div id="acomList"></div><button class="btn2" onclick="addAcomManual()">+ Renglón</button><div class="small" id="acomInfo"></div></div>
+<div style="margin-top:10px">
+<label>Acompañantes - los renglones mandan, si agregas te pregunto Adulto/Niño y ajusto K/L</label>
+<div id="acomList"></div>
+<div style="display:flex;gap:8px;margin-top:8px">
+<button class="btn2" onclick="addAcomPrompt('adulto')">+ Adulto</button>
+<button class="btn2" onclick="addAcomPrompt('nino')">+ Niño</button>
+<button class="btn2" onclick="addAcomPrompt()">+ Renglón (pregunta)</button>
+</div>
+<div class="small" id="acomInfo" style="margin-top:6px"></div>
+</div>
 <div style="margin-top:14px"><button class="btn" id="btnGuardar" onclick="guardar()">+ Guardar</button> <span id="msg" class="small"></span></div>
 </div>
 
@@ -80,11 +91,11 @@ td{padding:8px 6px;border-top:1px solid var(--line);font-size:11px;vertical-alig
 <div class="p-box" style="background:#eaf2f8;border-color:#3498db"><div class="head">SI VAN = CONF + PORCONF</div><div class="line"><span id="pSiA">0</span>A + <span id="pSiN">0</span>N = <b id="pSiT">0</b></div><div class="sub">Sin sobrantes</div></div>
 </div>
 <div class="dash-grid-3">
-<div class="p-box" style="border-color:#e74c3c"><div class="head">Y ADULTOS SOBRANTES (SUM COL Y)</div><div class="line"><b id="dY">0</b></div><div class="sub">K-AB</div></div>
-<div class="p-box" style="border-color:#e74c3c"><div class="head">Z NIÑOS SOBRANTES (SUM COL Z)</div><div class="line"><b id="dZ">0</b></div><div class="sub">L-AC</div></div>
-<div class="p-box"><div class="head">DISP 21 MESAS (210-M)</div><div class="line"><b id="dDispTot">0</b></div><div class="sub" id="totalDispSub"></div></div>
+<div class="p-box" style="border-color:#e74c3c"><div class="head">Y ADULTOS SOBRANTES</div><div class="line"><b id="dY">0</b></div><div class="sub">K-AB</div></div>
+<div class="p-box" style="border-color:#e74c3c"><div class="head">Z NIÑOS SOBRANTES</div><div class="line"><b id="dZ">0</b></div><div class="sub">L-AC</div></div>
+<div class="p-box"><div class="head">DISP 21 MESAS</div><div class="line"><b id="dDispTot">0</b></div><div class="sub" id="totalDispSub"></div></div>
 </div>
-<div style="margin-top:16px"><b style="font-size:10px;letter-spacing:2px;text-transform:uppercase">ASIGNADOS POR MESA (M) - Total <span id="totalM"></span> - Muestra asignados y libres (ya no duplicado)</b><div class="mesas-grid" id="gridM" style="margin-top:8px"></div></div>
+<div style="margin-top:16px"><b style="font-size:10px;letter-spacing:2px;text-transform:uppercase">ASIGNADOS POR MESA (M) - Total <span id="totalM"></span></b><div class="mesas-grid" id="gridM" style="margin-top:8px"></div></div>
 </div>
 
 <div class="card">
@@ -105,12 +116,10 @@ function jsonp(u,cb){const n='cb_'+Date.now();window[n]=d=>{cb(d);delete window[
 function cargar(){
   jsonp(GS_URL+'?action=list',r=>{
     DATA=r||[];
-    const trae = r[0] && ('ab' in r[0] || 'y' in r[0]);
-    document.getElementById('gsInfo').textContent = trae ? 'GS V10.4 OK' : 'GS viejo - actualiza para Y/Z exactos';
-    document.getElementById('gsInfo').style.color = trae ? '#1e8449' : '#e74c3c';
     calcularMesas(); poblarSelectMesas(); render(DATA);
     document.getElementById('status').textContent='Conectado '+r.length+' filas';
-    onKLChange();
+    const trae = r[0] && ('ab' in r[0] || 'y' in r[0]);
+    document.getElementById('gsInfo').textContent = trae ? 'GS V10.4 OK' : 'GS viejo';
   });
 }
 function calcularMesas(){mesasM={};for(let i=1;i<=TOTAL_MESAS;i++) mesasM[i]=0; DATA.forEach(it=>{const m=parseInt(it.lugaresM||it.lugares||0)||0;const mesa=parseInt(it.mesa)||0;if(mesa>=1&&mesa<=TOTAL_MESAS) mesasM[mesa]+=m;});}
@@ -119,30 +128,78 @@ function poblarSelectMesas(){
   for(let i=1;i<=TOTAL_MESAS;i++){const ocup=mesasM[i]||0, libres=CAP-ocup;const opt=document.createElement('option');opt.value=i;opt.textContent=`Mesa ${i} - ${ocup}/${CAP} ocupados, libres ${libres}`;if(libres<=0){opt.textContent=`Mesa ${i} - LLENA ${ocup}/${CAP}`;opt.disabled=true;}sel.appendChild(opt);}
   if(act) sel.value=act;
 }
-function getTotalesNecesitados(){const k=parseInt(document.getElementById('adultos').value)||0,l=parseInt(document.getElementById('ninos').value)||0,ad=esFamilia(document.getElementById('titular').value)?0:1;return {k,l,ad,m:k+l+ad};}
-function onTitularChange(){onKLChange();} function onMesaChange(){onKLChange();}
-function onKLChange(){
-  const {k,l,ad,m}=getTotalesNecesitados();const mesaVal=parseInt(document.getElementById('mesa').value)||0;
+function getTotalesFromRows(){
+  const rows=[...document.querySelectorAll('#acomList .acom-row')];
+  let k=0,l=0;
+  rows.forEach(r=>{const tipo=r.querySelector('select').value; if(tipo==='adulto') k++; else l++;});
+  return {k,l};
+}
+function syncKInputs(){
+  const {k,l}=getTotalesFromRows();
+  document.getElementById('adultos').value=k;
+  document.getElementById('ninos').value=l;
+  updateMesaInfo();
+}
+function getTotalesNecesitados(){
+  const {k,l}=getTotalesFromRows();
+  const ad=esFamilia(document.getElementById('titular').value)?0:1;
+  // Si no hay renglones, usa inputs
+  const kInput=parseInt(document.getElementById('adultos').value)||0;
+  const lInput=parseInt(document.getElementById('ninos').value)||0;
+  const hasRows=document.querySelectorAll('#acomList .acom-row').length>0;
+  const kf=hasRows?k:kInput;
+  const lf=hasRows?l:lInput;
+  return {k:kf,l:lf,ad,m:kf+lf+ad};
+}
+function onTitularChange(){updateMesaInfo();}
+function onMesaChange(){updateMesaInfo();}
+function onKLChangeManual(){
+  // Cuando cambias K/L manualmente, regenera renglones
+  const k=parseInt(document.getElementById('adultos').value)||0;
+  const l=parseInt(document.getElementById('ninos').value)||0;
+  regenerarRows(k,l);
+  updateMesaInfo();
+}
+function regenerarRows(k,l){
+  const list=document.getElementById('acomList');list.innerHTML='';
+  for(let i=0;i<k;i++) addAcomRowDirect('adulto',`Adulto ${i+1}`);
+  for(let i=0;i<l;i++) addAcomRowDirect('nino',`Niño ${i+1}`);
+}
+function updateMesaInfo(){
+  const {k,l,ad,m}=getTotalesNecesitados();
+  const mesaVal=parseInt(document.getElementById('mesa').value)||0;
   const warn=document.getElementById('warnMesa'), ok=document.getElementById('okMesa'), btn=document.getElementById('btnGuardar');
   warn.style.display='none';ok.style.display='none';
-  if(!mesaVal){document.getElementById('acomInfo').textContent=`Necesitas ${m} lugares`;syncAcomRows(m,ad);return;}
+  if(!mesaVal){document.getElementById('acomInfo').textContent=`Necesitas ${m} lugares (K${k}+L${l}+AD${ad}) - elige mesa`;return;}
   const ocup=mesasM[mesaVal]||0, libres=CAP-ocup;
-  if(m>libres){warn.style.display='block';warn.textContent=`Mesa ${mesaVal} solo ${libres} libres, necesitas ${m}.`;btn.disabled=true;syncAcomRows(libres,ad);}
-  else{ok.style.display='block';ok.textContent=`Mesa ${mesaVal}: ${ocup} ocupados, quedan ${libres}, tu invitación ${m} OK`;btn.disabled=false;syncAcomRows(m,ad);}
+  if(m>libres){warn.style.display='block';warn.textContent=`Mesa ${mesaVal} solo ${libres} libres, necesitas ${m}. Reduce o cambia mesa.`;btn.disabled=true;}
+  else{ok.style.display='block';ok.textContent=`Mesa ${mesaVal}: ${ocup} ocupados, quedan ${libres}, tu invitación ${m} OK (K${k}+L${l}+AD${ad})`;btn.disabled=false;}
+  document.getElementById('acomInfo').textContent=`Renglones: ${k} adultos + ${l} niños = ${k+l} acompañantes, total con titular ${m}`;
 }
-function syncAcomRows(totalM,ad){
-  const list=document.getElementById('acomList');const numAcom=Math.max(0,totalM-ad);const act=list.querySelectorAll('.acom-row').length;
-  if(act<numAcom) for(let i=act;i<numAcom;i++) addAcomRow(''); else if(act>numAcom) for(let i=act-1;i>=numAcom;i--) list.children[i].remove();
-  if(numAcom===0&&act===0) list.innerHTML='<div class="small" style="padding:6px">Solo titular</div>';
+function addAcomRowDirect(tipo,nombre=''){
+  const list=document.getElementById('acomList');
+  if(list.querySelector('.small')) list.innerHTML='';
+  const d=document.createElement('div');d.className='acom-row';
+  d.innerHTML=`<select onchange="syncKInputs()"><option value="adulto" ${tipo==='adulto'?'selected':''}>Adulto</option><option value="nino" ${tipo==='nino'?'selected':''}>Niño</option></select><input value="${nombre}" placeholder="Nombre"><button class="btn2" onclick="this.parentElement.remove();syncKInputs()">✕</button>`;
+  list.appendChild(d);
 }
-function addAcomRow(v=""){const list=document.getElementById('acomList');if(list.querySelector('.small')&&!list.querySelector('.acom-row')) list.innerHTML='';const d=document.createElement('div');d.className='acom-row';d.innerHTML=`<input value="${v}" placeholder="Nombre"><button class="btn2" onclick="this.parentElement.remove()">✕</button>`;list.appendChild(d);}
-function addAcomManual(){
-  const {ad}=getTotalesNecesitados();const mesaVal=parseInt(document.getElementById('mesa').value)||0;
-  if(!mesaVal){alert('Elige mesa');return;}const libres=CAP-(mesasM[mesaVal]||0),maxAcom=libres-ad,act=document.getElementById('acomList').querySelectorAll('.acom-row').length;
-  if(act>=maxAcom){alert(`Solo ${maxAcom} acompañantes caben en Mesa ${mesaVal}`);return;}addAcomRow('');
+function addAcomPrompt(tipo){
+  const mesaVal=parseInt(document.getElementById('mesa').value)||0;
+  if(!mesaVal){alert('Elige mesa primero');return;}
+  if(!tipo){
+    tipo=prompt('¿Adulto o Niño? escribe A o N','A');
+    if(!tipo) return;
+    tipo=tipo.toLowerCase().startsWith('a')?'adulto':'nino';
+  }
+  const {ad,m}=getTotalesNecesitados();
+  const libres=CAP-(mesasM[mesaVal]||0);
+  if(m>=libres){alert(`Mesa ${mesaVal} solo ${libres} libres, ya tienes ${m}. No cabe más.`);return;}
+  addAcomRowDirect(tipo, tipo==='adulto' ? `Adulto ${document.querySelectorAll('#acomList .acom-row').length+1}` : `Niño ${document.querySelectorAll('#acomList .acom-row').length+1}`);
+  syncKInputs();
 }
-function getAcom(){return [...document.querySelectorAll('#acomList .acom-row input')].map(i=>i.value.trim()).filter(Boolean).join(', ');}
+function getAcom(){return [...document.querySelectorAll('#acomList .acom-row')].map(r=>{const t=r.querySelector('select').value==='adulto'?'Adulto':'Niño';const n=r.querySelector('input').value.trim();return n?`${t}: ${n}`:''}).filter(Boolean).join(', ');}
 function getLinkCorrecto(it){const l=it.link||'';return l.includes('?id=')?l:SOBRE_BASE+it.id;}
+
 function render(list){
   const tb=document.getElementById('tbody');tb.innerHTML='';
   const ls=getLS();
@@ -184,9 +241,15 @@ function render(list){
   list.forEach((it,idx)=>{
     const esConf=(it.estatus||'').toLowerCase().includes('confirm');
     const envios=esConf?0:parseInt(it.envios||0)||parseInt(ls[it.id]||0);
-    const btn=esConf?'<span style="background:#eee;padding:3px 6px;border-radius:8px;font-size:10px">Conf</span>':`<button class="btn-green" onclick="wa('${it.id}')">WA${envios?`(${envios})`:''}</button>`;
+    let btnHtml='';
+    if(esConf){
+      btnHtml=`<span style="background:#eee;padding:4px 8px;border-radius:10px;font-size:10px;display:inline-block">Conf</span><a href="${getLinkCorrecto(it)}" target="_blank" class="sobre-link">🔍 Ver Sobre</a>`;
+    }else{
+      if(envios===0) btnHtml=`<button class="btn-green" onclick="wa('${it.id}')">WA</button><a href="${getLinkCorrecto(it)}" target="_blank" class="sobre-link">Ver Sobre</a>`;
+      else btnHtml=`<button class="btn-green" style="background:#f1c40f;color:#111" onclick="wa('${it.id}')">WA (${envios})</button><a href="${getLinkCorrecto(it)}" target="_blank" class="sobre-link">Ver Sobre</a>`;
+    }
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${idx+1}</td><td><b>${it.titular}</b> <span class="small">(${it.id})</span><br><span class="small">${it.grupo||''}</span></td><td>Mesa ${it.mesa||''}</td><td>${it.estatus||''}</td><td>${btn}</td>`;
+    tr.innerHTML=`<td>${idx+1}</td><td><b>${it.titular}</b> <span class="small">(${it.id})</span><br><span class="small">${it.grupo||''}</span></td><td>Mesa ${it.mesa||''}</td><td>${it.estatus||''}</td><td>${btnHtml}</td>`;
     tb.appendChild(tr);
   });
 }
@@ -195,12 +258,13 @@ function wa(id){const it=DATA.find(x=>x.id==id);if(!it)return;let tel=(it.celula
 function guardar(){
   const t=document.getElementById('titular').value.trim(),c=document.getElementById('celular').value.trim(),mesa=document.getElementById('mesa').value;
   if(!t||!c||!mesa){alert('Faltan datos');return;}
-  const {ad,m}=getTotalesNecesitados();const libres=CAP-(mesasM[parseInt(mesa)]||0);
+  const {k,l,ad,m}=getTotalesNecesitados();
+  const libres=CAP-(mesasM[parseInt(mesa)]||0);
   if(m>libres){alert(`Mesa ${mesa} solo ${libres} libres, necesitas ${m}`);return;}
-  const p={action:'add',titular:t,celular:c,mesa:mesa,adultos:document.getElementById('adultos').value,ninos:document.getElementById('ninos').value,grupo:getAcom(),tipo:document.getElementById('tipo').value,categoria:document.getElementById('cat').value};
+  const p={action:'add',titular:t,celular:c,mesa:mesa,adultos:k,ninos:l,grupo:getAcom(),tipo:document.getElementById('tipo').value,categoria:document.getElementById('cat').value};
   const qs=Object.keys(p).map(k=>k+'='+encodeURIComponent(p[k])).join('&');
   document.getElementById('msg').textContent='Guardando...';
-  jsonp(GS_URL+'?'+qs,r=>{document.getElementById('msg').textContent='OK '+r.id;cargar();});
+  jsonp(GS_URL+'?'+qs,r=>{document.getElementById('msg').textContent='OK '+r.id;cargar();document.getElementById('acomList').innerHTML='';document.getElementById('titular').value='';document.getElementById('celular').value='';});
 }
 window.onload=cargar;
 </script>
