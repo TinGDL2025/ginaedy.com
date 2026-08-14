@@ -3,73 +3,145 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Gina & Edy</title>
+<title>Gina & Edy - Invitación</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600&family=Great+Vibes&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#f2ebe1;overflow:hidden}
-.stage{width:96vw;max-width:680px;position:relative;transition:.85s}
-.stage.out{transform:scale(.84) translateY(-70px);opacity:0;pointer-events:none}
-.video-box{width:100%;aspect-ratio:16/8.8;overflow:hidden;background:#f2ebe1;box-shadow:none}
-.video-box video{width:100%;height:138%;object-fit:cover;transform:translateY(-13.5%);display:block}
-#ondaVideo{position:absolute;inset:0;z-index:1;width:100%;height:138%}
-#confetiVideo{position:absolute;inset:0;z-index:2;display:none;width:100%;height:138%}
+body{min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#f2ebe1 url('fondo_papel_crema.jpg') center/cover no-repeat;overflow:hidden;position:relative}
+.sound-btn{position:absolute;top:16px;right:16px;z-index:70;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.92);border:1px solid rgba(201,168,138,.28);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.stage{position:relative;z-index:10;width:96vw;max-width:680px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all .85s cubic-bezier(0.7,0,0.2,1)}
+.stage.out{transform:scale(.84) translateY(-70px);opacity:0;filter:blur(3px);pointer-events:none}
+.video-box{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#f2ebe1;box-shadow:none;border-radius:0}
+.video-box video{width:100%;height:152%;object-fit:cover;object-position:center;display:block;transform:translateY(-16%)}
+#ondaVideo{position:absolute;inset:0;z-index:1;width:100%;height:152%}
+#confetiVideo{position:absolute;inset:0;z-index:2;display:none;width:100%;height:152%}
 #confetiVideo.active{display:block}
-.seal-hit{position:absolute;left:50%;top:49%;transform:translate(-50%,-50%);width:140px;height:140px;border-radius:50%;z-index:5;cursor:pointer}
-.overlay{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:20px 0}
-.tap{position:absolute;inset:0;z-index:20;background:rgba(242,235,225,.92);display:flex;align-items:center;justify-content:center;cursor:pointer}
-.tap.hide{opacity:0;pointer-events:none}
-.card-layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;pointer-events:none}
+.seal-hit{position:absolute;left:50%;top:49%;transform:translate(-50%,-50%);width:150px;height:150px;border-radius:50%;z-index:5;cursor:pointer}
+.overlay{position:absolute;inset:0;z-index:4;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:22px 0}
+.overlay-top{font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:rgba(35,63,57,.58);text-shadow:0 1px 0 rgba(255,255,255,.8)}
+.tap-to-sound{position:absolute;inset:0;z-index:20;background:rgba(242,235,225,.88);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.4s}
+.tap-to-sound.hide{opacity:0;pointer-events:none}
+.card-layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;z-index:50;pointer-events:none}
 .card-layer.active{pointer-events:auto}
-.card{width:90%;max-width:400px;background:#fff;border-radius:22px;padding:32px;text-align:center;transform:translateY(60px) scale(.88);opacity:0;transition:.9s}
+.card{width:100%;max-width:400px;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(201,168,138,.18);border-radius:24px;padding:38px 28px 26px;text-align:center;box-shadow:0 32px 90px -24px rgba(35,63,57,.38);transform:translateY(60px) scale(.88);opacity:0;transition:all .95s cubic-bezier(0.16,1,0.3,1)}
 .card-layer.active .card{transform:translateY(0) scale(1);opacity:1}
+.card-top{font-size:9px;letter-spacing:.32em;text-transform:uppercase;color:rgba(35,63,57,.45);margin-bottom:18px}
+.card-love{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:rgba(35,63,57,.7)}
+.card-guest{font-family:'Cormorant Garamond',serif;font-size:28px;color:#233F39;font-weight:500;margin-top:4px}
+.card-div{width:36px;height:1px;background:rgba(201,168,138,.45);margin:14px auto}
+.card-script{font-family:'Great Vibes',cursive;font-size:52px;color:#1d352f;line-height:.9;margin:8px 0}
+.card-couple{font-family:'Cormorant Garamond',serif;font-size:26px;color:#233F39}
+.card-date{font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:rgba(35,63,57,.5);margin-top:8px}
+.card-seal{width:52px;height:52px;border-radius:50%;margin:22px auto 0;background:linear-gradient(135deg,#E9C97A,#B68A3A);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-weight:600;color:#5C4418;font-size:13px;box-shadow:0 4px 16px rgba(182,138,58,.35)}
+.card-btn{width:100%;height:48px;border-radius:999px;background:#233F39;color:#fdfaf6;border:none;font-family:'Inter',sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase;margin-top:24px;cursor:pointer;transition:.2s}
+.card-btn:active{transform:scale(.98)}
+.card-back{background:none;border:none;font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(35,63,57,.4);margin-top:14px;cursor:pointer}
 </style>
 </head>
 <body>
+<button class="sound-btn" id="soundBtn">🔇</button>
 <div class="stage" id="stage">
-  <div class="video-box" id="box">
-    <video id="ondaVideo" autoplay loop playsinline><source src="sobre_onda.mp4"></video>
-    <video id="confetiVideo" playsinline><source src="sobre_confeti.mp4"></video>
-    <div class="overlay"><div style="font-size:10px;letter-spacing:.3em">Tienes una invitación</div><button id="hint">Toca el sello</button></div>
-    <div class="seal-hit" id="seal"></div>
-    <div class="tap" id="tap"><span>🔊 Toca para activar sonido</span></div>
+  <div class="video-box" id="videoBox">
+    <video id="ondaVideo" autoplay loop playsinline preload="auto">
+      <source src="sobre_onda.mp4" type="video/mp4">
+    </video>
+    <video id="confetiVideo" playsinline preload="auto">
+      <source src="sobre_confeti.mp4" type="video/mp4">
+    </video>
+    <div class="overlay"><div class="overlay-top">Tienes una invitación</div></div>
+    <div class="seal-hit" id="sealHit"></div>
+    <div class="tap-to-sound" id="tapToSound"><span style="background:#fff;padding:10px 18px;border-radius:999px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#8a6a4a;border:1px solid rgba(201,168,138,.3)">🔊 Toca para activar sonido</span></div>
   </div>
 </div>
 <div class="card-layer" id="cardLayer">
   <div class="card">
-    <div id="guest">Invitado Especial</div>
-    <div style="font-size:40px;margin:10px 0">Nos casamos<br>Gina & Edy</div>
-    <button id="go">Ver invitación completa</button>
+    <div class="card-top">Tienes una invitación</div>
+    <div class="card-love">Con amor,</div>
+    <div class="card-guest" id="guestName">Invitado Especial</div>
+    <div class="card-div"></div>
+    <div class="card-script">Nos casamos</div>
+    <div class="card-couple">Gina & Edy</div>
+    <div class="card-date">02.01.27</div>
+    <div class="card-seal">G&E</div>
+    <button class="card-btn" id="goBtn">Ver invitación completa</button>
+    <button class="card-back" id="backBtn">← Volver al sobre</button>
   </div>
 </div>
 <script>
-var onda=document.getElementById('ondaVideo');
-var conf=document.getElementById('confetiVideo');
-var tap=document.getElementById('tap');
-var first=false; var sound=true;
-// Tu video onda ya inicia con silencio - intento autoplay con sonido
-onda.muted=false; onda.volume=0.6;
-onda.play().then(()=>{tap.classList.add('hide');first=true;}).catch(()=>{onda.muted=true;onda.play();});
-function enable(){first=true;onda.muted=false;onda.volume=0.6;onda.play();conf.muted=false;tap.classList.add('hide');}
+var APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbyHs7tjLBrpX1YQfFYfFnOUx99EKs0cCzf0IJIA2Dy1A6aD2tVDCLJZoiYkffEtOHzQhw/exec";
+var curId=(new URLSearchParams(window.location.search).get("id")||"010").padStart(3,"0");
+var curData={t:"Invitado Especial",tipo:1};
+window.renderDataSheet=function(o){
+  if(!o||o.status==="no encontrado")return;
+  var tipo=(o.tipoInvitacion||o.tipo||"").toLowerCase().includes("sin")?2:1;
+  curData={t:o.t||"Invitado Especial",tipo:tipo};
+  document.getElementById('guestName').textContent=curData.t;
+};
+(function(){var s=document.createElement("script");s.src=APPS_SCRIPT_URL+"?id="+curId+"&callback=renderDataSheet";document.body.appendChild(s);})();
+function vib(p){try{if(navigator.vibrate)navigator.vibrate(p)}catch(e){}}
+var ondaVideo=document.getElementById('ondaVideo');
+var confetiVideo=document.getElementById('confetiVideo');
+var tapToSound=document.getElementById('tapToSound');
+var soundBtn=document.getElementById('soundBtn');
+var soundOn=false;var first=false;
+// Tu onda inicia con silencio - intento autoplay con sonido
+function tryAutoplay(){
+  ondaVideo.muted=false;ondaVideo.volume=0.6;
+  var p=ondaVideo.play();
+  if(p!==undefined){
+    p.then(function(){soundOn=true;soundBtn.textContent='🔊';tapToSound.classList.add('hide');first=true;})
+    .catch(function(){ondaVideo.muted=true;ondaVideo.play();soundBtn.textContent='🔇';});
+  }
+}
+function enable(){first=true;soundOn=true;ondaVideo.muted=false;ondaVideo.volume=0.6;ondaVideo.play();confetiVideo.muted=false;soundBtn.textContent='🔊';tapToSound.classList.add('hide');}
 var opened=false;
 function openSeq(){
   if(!first) enable();
-  if(opened) return; opened=true;
+  if(opened) return; opened=true; vib(80);
   document.querySelector('.overlay').style.opacity='0';
-  setTimeout(()=>{conf.classList.add('active');conf.currentTime=0;conf.muted=!sound;conf.volume=0.9;conf.play();onda.pause();},180);
-  // SINCRONIZACIÓN ETIQUETA AL FINAL - 2.85s justo despues explosion
-  conf.ontimeupdate=()=>{
-    if(conf.currentTime>=2.85){
-      conf.pause();
+  setTimeout(function(){
+    confetiVideo.classList.add('active');
+    confetiVideo.currentTime=0;
+    confetiVideo.muted=!soundOn;
+    confetiVideo.volume=0.9;
+    confetiVideo.play();
+    ondaVideo.pause();
+  },180);
+  setTimeout(function(){vib([40,30,60]);},1400);
+  var shown=false;
+  confetiVideo.ontimeupdate=function(){
+    if(!shown && confetiVideo.currentTime>=2.85){
+      shown=true;
+      confetiVideo.pause();
+      document.getElementById('stage').classList.add('out');
+      document.getElementById('cardLayer').classList.add('active');
+      vib(120);
+    }
+  };
+  confetiVideo.onended=function(){
+    if(!shown){
       document.getElementById('stage').classList.add('out');
       document.getElementById('cardLayer').classList.add('active');
     }
-  }
+  };
 }
-document.getElementById('seal').onclick=openSeq;
-document.getElementById('hint').onclick=openSeq;
-document.getElementById('box').onclick=()=>{if(!first) enable(); if(!opened) openSeq();};
-tap.onclick=(e)=>{e.stopPropagation();enable();};
-document.getElementById('go').onclick=()=>{window.location.href='index.html';};
+function closeSeq(){
+  opened=false;confetiVideo.pause();confetiVideo.currentTime=0;confetiVideo.classList.remove('active');
+  ondaVideo.currentTime=0;ondaVideo.muted=!soundOn;ondaVideo.play();
+  document.querySelector('.overlay').style.opacity='1';
+  document.getElementById('stage').classList.remove('out');
+  document.getElementById('cardLayer').classList.remove('active');
+}
+document.getElementById('sealHit').addEventListener('click',openSeq);
+document.getElementById('videoBox').addEventListener('click',function(){if(!first) enable(); if(!opened) openSeq();});
+tapToSound.addEventListener('click',function(e){e.stopPropagation();enable();});
+document.getElementById('goBtn').addEventListener('click',function(){window.location.href='index.html?id='+encodeURIComponent(curId)+'&t='+(curData.tipo||1);});
+document.getElementById('backBtn').addEventListener('click',closeSeq);
+soundBtn.addEventListener('click',function(){
+  if(soundOn){soundOn=false;ondaVideo.muted=true;confetiVideo.muted=true;this.textContent='🔇';}
+  else{enable();}
+});
+window.addEventListener('load',function(){setTimeout(tryAutoplay,400);});
 </script>
 </body>
 </html>
