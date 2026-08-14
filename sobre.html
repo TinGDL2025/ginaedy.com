@@ -10,28 +10,30 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 .stage{width:96vw;max-width:680px;position:relative;transition:.85s}
 .stage.out{transform:scale(.84) translateY(-70px);opacity:0;pointer-events:none}
 .video-box{width:100%;aspect-ratio:16/8.8;overflow:hidden;background:#f2ebe1;box-shadow:none}
-.video-box video{width:100%;height:138%;object-fit:cover;transform:translateY(-13.5%);display:block}
-#ondaVideo{position:absolute;inset:0;z-index:1;width:100%;height:138%}
-#confetiVideo{position:absolute;inset:0;z-index:2;display:none;width:100%;height:138%}
+.video-box video{width:100%;height:152%;object-fit:cover;transform:translateY(-16%);display:block} /* CORRECCION 1: 152% y -16% para quitar negros */
+#ondaVideo{position:absolute;inset:0;z-index:1;width:100%;height:152%}
+#confetiVideo{position:absolute;inset:0;z-index:2;display:none;width:100%;height:152%}
 #confetiVideo.active{display:block}
 .seal-hit{position:absolute;left:50%;top:49%;transform:translate(-50%,-50%);width:140px;height:140px;border-radius:50%;z-index:5;cursor:pointer}
-.overlay{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:20px 0}
-.tap{position:absolute;inset:0;z-index:20;background:rgba(242,235,225,.92);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.overlay{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px 0;pointer-events:none} /* CORRECCION 2: solo arriba, sin tapar */
+.sound-btn{position:absolute;top:12px;right:12px;z-index:30;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.92);border:1px solid rgba(201,168,138,.25);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
+.tap{position:absolute;inset:0;z-index:20;background:rgba(242,235,225,.88);display:flex;align-items:center;justify-content:center;cursor:pointer}
 .tap.hide{opacity:0;pointer-events:none}
 .card-layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;pointer-events:none}
 .card-layer.active{pointer-events:auto}
-.card{width:90%;max-width:400px;background:#fff;border-radius:22px;padding:32px;text-align:center;transform:translateY(60px) scale(.88);opacity:0;transition:.9s}
+.card{width:90%;max-width:400px;background:rgba(255,255,255,.96);border-radius:22px;padding:32px;text-align:center;transform:translateY(60px) scale(.88);opacity:0;transition:.9s}
 .card-layer.active .card{transform:translateY(0) scale(1);opacity:1}
 </style>
 </head>
 <body>
 <div class="stage" id="stage">
   <div class="video-box" id="box">
-    <video id="ondaVideo" autoplay loop playsinline><source src="sobre_onda.mp4"></video>
-    <video id="confetiVideo" playsinline><source src="sobre_confeti.mp4"></video>
-    <div class="overlay"><div style="font-size:10px;letter-spacing:.3em">Tienes una invitación</div><button id="hint">Toca el sello</button></div>
+    <video id="ondaVideo" autoplay loop playsinline preload="auto"><source src="sobre_onda.mp4" type="video/mp4"></video>
+    <video id="confetiVideo" playsinline preload="auto"><source src="sobre_confeti.mp4" type="video/mp4"></video>
+    <div class="overlay"><div style="font-size:10px;letter-spacing:.3em">Tienes una invitación</div></div> <!-- QUITE BOTON hint que tapaba -->
     <div class="seal-hit" id="seal"></div>
-    <div class="tap" id="tap"><span>🔊 Toca para activar sonido</span></div>
+    <button class="sound-btn" id="soundBtn">🔇</button> <!-- BOCINITA COMO ANTES -->
+    <div class="tap" id="tap" style="display:none"><span>🔊 Toca para activar sonido</span></div>
   </div>
 </div>
 <div class="card-layer" id="cardLayer">
@@ -45,30 +47,61 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 var onda=document.getElementById('ondaVideo');
 var conf=document.getElementById('confetiVideo');
 var tap=document.getElementById('tap');
-var first=false; var sound=true;
-// Tu video onda ya inicia con silencio - intento autoplay con sonido
+var soundBtn=document.getElementById('soundBtn');
+var first=false; var soundOn=false;
+
+// CORRECCION: tu video inicia con silencio, intento autoplay con sonido
 onda.muted=false; onda.volume=0.6;
-onda.play().then(()=>{tap.classList.add('hide');first=true;}).catch(()=>{onda.muted=true;onda.play();});
-function enable(){first=true;onda.muted=false;onda.volume=0.6;onda.play();conf.muted=false;tap.classList.add('hide');}
+var p=onda.play();
+if(p!==undefined){
+  p.then(()=>{soundOn=true;first=true;soundBtn.textContent='🔊';tap.classList.add('hide');})
+   .catch(()=>{onda.muted=true;onda.play();soundOn=false;soundBtn.textContent='🔇';first=false;});
+}
+function enable(){
+  first=true;soundOn=true;
+  onda.muted=false;onda.volume=0.6;onda.play();
+  conf.muted=false;
+  soundBtn.textContent='🔊';
+  tap.classList.add('hide');
+}
 var opened=false;
 function openSeq(){
   if(!first) enable();
   if(opened) return; opened=true;
   document.querySelector('.overlay').style.opacity='0';
-  setTimeout(()=>{conf.classList.add('active');conf.currentTime=0;conf.muted=!sound;conf.volume=0.9;conf.play();onda.pause();},180);
-  // SINCRONIZACIÓN ETIQUETA AL FINAL - 2.85s justo despues explosion
+  setTimeout(()=>{
+    conf.classList.add('active');
+    conf.currentTime=0;
+    conf.muted=!soundOn;
+    conf.volume=0.9;
+    conf.play().catch(()=>{conf.muted=true;conf.play();});
+    onda.pause();
+  },180);
+  // SINCRONIZACION ETIQUETA AL FINAL - 2.85s despues explosion + fallback onended para que no se trabe
+  var shown=false;
   conf.ontimeupdate=()=>{
-    if(conf.currentTime>=2.85){
+    if(!shown && conf.currentTime>=2.85){
+      shown=true;
       conf.pause();
       document.getElementById('stage').classList.add('out');
       document.getElementById('cardLayer').classList.add('active');
     }
-  }
+  };
+  conf.onended=()=>{
+    if(!shown){
+      shown=true;
+      document.getElementById('stage').classList.add('out');
+      document.getElementById('cardLayer').classList.add('active');
+    }
+  };
 }
 document.getElementById('seal').onclick=openSeq;
-document.getElementById('hint').onclick=openSeq;
 document.getElementById('box').onclick=()=>{if(!first) enable(); if(!opened) openSeq();};
-tap.onclick=(e)=>{e.stopPropagation();enable();};
+soundBtn.onclick=(e)=>{
+  e.stopPropagation();
+  if(soundOn){soundOn=false;onda.muted=true;conf.muted=true;soundBtn.textContent='🔇';}
+  else{enable();}
+};
 document.getElementById('go').onclick=()=>{window.location.href='index.html';};
 </script>
 </body>
