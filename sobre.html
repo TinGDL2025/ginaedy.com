@@ -11,7 +11,8 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 .stage{width:96vw;max-width:680px;position:relative;transition:opacity .9s ease;display:flex;flex-direction:column;align-items:center}
 .stage.out{opacity:0;pointer-events:none}
 .top-envelope{text-align:center;margin-bottom:14px;display:flex;flex-direction:column;align-items:center;gap:4px}
-.guest-top{font-family:'Cormorant Garamond',serif;font-size:28px;color:#1a3a2f;font-weight:500;min-height:34px}
+.guest-top{font-family:'Cormorant Garamond',serif;font-size:28px;color:#1a3a2f;font-weight:500;min-height:34px;opacity:0;transition:opacity .3s ease}
+.guest-top.visible{opacity:1}
 .label-top{font-size:10px;letter-spacing:.32em;color:#1a3a2f;font-family:system-ui,sans-serif;text-transform:uppercase}
 .video-box{width:95%;margin:0 auto;aspect-ratio:16/8.2;overflow:hidden;background:#f2ebe1;position:relative}
 .video-box video{width:100%;height:95%;object-fit:cover;display:block;background:#f2ebe1}
@@ -26,7 +27,8 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 .card{width:95%;max-width:400px;background:#fff;border-radius:22px;padding:42px 32px 36px;text-align:center;position:relative;min-height:520px;display:flex;flex-direction:column;justify-content:center;align-items:center}
 .small-label{font-size:10px;letter-spacing:.32em;color:#9a9a9a;font-family:system-ui,sans-serif}
 .con-amor{font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:#8a6a5a;margin-top:8px}
-.guest{font-family:'Cormorant Garamond',serif;font-size:28px;color:#1a3a2f;margin-top:4px;font-weight:500}
+.guest{font-family:'Cormorant Garamond',serif;font-size:28px;color:#1a3a2f;margin-top:4px;font-weight:500;min-height:34px;opacity:0;transition:opacity .3s ease}
+.guest.visible{opacity:1}
 .divider{width:42px;height:1px;background:#e6d5c3;margin:18px auto}
 .nos-casamos{font-family:'Great Vibes',cursive;font-size:48px;color:#1a3a2f;line-height:1}
 .gina{font-family:'Cormorant Garamond',serif;font-size:22px;color:#1a3a2f;margin-top:14px}
@@ -51,7 +53,7 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 <body>
 <div class="stage" id="stage">
   <div class="top-envelope">
-    <div class="guest-top" id="guestTop">Eduardo Magallón</div>
+    <div class="guest-top" id="guestTop"></div>
     <div class="label-top">Tienes una invitación</div>
   </div>
   <div class="video-box">
@@ -66,7 +68,7 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
     <canvas id="goldConfetti"></canvas>
     <div class="small-label">TIENES UNA INVITACIÓN</div>
     <div class="con-amor">Con amor,</div>
-    <div class="guest" id="guest">Eduardo Magallón</div>
+    <div class="guest" id="guest"></div>
     <div class="divider"></div>
     <div class="nos-casamos">Nos casamos</div>
     <div class="gina">Gina & Edy</div>
@@ -84,9 +86,13 @@ async function loadGuest(){
     const r=await fetch(APP_URL);
     const d=await r.json();
     const it=d.find(x=>String(x.id)===String(getId()));
-    if(it){
-      document.getElementById('guest').textContent=it.titular;
-      document.getElementById('guestTop').textContent=it.titular;
+    if(it && it.titular){
+      const el1=document.getElementById('guestTop');
+      const el2=document.getElementById('guest');
+      el1.textContent=it.titular;
+      el2.textContent=it.titular;
+      el1.classList.add('visible');
+      el2.classList.add('visible');
     }
   }catch(e){}
 }
