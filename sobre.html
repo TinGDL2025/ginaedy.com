@@ -12,7 +12,7 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 .stage.out{opacity:0;pointer-events:none}
 .top-envelope{text-align:center;margin-bottom:6px;display:flex;flex-direction:column;align-items:center;gap:0}
 .guest-top{font-family:'Cormorant Garamond',serif;font-size:28px;color:#1a3a2f;font-weight:500;display:none}
-.guest-top.visible{display:block;margin-bottom:4px}
+.guest-top.visible{display:block;margin-bottom:4px;animation:fadeIn .3s ease}
 .label-top{font-size:10px;letter-spacing:.32em;color:#1a3a2f;font-family:system-ui,sans-serif;text-transform:uppercase}
 .video-box{width:95%;margin:0 auto;aspect-ratio:16/8.2;overflow:hidden;background:#f2ebe1;position:relative}
 .video-box video{width:100%;height:95%;object-fit:cover;display:block;background:#f2ebe1}
@@ -38,6 +38,7 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 .seal-wave:nth-child(2){animation-delay:.6s}
 .seal-wave:nth-child(3){animation-delay:1.2s}
 @keyframes wave{0%{transform:scale(.8);opacity:.6}100%{transform:scale(1.7);opacity:0}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 .seal-final{width:68px;height:68px;border-radius:50%;background:radial-gradient(circle at 30% 30%, #e8d0a0, #c8a86a);border:1px solid #b8975a;color:#5a3a20;font-size:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.22);position:relative;z-index:1}
 .ver{font-family:system-ui,sans-serif;font-size:9px;letter-spacing:.24em;color:#5a6a65;margin-top:18px;cursor:pointer}
 #goldConfetti{position:absolute;inset:-30px;width:calc(100% + 60px);height:calc(100% + 60px);pointer-events:none;z-index:5}
@@ -82,13 +83,23 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 const APP_URL = 'https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYToJd8tgpmw/exec';
 function getId(){ return new URLSearchParams(location.search).get('id') || '001'; }
 async function loadGuest(){
+  const id = getId();
+  const el1 = document.getElementById('guestTop');
+  const el2 = document.getElementById('guest');
+  const cacheKey = 'guest_'+id;
+  const cached = localStorage.getItem(cacheKey);
+  if(cached){
+    el1.textContent=cached;
+    el2.textContent=cached;
+    el1.classList.add('visible');
+    el2.classList.add('visible');
+  }
   try{
-    const r=await fetch(APP_URL);
+    const r=await fetch(APP_URL+'?t='+Date.now());
     const d=await r.json();
-    const it=d.find(x=>String(x.id)===String(getId()));
+    const it=d.find(x=>String(x.id)===String(id));
     if(it && it.titular){
-      const el1=document.getElementById('guestTop');
-      const el2=document.getElementById('guest');
+      localStorage.setItem(cacheKey, it.titular);
       el1.textContent=it.titular;
       el2.textContent=it.titular;
       el1.classList.add('visible');
