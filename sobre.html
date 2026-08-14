@@ -4,118 +4,72 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Gina & Edy</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Great+Vibes&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#f2ebe1;overflow:hidden}
-.stage{width:96vw;max-width:680px;position:relative;transition:opacity .9s ease;display:flex;flex-direction:column;align-items:center;gap:16px}
+.stage{width:96vw;max-width:680px;position:relative;transition:opacity .9s ease}
 .stage.out{opacity:0;pointer-events:none}
-.video-box{width:95%;margin:0 auto;aspect-ratio:16/10;overflow:hidden;background:transparent;position:relative;border-radius:6px;box-shadow:0 12px 35px rgba(0,0,0,.15)}
-.video-box video{width:100%;height:100%;object-fit:cover;display:block}
-#ondaVideo,#confetiVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-#confetiVideo{display:none;z-index:2}
+.video-box{width:95%;margin:0 auto;aspect-ratio:16/8.2;overflow:hidden;background:#f2ebe1;position:relative}
+.video-box video{width:100%;height:95%;object-fit:cover;display:block;background:#f2ebe1}
+#ondaVideo{position:absolute;inset:0;z-index:1;width:100%;height:95%}
+#confetiVideo{position:absolute;inset:0;z-index:2;display:none;width:100%;height:95%}
 #confetiVideo.active{display:block}
-.seal-hit{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:160px;height:160px;border-radius:50%;z-index:5;cursor:pointer}
-.overlay-hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:4;background:rgba(255,255,255,.92);border:0;padding:8px 16px;border-radius:20px;font-size:10px;letter-spacing:.2em;cursor:pointer}
-.top-label{font-size:11px;letter-spacing:.32em;color:#9a9a9a;text-transform:uppercase;font-family:system-ui,sans-serif}
-.guest-top{font-family:'Cormorant Garamond',serif;font-size:28px;color:#1e3a32;font-weight:500;min-height:34px;text-align:center}
-.bottom-texts{text-align:center}
-.con-amor{font-family:'EB Garamond',serif;font-style:italic;font-size:18px;color:#5a3a28}
-.nombres-host{font-family:'Cormorant Garamond',serif;font-size:28px;color:#1e3a32}
-.fecha{font-size:12px;letter-spacing:.18em;color:#1e3a32;margin-top:4px;font-family:system-ui,sans-serif}
-
-/* HOJA FINAL */
+.seal-hit{position:absolute;left:50%;top:49%;transform:translate(-50%,-50%);width:150px;height:150px;border-radius:50%;z-index:5;cursor:pointer}
+.overlay{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:20px 0;pointer-events:none}
+.overlay button{pointer-events:auto;background:rgba(255,255,255,.9);border:0;padding:8px 18px;border-radius:20px;font-size:11px;letter-spacing:.2em;cursor:pointer}
 .card-layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;pointer-events:none;opacity:0;transition:opacity .9s ease}
 .card-layer.active{pointer-events:auto;opacity:1}
-.card-final{width:95%;max-width:440px;background:#fffdf8;border-radius:18px;padding:32px 22px 26px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.12);display:flex;flex-direction:column;align-items:center;gap:7px;position:relative;overflow:hidden}
-.con-amor-final{font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:#8a6a5a}
-.guest-name{font-family:'Cormorant Garamond',serif;font-size:30px;color:#1e3a32;font-weight:500}
-.divider{width:48px;height:1px;background:#e6d5c3;margin:8px 0}
-.nos-casamos{font-family:'Great Vibes',cursive;font-size:52px;color:#1e3a32;line-height:1.1}
-.gina-edy{font-size:24px;color:#1e3a32}
-.fecha-final{font-size:11px;letter-spacing:.22em;color:#6a7a75;font-family:system-ui,sans-serif}
-.seal-wrap{position:relative;margin-top:18px;width:74px;height:74px;cursor:pointer}
-.seal-wave{position:absolute;inset:-8px;border-radius:50%;border:1px solid #c8a86a;opacity:0;animation:wave 2.2s infinite}
-.seal-wave:nth-child(2){animation-delay:.6s}
-@keyframes wave{0%{transform:scale(.8);opacity:.7}100%{transform:scale(1.5);opacity:0}}
-.seal-final{width:74px;height:74px;border-radius:50%;background:radial-gradient(circle at 30% 30%, #e8d0a0, #c8a86a);border:1px solid #b8975a;color:#5a3a20;font-size:13px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.22);position:relative;z-index:1}
-.cta{font-size:9px;letter-spacing:.25em;color:#1e3a32;margin-top:14px;text-transform:uppercase;font-family:system-ui,sans-serif;cursor:pointer}
-#goldConfetti{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:10}
-
-@media (max-width:600px){
- .stage{width:100vw;gap:12px}
- .video-box{width:92vw;aspect-ratio:1/1.05;border-radius:12px}
- .seal-hit{width:190px;height:190px}
- .guest-top{font-size:24px}
- .card-final{width:92vw}
-}
+.card{width:95%;max-width:400px;background:#fff;border-radius:22px;padding:32px;text-align:center}
+#goldConfetti{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:200}
 </style>
 </head>
 <body>
+<canvas id="goldConfetti"></canvas>
 
 <div class="stage" id="stage">
-  <div class="top-label">Tienes una invitación</div>
-  <div class="guest-top" id="guestTop">Familia Rosales</div>
   <div class="video-box">
-    <video id="ondaVideo" autoplay loop muted playsinline preload="auto"><source src="sobre_onda.mp4" type="video/mp4"></video>
+    <video id="ondaVideo" autoplay loop muted playsinline><source src="sobre_onda.mp4" type="video/mp4"></video>
     <video id="confetiVideo" playsinline muted><source src="sobre_confeti.mp4" type="video/mp4"></video>
-    <button class="overlay-hint" id="hint">Toca el sello</button>
+    <div class="overlay"><div style="font-size:10px;letter-spacing:.3em" id="guestTop">Tienes una invitación</div><button id="hint">Toca el sello</button></div>
     <div class="seal-hit" id="seal"></div>
-  </div>
-  <div class="bottom-texts">
-    <div class="con-amor">Con amor,</div>
-    <div class="nombres-host">Gorgina Isabel & Eduardo</div>
-    <div class="fecha">02 . 01 . 27</div>
   </div>
 </div>
 
 <div class="card-layer" id="cardLayer">
-  <div class="card-final">
-    <canvas id="goldConfetti"></canvas>
-    <div class="top-label">Tienes una invitación</div>
-    <div class="con-amor-final">Con amor,</div>
-    <div class="guest-name" id="guestFinal">Familia Rosales</div>
-    <div class="divider"></div>
-    <div class="nos-casamos">Nos casamos</div>
-    <div class="gina-edy">Gina & Edy</div>
-    <div class="fecha-final">02.01.27</div>
-    <div class="seal-wrap" id="sealBtn">
-      <div class="seal-wave"></div>
-      <div class="seal-wave"></div>
-      <div class="seal-final">G&E</div>
-    </div>
-    <div class="cta" id="ctaBtn">Ver invitación completa</div>
+  <div class="card">
+    <div id="guest">Invitado Especial</div>
+    <div style="font-size:40px;margin:10px 0">Nos casamos<br>Gina & Edy</div>
+    <button id="go">Ver invitación completa</button>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
+/* ===== 1. CONEXION SHEET (TU APP) ===== */
 const APP_URL = 'https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYToJd8tgpmw/exec';
-function getId(){ return new URLSearchParams(window.location.search).get('id') || '001'; }
-
+function getId(){ return new URLSearchParams(location.search).get('id') || '001'; }
 async function loadGuest(){
-  const id = getId();
   try{
-    const res = await fetch(APP_URL + '?id=' + id);
+    const res = await fetch(APP_URL);
     const data = await res.json();
-    // Tu app regresa array completo, buscamos por id
-    let item = Array.isArray(data) ? data.find(x=>x.id==id) : data;
+    const id = getId();
+    const item = data.find(r=>String(r.id)===String(id));
     if(item){
-      const nombre = item.titular || item.grupo || item.nombre;
-      document.getElementById('guestTop').textContent = nombre;
-      document.getElementById('guestFinal').textContent = nombre;
+      document.getElementById('guest').textContent = item.titular;
+      document.getElementById('guestTop').textContent = item.titular;
     }
-  }catch(e){ console.log('Sheet offline', e); }
+  }catch(e){ console.log('Sheet error', e); }
 }
 loadGuest();
 
+/* ===== 2. CONFETI DORADO ===== */
 function launchGoldConfetti(){
-  var canvas = document.getElementById('goldConfetti');
-  var myConfetti = confetti.create(canvas, { resize:true, useWorker:true });
-  myConfetti({ particleCount: 35, spread: 80, startVelocity: 28, origin:{ y:0.1 }, colors:['#d4af37','#c8a86a','#e8d0a0','#b8975a'], scalar:0.8, ticks:200 });
-  setTimeout(()=>{ myConfetti({ particleCount: 18, spread: 100, startVelocity: 14, origin:{ y:0 }, colors:['#d4af37','#c8a86a'], gravity:0.6, scalar:0.6, ticks:300 }); }, 500);
+  const myConf = confetti.create(document.getElementById('goldConfetti'), {resize:true,useWorker:true});
+  myConf({particleCount:28, spread:75, startVelocity:24, origin:{y:0.25}, colors:['#d4af37','#c8a86a','#e8d0a0','#b8975a'], scalar:0.8, ticks:250});
+  setTimeout(()=>{ myConf({particleCount:15, spread:90, origin:{y:0}, colors:['#d4af37','#c8a86a'], gravity:0.6, scalar:0.6, ticks:300}); }, 450);
 }
 
+/* ===== 3. LOGICA SOBRE - AQUI ESTA EL OPEN QUE PREGUNTAS ===== */
 var onda=document.getElementById('ondaVideo');
 var conf=document.getElementById('confetiVideo');
 var hint=document.getElementById('hint');
@@ -123,14 +77,32 @@ var stage=document.getElementById('stage');
 var cardLayer=document.getElementById('cardLayer');
 onda.muted=true; onda.play().catch(()=>{});
 var soundOn=false, clickCount=0, opened=false;
+
 function enableSound(){ if(soundOn) return; soundOn=true; onda.muted=false; onda.volume=0.6; onda.play(); conf.muted=false; }
 function firstClick(){ enableSound(); clickCount=1; hint.textContent='Ahora ábrelo ✨'; }
-function openSeq(){ if(opened) return; opened=true; hint.style.opacity='0'; setTimeout(()=>{conf.classList.add('active');conf.currentTime=0;conf.muted=false;conf.volume=0.9;conf.play();onda.pause();},120); conf.ontimeupdate=()=>{ if(conf.currentTime>=2.85){ conf.pause(); stage.classList.add('out'); cardLayer.classList.add('active'); setTimeout(launchGoldConfetti, 200); }}}
+
+function openSeq(){   // <--- ESTE ES EL OPEN
+  if(opened) return; opened=true;
+  hint.style.opacity='0';
+  setTimeout(()=>{
+    conf.classList.add('active');
+    conf.currentTime=0; conf.muted=false; conf.volume=0.9; conf.play(); onda.pause();
+  },120);
+  
+  // AQUI ABAJO ES DONDE SE ACTIVA LA HOJA FINAL + CONFETI
+  conf.ontimeupdate=()=>{
+    if(conf.currentTime>=2.85){
+      conf.pause();
+      stage.classList.add('out');
+      cardLayer.classList.add('active');
+      setTimeout(launchGoldConfetti, 300); // <-- CONFETI DORADO AL ENTRAR
+    }
+  }
+}
+
 document.getElementById('seal').onclick=()=>{ if(clickCount===0) firstClick(); else openSeq(); };
 hint.onclick=()=>{ if(clickCount===0) firstClick(); else openSeq(); };
-function goIndex(){ window.location.href='index.html?id='+getId(); }
-document.getElementById('sealBtn').onclick=goIndex;
-document.getElementById('ctaBtn').onclick=goIndex;
+document.getElementById('go').onclick=()=>{ window.location.href='index.html?id='+getId(); };
 </script>
 </body>
 </html>
