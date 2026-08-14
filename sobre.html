@@ -7,21 +7,21 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#f2ebe1;overflow:hidden}
-.stage{width:96vw;max-width:680px;position:relative;transition:.85s}
-.stage.out{transform:scale(.84) translateY(-70px);opacity:0;pointer-events:none}
-.video-box{width:100%;aspect-ratio:16/8.2;overflow:hidden;background:#f2ebe1;position:relative}
+.stage{width:96vw;max-width:680px;position:relative;transition:opacity .9s ease}
+.stage.out{opacity:0;pointer-events:none}
+/* 95% PAREJO - SOBRE Y HOJA FINAL AL MISMO FILO */
+.video-box{width:95%;margin:0 auto;aspect-ratio:16/8.2;overflow:hidden;background:#f2ebe1;position:relative}
 .video-box video{width:100%;height:95%;object-fit:cover;transform:translateY(0%);display:block;background:#f2ebe1}
 #ondaVideo{position:absolute;inset:0;z-index:1;width:100%;height:95%;transform:translateY(0%)}
 #confetiVideo{position:absolute;inset:0;z-index:2;display:none;width:100%;height:95%;transform:translateY(0%)}
 #confetiVideo.active{display:block}
-.seal-hit{position:absolute;left:50%;top:49%;transform:translate(-50%,-50%);width:140px;height:140px;border-radius:50%;z-index:5;cursor:pointer}
+.seal-hit{position:absolute;left:50%;top:49%;transform:translate(-50%,-50%);width:150px;height:150px;border-radius:50%;z-index:5;cursor:pointer}
 .overlay{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:20px 0;pointer-events:none}
-.overlay button{pointer-events:auto}
+.overlay button{pointer-events:auto;background:rgba(255,255,255,.9);border:0;padding:8px 18px;border-radius:20px;font-size:11px;letter-spacing:.2em;cursor:pointer;transition:.3s}
 .tap{display:none !important}
-.card-layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;pointer-events:none}
-.card-layer.active{pointer-events:auto}
-.card{width:90%;max-width:400px;background:#fff;border-radius:22px;padding:32px;text-align:center;transform:translateY(60px) scale(.88);opacity:0;transition:.9s}
-.card-layer.active .card{transform:translateY(0) scale(1);opacity:1}
+.card-layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;pointer-events:none;opacity:0;transition:opacity .9s ease}
+.card-layer.active{pointer-events:auto;opacity:1}
+.card{width:95%;max-width:400px;background:#fff;border-radius:22px;padding:32px;text-align:center;transform:none;opacity:1}
 </style>
 </head>
 <body>
@@ -43,31 +43,62 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 <script>
 var onda=document.getElementById('ondaVideo');
 var conf=document.getElementById('confetiVideo');
-var soundEnabled=false;
-onda.muted=true; onda.play().catch(()=>{});
-function enableSound(){
-  if(soundEnabled) return;
-  soundEnabled=true;
-  onda.muted=false; onda.volume=0.6; onda.play();
-  conf.muted=false;
-}
+var hint=document.getElementById('hint');
+var stage=document.getElementById('stage');
+var cardLayer=document.getElementById('cardLayer');
+
+onda.muted=true; onda.volume=0.6; onda.play().catch(()=>{});
+
+var soundOn=false;
+var clickCount=0;
 var opened=false;
-function openSeq(){
-  if(!soundEnabled) enableSound();
-  if(opened) return; opened=true;
-  document.querySelector('.overlay').style.opacity='0';
-  setTimeout(()=>{conf.classList.add('active');conf.currentTime=0;conf.muted=false;conf.volume=0.9;conf.play();onda.pause();},180);
-  conf.ontimeupdate=()=>{
-    if(conf.currentTime>=2.85){
-      conf.pause();
-      document.getElementById('stage').classList.add('out');
-      document.getElementById('cardLayer').classList.add('active');
-    }
-  }
+
+function enableSound(){
+ if(soundOn) return;
+ soundOn=true;
+ onda.muted=false;
+ onda.volume=0.6;
+ onda.play().catch(()=>{});
+ conf.muted=false;
 }
-document.getElementById('seal').onclick=openSeq;
-document.getElementById('hint').onclick=openSeq;
-document.getElementById('box').onclick=()=>{if(!soundEnabled) enableSound(); if(!opened) openSeq();};
+
+function firstClick(){
+ enableSound();
+ clickCount=1;
+ hint.textContent='Ahora ábrelo ✨';
+ // pequeño feedback visual
+ document.getElementById('seal').style.transform='translate(-50%,-50%) scale(1.05)';
+ setTimeout(()=>{document.getElementById('seal').style.transform='translate(-50%,-50%) scale(1)';},200);
+}
+
+function openSeq(){
+ if(opened) return; opened=true;
+ hint.style.opacity='0';
+ setTimeout(()=>{
+   conf.classList.add('active');
+   conf.currentTime=0;
+   conf.muted=false;
+   conf.volume=0.9;
+   conf.play();
+   onda.pause();
+ },120);
+ conf.ontimeupdate=()=>{
+   if(conf.currentTime>=2.85){
+     conf.pause();
+     stage.classList.add('out');
+     cardLayer.classList.add('active');
+   }
+ }
+}
+
+document.getElementById('seal').onclick=()=>{
+ if(clickCount===0){ firstClick(); }
+ else { openSeq(); }
+};
+hint.onclick=()=>{
+ if(clickCount===0){ firstClick(); }
+ else { openSeq(); }
+};
 document.getElementById('go').onclick=()=>{window.location.href='index.html'+window.location.search;};
 </script>
 </body>
