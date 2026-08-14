@@ -2,56 +2,74 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Gina & Edy</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#faf4e8;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Times New Roman',serif;overflow:hidden}
-.top{font-size:10px;letter-spacing:.35em;text-transform:uppercase;opacity:.7;margin-bottom:60px}
-.stage{position:relative;width:520px;max-width:88vw;aspect-ratio:1.4/1;display:flex;align-items:center;justify-content:center;background:transparent !important}
-#ondaVideo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:transparent !important;border:none}
-.envelope{position:relative;z-index:2;width:100%;cursor:pointer;filter:drop-shadow(0 25px 40px rgba(0,0,0,.25));transition:.5s}
-.envelope:hover{transform:translateY(-6px) scale(1.02)}
-#soundBtn{position:fixed;top:28px;right:28px;width:44px;height:44px;border-radius:50%;border:none;background:#fff;box-shadow:0 4px 15px rgba(0,0,0,.12);cursor:pointer;font-size:18px;z-index:20}
+body{min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#f2ebe1;overflow:hidden}
+.stage{width:96vw;max-width:680px;position:relative;transition:.85s}
+.stage.out{transform:scale(.84) translateY(-70px);opacity:0;pointer-events:none}
+/* AGRANDADO - ESTO QUITA LAS LINEAS NEGRAS */
+.video-box{width:100%;aspect-ratio:16/10;overflow:hidden;background:#f2ebe1;position:relative}
+.video-box video{width:100%;height:160%;object-fit:cover;transform:translateY(-20%);display:block;background:transparent}
+#ondaVideo{position:absolute;inset:0;z-index:1;width:100%;height:160%;transform:translateY(-20%)}
+#confetiVideo{position:absolute;inset:0;z-index:2;display:none;width:100%;height:160%;transform:translateY(-20%)}
+#confetiVideo.active{display:block}
+.seal-hit{position:absolute;left:50%;top:49%;transform:translate(-50%,-50%);width:140px;height:140px;border-radius:50%;z-index:5;cursor:pointer}
+.overlay{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:20px 0;pointer-events:none}
+.overlay button{pointer-events:auto}
+.tap{display:none !important}
+.card-layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;pointer-events:none}
+.card-layer.active{pointer-events:auto}
+.card{width:90%;max-width:400px;background:#fff;border-radius:22px;padding:32px;text-align:center;transform:translateY(60px) scale(.88);opacity:0;transition:.9s}
+.card-layer.active .card{transform:translateY(0) scale(1);opacity:1}
 </style>
 </head>
 <body>
-<button id="soundBtn">🔇</button>
-<div class="top">Tienes una invitación</div>
-
-<div class="stage">
-  <video id="ondaVideo" loop muted playsinline autoplay preload="auto">
-    <source src="sobre_onda.mp4" type="video/mp4">
-  </video>
-  <!-- Usa tu sobre con sombra como imagen -->
-  <img class="envelope" id="env" src="sobre_verde.png" alt="Sobre">
+<div class="stage" id="stage">
+  <div class="video-box" id="box">
+    <video id="ondaVideo" autoplay loop muted playsinline preload="auto"><source src="sobre_onda.mp4" type="video/mp4"></video>
+    <video id="confetiVideo" playsinline muted><source src="sobre_confeti.mp4" type="video/mp4"></video>
+    <div class="overlay"><div style="font-size:10px;letter-spacing:.3em">Tienes una invitación</div><button id="hint">Toca el sello</button></div>
+    <div class="seal-hit" id="seal"></div>
+  </div>
 </div>
-
+<div class="card-layer" id="cardLayer">
+  <div class="card">
+    <div id="guest">Invitado Especial</div>
+    <div style="font-size:40px;margin:10px 0">Nos casamos<br>Gina & Edy</div>
+    <button id="go">Ver invitación completa</button>
+  </div>
+</div>
 <script>
-const video=document.getElementById('ondaVideo');
-const env=document.getElementById('env');
-const btn=document.getElementById('soundBtn');
-let on=false;
-video.play().catch(()=>{});
-
-function activar(){
- if(on) return;
- on=true;
- video.muted=false;
- video.volume=0.6;
- video.play();
- btn.textContent='🔊';
+var onda=document.getElementById('ondaVideo');
+var conf=document.getElementById('confetiVideo');
+var soundEnabled=false;
+onda.muted=true; onda.play().catch(()=>{});
+function enableSound(){
+  if(soundEnabled) return;
+  soundEnabled=true;
+  onda.muted=false; onda.volume=0.6; onda.play();
+  conf.muted=false;
 }
-function toggle(){
- if(!on) activar();
- else{ video.muted=!video.muted; btn.textContent=video.muted?'🔇':'🔊'; }
+var opened=false;
+function openSeq(){
+  if(!soundEnabled) enableSound();
+  if(opened) return; opened=true;
+  document.querySelector('.overlay').style.opacity='0';
+  setTimeout(()=>{conf.classList.add('active');conf.currentTime=0;conf.muted=false;conf.volume=0.9;conf.play();onda.pause();},180);
+  conf.ontimeupdate=()=>{
+    if(conf.currentTime>=2.85){
+      conf.pause();
+      document.getElementById('stage').classList.add('out');
+      document.getElementById('cardLayer').classList.add('active');
+    }
+  }
 }
-env.addEventListener('click',()=>{
- activar();
- env.style.transform='scale(1.08)';
- setTimeout(()=>{ location.href='invitacion.html'+location.search; },600);
-});
-btn.addEventListener('click',toggle);
+document.getElementById('seal').onclick=openSeq;
+document.getElementById('hint').onclick=openSeq;
+document.getElementById('box').onclick=()=>{if(!soundEnabled) enableSound(); if(!opened) openSeq();};
+document.getElementById('go').onclick=()=>{window.location.href='index.html'+window.location.search;};
 </script>
 </body>
 </html>
