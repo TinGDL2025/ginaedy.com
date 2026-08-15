@@ -7,42 +7,74 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#F2EBE1;overflow:hidden}
-#bg-video{position:fixed;inset:0;width:100vw;height:100vh;object-fit:cover;object-position:center;z-index:1;background:#F2EBE1}
-#overlay{position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-.badge{background:#4361EE;color:#fff;font:600 1.6vmin Inter;letter-spacing:.28em;padding:.8vmin 2vmin;border-radius:4px;margin-bottom:2vh;opacity:0;transition:.6s .1s}
-.conamor{font:italic 2.2vmin 'Cormorant Garamond';color:#8B7355;opacity:0;transition:.6s .2s}
-.guest{font:600 5.5vmin 'Cormorant Garamond';color:#1a1a1a;opacity:0;transition:.6s .3s}
-.line{width:6vmin;height:1px;background:#D4AF37;margin:2vh 0;opacity:0;transition:.6s .35s}
+/* PARTE 1 - ONDA - NO SE TOCA */
+#onda{position:fixed;inset:0;width:100vw;height:100vh;z-index:10;background:#F2EBE1}
+#onda video{width:100%;height:100%;object-fit:cover}
+/* PARTE 2 - CONFETI - ESTA SI SE TOCA */
+#confeti{position:fixed;inset:0;width:100vw;height:100vh;z-index:1;display:none;background:#F2EBE1}
+#confeti video{width:100vw;height:100vh;object-fit:cover;object-position:center}
+#texts{position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none}
+.badge{background:#4361EE;color:#fff;font:600 1.6vmin Inter;letter-spacing:.28em;padding:.8vmin 2vmin;border-radius:4px;margin-bottom:2vh;opacity:0;transition:.6s}
+.conamor{font:italic 2.2vmin 'Cormorant Garamond';color:#8B7355;opacity:0;transition:.6s .1s}
+.guest{font:600 5.5vmin 'Cormorant Garamond';opacity:0;transition:.6s .2s}
+.line{width:6vmin;height:1px;background:#D4AF37;margin:2vh 0;opacity:0;transition:.6s .3s}
 .noscasamos{font:8vmin 'Great Vibes';color:#0F2E26;opacity:0;transition:.6s .4s}
 .nombres{font:3vmin 'Cormorant Garamond';opacity:0;transition:.6s .5s}
 .fecha{font:1.6vmin Inter;letter-spacing:.35em;color:#666;opacity:0;transition:.6s .6s}
-.seal{width:10vmin;height:10vmin;min-width:64px;min-height:64px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#F9E076,#D4AF37 45%,#8B6914);border:3px solid #fff;outline:2px solid #D4AF37;outline-offset:1.2vmin;display:flex;align-items:center;justify-content:center;font:600 2.2vmin 'Cormorant Garamond';color:#5C4A14;margin:3.5vh 0 2vh;opacity:0;transition:.6s .7s}
+.seal{width:10vmin;height:10vmin;min-width:64px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#F9E076,#D4AF37 45%,#8B6914);border:3px solid #fff;outline:2px solid #D4AF37;outline-offset:1.2vmin;display:flex;align-items:center;justify-content:center;font:600 2.2vmin 'Cormorant Garamond';color:#5C4A14;margin:3.5vh 0;opacity:0;transition:.6s .7s}
 .ver{font:1.3vmin Inter;letter-spacing:.28em;color:#888;opacity:0;transition:.6s .8s}
 .show{opacity:1!important}
 .dim{filter:brightness(.88)}
 </style>
 </head>
 <body>
-<video id="bg-video" autoplay playsinline controls src="sobre_confeti.mp4"></video>
-<div id="overlay">
-  <div class="badge" id="b1">TIENES UNA INVITACIÓN</div>
-  <div class="conamor" id="b2">Con amor,</div>
-  <div class="guest" id="guestName">Poncho</div>
-  <div class="line" id="b3"></div>
-  <div class="noscasamos" id="b4">Nos casamos</div>
-  <div class="nombres" id="b5">Gina & Edy</div>
-  <div class="fecha" id="b6">02.01.27</div>
-  <div class="seal" id="b7">G&E</div>
-  <div class="ver" id="b8">VER INVITACIÓN COMPLETA</div>
+
+<!-- PARTE 1 - NO SE TOCA -->
+<div id="onda">
+  <video autoplay muted loop playsinline src="sobre_onda.mp4"></video>
 </div>
+
+<!-- PARTE 2 - SI SE TOCA - FULLSCREEN -->
+<div id="confeti">
+  <video id="v2" playsinline controls src="sobre_confeti.mp4"></video>
+  <div id="texts">
+    <div class="badge" id="t1">TIENES UNA INVITACIÓN</div>
+    <div class="conamor" id="t2">Con amor,</div>
+    <div class="guest" id="guest">Poncho</div>
+    <div class="line" id="t3"></div>
+    <div class="noscasamos" id="t4">Nos casamos</div>
+    <div class="nombres" id="t5">Gina & Edy</div>
+    <div class="fecha" id="t6">02.01.27</div>
+    <div class="seal" id="t7">G&E</div>
+    <div class="ver" id="t8">VER INVITACIÓN COMPLETA</div>
+  </div>
+</div>
+
 <script>
-const v=document.getElementById('bg-video');
-const els=['b1','b2','guestName','b3','b4','b5','b6','b7','b8'].map(id=>document.getElementById(id));
-const name=new URLSearchParams(location.search).get('id')||'Poncho';
-document.getElementById('guestName').textContent=name;
-function showTexts(){ els.forEach(e=>e.classList.add('show')); v.classList.add('dim'); }
-v.addEventListener('timeupdate',()=>{ if(v.currentTime>=2.8) showTexts(); });
-setTimeout(showTexts,3500);
+// Guest desde sheet
+const g=new URLSearchParams(location.search).get('id')||'Poncho';
+document.getElementById('guest').textContent=g;
+
+// Doble clic en onda para pasar a confeti - tu lógica original
+document.getElementById('onda').addEventListener('dblclick',()=>{
+  if(navigator.vibrate) navigator.vibrate([80,30,80]);
+  document.getElementById('onda').style.opacity='0';
+  document.getElementById('onda').style.transition='opacity .6s';
+  setTimeout(()=>{
+    document.getElementById('onda').style.display='none';
+    const c=document.getElementById('confeti');
+    c.style.display='block';
+    document.getElementById('v2').play();
+  },600);
+});
+
+// Textos en explosión 2.8s
+const v2=document.getElementById('v2');
+const els=['t1','t2','guest','t3','t4','t5','t6','t7','t8'].map(id=>document.getElementById(id));
+v2.addEventListener('timeupdate',()=>{
+  if(v2.currentTime>=2.8) els.forEach(e=>e.classList.add('show'));
+  if(v2.currentTime>=3.5) v2.classList.add('dim');
+});
 </script>
 </body>
 </html>
