@@ -1,49 +1,48 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Great+Vibes&family=Inter:wght@500&display=swap" rel="stylesheet">
 <style>
-body{background:#F2EBE1;margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh}
-.card{width:672px;height:873px;background:white;border-radius:24px;overflow:hidden;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.12)}
-.card video{width:100%;height:100%;object-fit:cover;transform:scale(1.18)} /* quita barras negras */
-.texts{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity .8s}
-.texts.show{opacity:1}
-.badge{background:#4361EE;color:white;font:600 10px Inter;letter-spacing:.25em;padding:5px 12px}
-.conamor{font:italic 15px 'Cormorant Garamond';color:#8B7355;margin-top:12px}
-.poncho{font:600 40px 'Cormorant Garamond';margin:4px 0}
-.line{width:48px;height:1px;background:#D4AF37;margin:10px 0 18px}
-.noscasamos{font:58px 'Great Vibes';color:#0F2E26}
-.nombres{font:22px 'Cormorant Garamond';margin-top:8px}
-.fecha{font:11px Inter;letter-spacing:.3em;color:#888;margin-top:6px}
-.seal{width:76px;height:76px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#F9E076,#D4AF37 45%,#8B6914);border:3px solid white;outline:2px solid #D4AF37;outline-offset:8px;display:flex;align-items:center;justify-content:center;font:600 17px 'Cormorant Garamond';color:#5C4A14;margin:32px 0 20px}
-.ver{font:10px Inter;letter-spacing:.25em;color:#999}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#F2EBE1;overflow:hidden}
+#bg-video{position:fixed;inset:0;width:100vw;height:100vh;object-fit:cover;object-position:center;z-index:1;background:#F2EBE1}
+#overlay{position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.badge{background:#4361EE;color:#fff;font:600 1.6vmin Inter;letter-spacing:.28em;padding:.8vmin 2vmin;border-radius:4px;margin-bottom:2vh;opacity:0;transition:.6s .1s}
+.conamor{font:italic 2.2vmin 'Cormorant Garamond';color:#8B7355;opacity:0;transition:.6s .2s}
+.guest{font:600 5.5vmin 'Cormorant Garamond';color:#1a1a1a;opacity:0;transition:.6s .3s}
+.line{width:6vmin;height:1px;background:#D4AF37;margin:2vh 0;opacity:0;transition:.6s .35s}
+.noscasamos{font:8vmin 'Great Vibes';color:#0F2E26;opacity:0;transition:.6s .4s}
+.nombres{font:3vmin 'Cormorant Garamond';opacity:0;transition:.6s .5s}
+.fecha{font:1.6vmin Inter;letter-spacing:.35em;color:#666;opacity:0;transition:.6s .6s}
+.seal{width:10vmin;height:10vmin;min-width:64px;min-height:64px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#F9E076,#D4AF37 45%,#8B6914);border:3px solid #fff;outline:2px solid #D4AF37;outline-offset:1.2vmin;display:flex;align-items:center;justify-content:center;font:600 2.2vmin 'Cormorant Garamond';color:#5C4A14;margin:3.5vh 0 2vh;opacity:0;transition:.6s .7s}
+.ver{font:1.3vmin Inter;letter-spacing:.28em;color:#888;opacity:0;transition:.6s .8s}
+.show{opacity:1!important}
+.dim{filter:brightness(.88)}
 </style>
 </head>
 <body>
-<div class="card">
-  <video id="v" autoplay muted playsinline src="sobre_confeti.mp4"></video>
-  <div class="texts" id="t">
-    <div class="badge">TIENES UNA INVITACIÓN</div>
-    <div class="conamor">Con amor,</div>
-    <div class="poncho" id="guest">Poncho</div>
-    <div class="line"></div>
-    <div class="noscasamos">Nos casamos</div>
-    <div class="nombres">Gina & Edy</div>
-    <div class="fecha">02.01.27</div>
-    <div class="seal">G&E</div>
-    <div class="ver">VER INVITACIÓN COMPLETA</div>
-  </div>
+<video id="bg-video" autoplay playsinline controls src="sobre_confeti.mp4"></video>
+<div id="overlay">
+  <div class="badge" id="b1">TIENES UNA INVITACIÓN</div>
+  <div class="conamor" id="b2">Con amor,</div>
+  <div class="guest" id="guestName">Poncho</div>
+  <div class="line" id="b3"></div>
+  <div class="noscasamos" id="b4">Nos casamos</div>
+  <div class="nombres" id="b5">Gina & Edy</div>
+  <div class="fecha" id="b6">02.01.27</div>
+  <div class="seal" id="b7">G&E</div>
+  <div class="ver" id="b8">VER INVITACIÓN COMPLETA</div>
 </div>
 <script>
-// Poncho viene del sheet ?id=Poncho
-const p=new URLSearchParams(location.search).get('id')||new URLSearchParams(location.search).get('guest');
-if(p) document.getElementById('guest').textContent=p;
-
-const v=document.getElementById('v'), t=document.getElementById('t');
-v.addEventListener('timeupdate',()=>{
-  if(v.currentTime>=2.8) t.classList.add('show'); // aparece en explosión
-  if(v.currentTime>=4.5){ v.style.opacity='0'; v.style.transition='opacity .6s' } // hoja limpia sin confeti
-});
+const v=document.getElementById('bg-video');
+const els=['b1','b2','guestName','b3','b4','b5','b6','b7','b8'].map(id=>document.getElementById(id));
+const name=new URLSearchParams(location.search).get('id')||'Poncho';
+document.getElementById('guestName').textContent=name;
+function showTexts(){ els.forEach(e=>e.classList.add('show')); v.classList.add('dim'); }
+v.addEventListener('timeupdate',()=>{ if(v.currentTime>=2.8) showTexts(); });
+setTimeout(showTexts,3500);
 </script>
 </body>
 </html>
