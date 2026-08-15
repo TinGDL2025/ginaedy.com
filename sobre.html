@@ -89,10 +89,8 @@ async function loadGuest(){
   const cacheKey = 'guest_'+id;
   const cached = localStorage.getItem(cacheKey);
   if(cached){
-    el1.textContent=cached;
-    el2.textContent=cached;
-    el1.classList.add('visible');
-    el2.classList.add('visible');
+    el1.textContent=cached; el2.textContent=cached;
+    el1.classList.add('visible'); el2.classList.add('visible');
   }
   try{
     const r=await fetch(APP_URL+'?t='+Date.now());
@@ -100,10 +98,8 @@ async function loadGuest(){
     const it=d.find(x=>String(x.id)===String(id));
     if(it && it.titular){
       localStorage.setItem(cacheKey, it.titular);
-      el1.textContent=it.titular;
-      el2.textContent=it.titular;
-      el1.classList.add('visible');
-      el2.classList.add('visible');
+      el1.textContent=it.titular; el2.textContent=it.titular;
+      el1.classList.add('visible'); el2.classList.add('visible');
     }
   }catch(e){}
 }
@@ -123,6 +119,7 @@ onda.muted=true; onda.play().catch(()=>{});
 var soundOn=false, clickCount=0, opened=false;
 function enableSound(){ if(soundOn) return; soundOn=true; onda.muted=false; onda.volume=0.6; onda.play(); conf.muted=false; }
 function firstClick(){ enableSound(); clickCount=1; hint.textContent='Ahora ábrelo ✨'; }
+
 function openSeq(){
   if(opened) return; opened=true;
   hint.style.opacity='0';
@@ -134,11 +131,20 @@ function openSeq(){
     conf.play();
     onda.pause();
   },120);
-  // CAMBIO: espera a que termine TODO el video confeti, no 2.85s
-  conf.onended = () => {
+
+  // AJUSTE AUTOMATICO AL FINAL DEL VIDEO
+  let switched=false;
+  function showCard(){
+    if(switched) return; switched=true;
     stage.classList.add('out');
     cardLayer.classList.add('active');
-    setTimeout(launchGoldConfetti, 100);
+    setTimeout(launchGoldConfetti, 150);
+  }
+  conf.onended = showCard;
+  conf.ontimeupdate = () => {
+    if(conf.duration && conf.currentTime >= conf.duration - 0.35){
+      showCard();
+    }
   };
 }
 document.getElementById('seal').onclick=()=>{ if(clickCount===0) firstClick(); else openSeq(); };
