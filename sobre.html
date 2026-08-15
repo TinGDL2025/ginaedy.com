@@ -3,78 +3,136 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Great+Vibes&family=Inter:wght@500&display=swap" rel="stylesheet">
+<title>Gina & Edy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Great+Vibes&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#F2EBE1;overflow:hidden}
-/* PARTE 1 - ONDA - NO SE TOCA */
-#onda{position:fixed;inset:0;width:100vw;height:100vh;z-index:10;background:#F2EBE1}
-#onda video{width:100%;height:100%;object-fit:cover}
-/* PARTE 2 - CONFETI - ESTA SI SE TOCA */
-#confeti{position:fixed;inset:0;width:100vw;height:100vh;z-index:1;display:none;background:#F2EBE1}
-#confeti video{width:100vw;height:100vh;object-fit:cover;object-position:center}
-#texts{position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none}
-.badge{background:#4361EE;color:#fff;font:600 1.6vmin Inter;letter-spacing:.28em;padding:.8vmin 2vmin;border-radius:4px;margin-bottom:2vh;opacity:0;transition:.6s}
-.conamor{font:italic 2.2vmin 'Cormorant Garamond';color:#8B7355;opacity:0;transition:.6s .1s}
-.guest{font:600 5.5vmin 'Cormorant Garamond';opacity:0;transition:.6s .2s}
-.line{width:6vmin;height:1px;background:#D4AF37;margin:2vh 0;opacity:0;transition:.6s .3s}
-.noscasamos{font:8vmin 'Great Vibes';color:#0F2E26;opacity:0;transition:.6s .4s}
-.nombres{font:3vmin 'Cormorant Garamond';opacity:0;transition:.6s .5s}
-.fecha{font:1.6vmin Inter;letter-spacing:.35em;color:#666;opacity:0;transition:.6s .6s}
-.seal{width:10vmin;height:10vmin;min-width:64px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#F9E076,#D4AF37 45%,#8B6914);border:3px solid #fff;outline:2px solid #D4AF37;outline-offset:1.2vmin;display:flex;align-items:center;justify-content:center;font:600 2.2vmin 'Cormorant Garamond';color:#5C4A14;margin:3.5vh 0;opacity:0;transition:.6s .7s}
-.ver{font:1.3vmin Inter;letter-spacing:.28em;color:#888;opacity:0;transition:.6s .8s}
-.show{opacity:1!important}
-.dim{filter:brightness(.88)}
+body{min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#f2ebe1;overflow:hidden}
+.stage{width:96vw;max-width:680px;position:relative;transition:opacity .9s ease}
+.stage.out{opacity:0;pointer-events:none}
+.video-box{width:95%;margin:0 auto;aspect-ratio:16/8.2;overflow:hidden;background:#f2ebe1;position:relative}
+.video-box video{width:100%;height:95%;object-fit:cover;display:block;background:#f2ebe1}
+#ondaVideo{position:absolute;inset:0;z-index:1;width:100%;height:95%}
+#confetiVideo{position:absolute;inset:0;z-index:2;display:none;width:100%;height:95%}
+#confetiVideo.active{display:block}
+.seal-hit{position:absolute;left:50%;top:49%;transform:translate(-50%,-50%);width:150px;height:150px;border-radius:50%;z-index:5;cursor:pointer}
+.overlay{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:20px 0;pointer-events:none}
+.overlay button{pointer-events:auto;background:rgba(255,255,255,.9);border:0;padding:8px 18px;border-radius:20px;font-size:11px;letter-spacing:.2em;cursor:pointer}
+
+/* HOJA FINAL - MAS ALTA, MISMO ANCHO BUENO */
+.card-layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;pointer-events:none;opacity:0;transition:opacity .9s ease}
+.card-layer.active{pointer-events:auto;opacity:1}
+.card{width:95%;max-width:400px;background:#fff;border-radius:22px;padding:42px 32px 36px;text-align:center;position:relative;min-height:520px;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.small-label{font-size:10px;letter-spacing:.32em;color:#9a9a9a;font-family:system-ui,sans-serif}
+.con-amor{font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:#8a6a5a;margin-top:8px}
+.guest{font-family:'Cormorant Garamond',serif;font-size:28px;color:#1a3a2f;margin-top:4px;font-weight:500}
+.divider{width:42px;height:1px;background:#e6d5c3;margin:18px auto}
+.nos-casamos{font-family:'Great Vibes',cursive;font-size:48px;color:#1a3a2f;line-height:1}
+.gina{font-family:'Cormorant Garamond',serif;font-size:22px;color:#1a3a2f;margin-top:14px}
+.fecha{font-family:system-ui,sans-serif;font-size:10px;letter-spacing:.2em;color:#7a8a85;margin-top:6px}
+
+/* BOTON CON ONDAS - COMO LO TENIAS EXCELENTE */
+.seal-wrap{position:relative;margin-top:28px;width:68px;height:68px;cursor:pointer}
+.seal-wave{position:absolute;inset:-10px;border-radius:50%;border:1px solid #c8a86a;opacity:0;animation:wave 2.2s infinite}
+.seal-wave:nth-child(2){animation-delay:.6s}
+.seal-wave:nth-child(3){animation-delay:1.2s}
+@keyframes wave{0%{transform:scale(.8);opacity:.6}100%{transform:scale(1.7);opacity:0}}
+.seal-final{width:68px;height:68px;border-radius:50%;background:radial-gradient(circle at 30% 30%, #e8d0a0, #c8a86a);border:1px solid #b8975a;color:#5a3a20;font-size:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.22);position:relative;z-index:1}
+.ver{font-family:system-ui,sans-serif;font-size:9px;letter-spacing:.24em;color:#5a6a65;margin-top:18px;cursor:pointer}
+#goldConfetti{position:absolute;inset:-30px;width:calc(100% + 60px);height:calc(100% + 60px);pointer-events:none;z-index:5}
+
+/* CELULAR - SOBRE MISMO ANCHO QUE HOJA FINAL 92vw Y MAS GRANDE */
+@media (max-width:600px){
+  .stage{width:100vw}
+  .video-box{width:92vw;aspect-ratio:1/1.05;border-radius:14px}
+  .video-box video,#ondaVideo,#confetiVideo{height:100%}
+  .seal-hit{width:185px;height:185px}
+  .card{width:92vw;min-height:560px;padding:36px 24px 32px}
+}
 </style>
 </head>
 <body>
 
-<!-- PARTE 1 - NO SE TOCA -->
-<div id="onda">
-  <video autoplay muted loop playsinline src="sobre_onda.mp4"></video>
-</div>
-
-<!-- PARTE 2 - SI SE TOCA - FULLSCREEN -->
-<div id="confeti">
-  <video id="v2" playsinline controls src="sobre_confeti.mp4"></video>
-  <div id="texts">
-    <div class="badge" id="t1">TIENES UNA INVITACIÓN</div>
-    <div class="conamor" id="t2">Con amor,</div>
-    <div class="guest" id="guest">Poncho</div>
-    <div class="line" id="t3"></div>
-    <div class="noscasamos" id="t4">Nos casamos</div>
-    <div class="nombres" id="t5">Gina & Edy</div>
-    <div class="fecha" id="t6">02.01.27</div>
-    <div class="seal" id="t7">G&E</div>
-    <div class="ver" id="t8">VER INVITACIÓN COMPLETA</div>
+<div class="stage" id="stage">
+  <div class="video-box">
+    <video id="ondaVideo" autoplay loop muted playsinline preload="auto"><source src="sobre_onda.mp4" type="video/mp4"></video>
+    <video id="confetiVideo" playsinline muted><source src="sobre_confeti.mp4" type="video/mp4"></video>
+    <div class="overlay"><div style="font-size:10px;letter-spacing:.3em">Tienes una invitación</div><button id="hint">Toca el sello</button></div>
+    <div class="seal-hit" id="seal"></div>
   </div>
 </div>
 
+<div class="card-layer" id="cardLayer">
+  <div class="card">
+    <canvas id="goldConfetti"></canvas>
+    <div class="small-label">TIENES UNA INVITACIÓN</div>
+    <div class="con-amor">Con amor,</div>
+    <div class="guest" id="guest">Eduardo Magallón</div>
+    <div class="divider"></div>
+    <div class="nos-casamos">Nos casamos</div>
+    <div class="gina">Gina & Edy</div>
+    <div class="fecha">02.01.27</div>
+    
+    <div class="seal-wrap" id="sealFinal">
+      <div class="seal-wave"></div>
+      <div class="seal-wave"></div>
+      <div class="seal-wave"></div>
+      <div class="seal-final">G&E</div>
+    </div>
+    <div class="ver" id="verBtn">VER INVITACIÓN COMPLETA</div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
-// Guest desde sheet
-const g=new URLSearchParams(location.search).get('id')||'Poncho';
-document.getElementById('guest').textContent=g;
+const APP_URL = 'https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYToJd8tgpmw/exec';
+function getId(){ return new URLSearchParams(location.search).get('id') || '001'; }
+async function loadGuest(){ try{ const r=await fetch(APP_URL); const d=await r.json(); const it=d.find(x=>String(x.id)===String(getId())); if(it) document.getElementById('guest').textContent=it.titular; }catch(e){} }
+loadGuest();
 
-// Doble clic en onda para pasar a confeti - tu lógica original
-document.getElementById('onda').addEventListener('dblclick',()=>{
-  if(navigator.vibrate) navigator.vibrate([80,30,80]);
-  document.getElementById('onda').style.opacity='0';
-  document.getElementById('onda').style.transition='opacity .6s';
+// CONFETI MUCHO MAS, DE ATRAS Y LADOS
+function launchGoldConfetti(){
+  const canvas=document.getElementById('goldConfetti');
+  const c=confetti.create(canvas,{resize:true,useWorker:true});
+  // explosion fuerte detras del papel
+  c({particleCount:45, spread:70, startVelocity:28, origin:{x:0.2,y:0.65}, angle:60, colors:['#d4af37','#c8a86a','#e8d0a0','#ffd700','#b8975a'], scalar:0.9, ticks:350, gravity:0.7});
+  c({particleCount:45, spread:70, startVelocity:28, origin:{x:0.8,y:0.65}, angle:120, colors:['#d4af37','#c8a86a','#e8d0a0','#ffd700','#b8975a'], scalar:0.9, ticks:350, gravity:0.7});
   setTimeout(()=>{
-    document.getElementById('onda').style.display='none';
-    const c=document.getElementById('confeti');
-    c.style.display='block';
-    document.getElementById('v2').play();
-  },600);
-});
+    c({particleCount:25, spread:60, startVelocity:18, origin:{x:0.15,y:0.7}, angle:75, colors:['#d4af37','#c8a86a'], scalar:0.8, ticks:320});
+    c({particleCount:25, spread:60, startVelocity:18, origin:{x:0.85,y:0.7}, angle:105, colors:['#d4af37','#c8a86a'], scalar:0.8, ticks:320});
+  }, 300);
+  setTimeout(()=>{
+    c({particleCount:15, spread:90, startVelocity:14, origin:{x:0.5,y:0.8}, colors:['#e8d0a0','#c8a86a'], gravity:0.5, scalar:0.6, ticks:400});
+  }, 600);
+}
 
-// Textos en explosión 2.8s
-const v2=document.getElementById('v2');
-const els=['t1','t2','guest','t3','t4','t5','t6','t7','t8'].map(id=>document.getElementById(id));
-v2.addEventListener('timeupdate',()=>{
-  if(v2.currentTime>=2.8) els.forEach(e=>e.classList.add('show'));
-  if(v2.currentTime>=3.5) v2.classList.add('dim');
-});
+var onda=document.getElementById('ondaVideo');
+var conf=document.getElementById('confetiVideo');
+var hint=document.getElementById('hint');
+var stage=document.getElementById('stage');
+var cardLayer=document.getElementById('cardLayer');
+onda.muted=true; onda.play().catch(()=>{});
+var soundOn=false, clickCount=0, opened=false;
+function enableSound(){ if(soundOn) return; soundOn=true; onda.muted=false; onda.volume=0.6; onda.play(); conf.muted=false; }
+function firstClick(){ enableSound(); clickCount=1; hint.textContent='Ahora ábrelo ✨'; }
+function openSeq(){
+  if(opened) return; opened=true;
+  hint.style.opacity='0';
+  setTimeout(()=>{ conf.classList.add('active'); conf.currentTime=0; conf.muted=false; conf.volume=0.9; conf.play(); onda.pause(); },120);
+  conf.ontimeupdate=()=>{
+    if(conf.currentTime>=2.85){
+      conf.pause();
+      stage.classList.add('out');
+      cardLayer.classList.add('active');
+      setTimeout(launchGoldConfetti, 100);
+    }
+  }
+}
+document.getElementById('seal').onclick=()=>{ if(clickCount===0) firstClick(); else openSeq(); };
+hint.onclick=()=>{ if(clickCount===0) firstClick(); else openSeq(); };
+function goIndex(){ location.href='index.html?id='+getId(); }
+document.getElementById('sealFinal').onclick=goIndex;
+document.getElementById('verBtn').onclick=goIndex;
 </script>
 </body>
 </html>
