@@ -3,26 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Gina & Edy - VideoBox Fijo</title>
+<title>Gina & Edy</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Great+Vibes&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#f2ebe1;overflow:hidden}
-.stage{width:96vw;max-width:680px;position:relative;transition:opacity .9s ease}
+
+/* ESCENARIO Y CONTENEDOR AJUSTADO A LA TARJETA FINAL */
+.stage{width:95%;max-width:400px;position:relative;transition:opacity .6s ease-out;display:flex;justify-content:center}
 .stage.out{opacity:0;pointer-events:none}
-.video-box{width:92vw;max-width:420px;aspect-ratio:3/4.2;margin:0 auto;overflow:hidden;background:#f2ebe1;position:relative;border-radius:22px;box-shadow:0 10px 30px rgba(0,0,0,.06)}
-.video-box video{width:100%;height:100%;object-fit:contain;display:block;background:#f2ebe1;position:absolute;inset:0}
-#ondaVideo{z-index:1;transform:scale(0.62);transform-origin:center center;transition:opacity .4s}
-#confetiVideo{z-index:2;display:none;transform:scale(0.62);transform-origin:center center;transition:transform .6s cubic-bezier(.25,.8,.25,1)}
+
+.video-box{
+  width:100%;
+  max-width:400px;
+  min-height:520px;
+  aspect-ratio:1/1.3;
+  overflow:hidden;
+  background:#f2ebe1;
+  position:relative;
+  border-radius:22px;
+}
+
+.video-box video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  background:#f2ebe1;
+}
+
+#ondaVideo{position:absolute;inset:0;z-index:1;width:100%;height:100%}
+#confetiVideo{position:absolute;inset:0;z-index:2;display:none;width:100%;height:100%}
 #confetiVideo.active{display:block}
-#confetiVideo.zoom-final{transform:scale(1.0)}
-.seal-hit{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:150px;height:150px;border-radius:50%;z-index:5;cursor:pointer}
-.overlay{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:22px 0 28px;pointer-events:none}
-.overlay .label{font-size:10px;letter-spacing:.32em;color:#7a7a7a;font-family:system-ui,sans-serif}
-.overlay button{pointer-events:auto;background:rgba(255,255,255,.92);border:0;padding:8px 18px;border-radius:20px;font-size:11px;letter-spacing:.2em;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.08)}
-.card-layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;pointer-events:none;opacity:0;transition:opacity .9s ease}
+
+.seal-hit{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:160px;height:160px;border-radius:50%;z-index:5;cursor:pointer}
+.overlay{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:30px 0;pointer-events:none;transition:opacity .3s ease}
+.overlay button{pointer-events:auto;background:rgba(255,255,255,.9);border:0;padding:8px 18px;border-radius:20px;font-size:11px;letter-spacing:.2em;cursor:pointer}
+
+/* HOJA FINAL CON DIMENSIONES EXACTAS A LA VENTANA DE VIDEO */
+.card-layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;pointer-events:none;opacity:0;transition:opacity .6s ease-in-out}
 .card-layer.active{pointer-events:auto;opacity:1}
-.card{width:92vw;max-width:420px;background:#fff;border-radius:22px;padding:42px 32px 36px;text-align:center;position:relative;min-height:560px;display:flex;flex-direction:column;justify-content:center;align-items:center;box-shadow:0 20px 60px rgba(0,0,0,.12)}
+.card{width:95%;max-width:400px;background:#fff;border-radius:22px;padding:42px 32px 36px;text-align:center;position:relative;min-height:520px;display:flex;flex-direction:column;justify-content:center;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.05)}
+
 .small-label{font-size:10px;letter-spacing:.32em;color:#9a9a9a;font-family:system-ui,sans-serif}
 .con-amor{font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:#8a6a5a;margin-top:8px}
 .guest{font-family:'Cormorant Garamond',serif;font-size:28px;color:#1a3a2f;margin-top:4px;font-weight:500}
@@ -30,6 +52,8 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 .nos-casamos{font-family:'Great Vibes',cursive;font-size:48px;color:#1a3a2f;line-height:1}
 .gina{font-family:'Cormorant Garamond',serif;font-size:22px;color:#1a3a2f;margin-top:14px}
 .fecha{font-family:system-ui,sans-serif;font-size:10px;letter-spacing:.2em;color:#7a8a85;margin-top:6px}
+
+/* BOTÓN CON ONDAS */
 .seal-wrap{position:relative;margin-top:28px;width:68px;height:68px;cursor:pointer}
 .seal-wave{position:absolute;inset:-10px;border-radius:50%;border:1px solid #c8a86a;opacity:0;animation:wave 2.2s infinite}
 .seal-wave:nth-child(2){animation-delay:.6s}
@@ -38,22 +62,26 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 .seal-final{width:68px;height:68px;border-radius:50%;background:radial-gradient(circle at 30% 30%, #e8d0a0, #c8a86a);border:1px solid #b8975a;color:#5a3a20;font-size:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.22);position:relative;z-index:1}
 .ver{font-family:system-ui,sans-serif;font-size:9px;letter-spacing:.24em;color:#5a6a65;margin-top:18px;cursor:pointer}
 #goldConfetti{position:absolute;inset:-30px;width:calc(100% + 60px);height:calc(100% + 60px);pointer-events:none;z-index:5}
+
+/* AJUSTES PARA DISPOSITIVOS MÓVILES */
 @media (max-width:600px){
-  .video-box{width:92vw;aspect-ratio:3/4.1;border-radius:18px}
-  .seal-hit{width:185px;height:185px}
+  .stage{width:92vw}
+  .video-box{width:92vw;min-height:560px;aspect-ratio:1/1.2;border-radius:22px}
   .card{width:92vw;min-height:560px;padding:36px 24px 32px}
 }
 </style>
 </head>
 <body>
+
 <div class="stage" id="stage">
-  <div class="video-box" id="videoBox">
+  <div class="video-box">
     <video id="ondaVideo" autoplay loop muted playsinline preload="auto"><source src="sobre_onda.mp4" type="video/mp4"></video>
-    <video id="confetiVideo" playsinline muted><source src="sobre_confeti.mp4" type="video/mp4"></video>
-    <div class="overlay"><div class="label">Tienes una invitación</div><button id="hint">Toca el sello</button></div>
+    <video id="confetiVideo" playsinline muted preload="auto"><source src="sobre_confeti.mp4" type="video/mp4"></video>
+    <div class="overlay" id="overlay"><div style="font-size:10px;letter-spacing:.3em">Tienes una invitación</div><button id="hint">Toca el sello</button></div>
     <div class="seal-hit" id="seal"></div>
   </div>
 </div>
+
 <div class="card-layer" id="cardLayer">
   <div class="card">
     <canvas id="goldConfetti"></canvas>
@@ -64,51 +92,103 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
     <div class="nos-casamos">Nos casamos</div>
     <div class="gina">Gina & Edy</div>
     <div class="fecha">02.01.27</div>
-    <div class="seal-wrap" id="sealFinal"><div class="seal-wave"></div><div class="seal-wave"></div><div class="seal-wave"></div><div class="seal-final">G&E</div></div>
+    
+    <div class="seal-wrap" id="sealFinal">
+      <div class="seal-wave"></div>
+      <div class="seal-wave"></div>
+      <div class="seal-wave"></div>
+      <div class="seal-final">G&E</div>
+    </div>
     <div class="ver" id="verBtn">VER INVITACIÓN COMPLETA</div>
   </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
-const APP_URL='https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec';
-function getId(){return new URLSearchParams(location.search).get('id')||'001';}
-async function loadGuest(){try{const r=await fetch(APP_URL);const d=await r.json();const it=d.find(x=>String(x.id)===String(getId()));if(it)document.getElementById('guest').textContent=it.titular;}catch(e){}}
+const APP_URL = 'https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYToJd8tgpmw/exec';
+function getId(){ return new URLSearchParams(location.search).get('id') || '001'; }
+async function loadGuest(){ try{ const r=await fetch(APP_URL); const d=await r.json(); const it=d.find(x=>String(x.id)===String(getId())); if(it) document.getElementById('guest').textContent=it.titular; }catch(e){} }
 loadGuest();
+
 function launchGoldConfetti(){
   const canvas=document.getElementById('goldConfetti');
   const c=confetti.create(canvas,{resize:true,useWorker:true});
-  c({particleCount:45,spread:70,startVelocity:28,origin:{x:0.2,y:0.65},angle:60,colors:['#d4af37','#c8a86a','#e8d0a0','#ffd700','#b8975a'],scalar:0.9,ticks:350,gravity:0.7});
-  c({particleCount:45,spread:70,startVelocity:28,origin:{x:0.8,y:0.65},angle:120,colors:['#d4af37','#c8a86a','#e8d0a0','#ffd700','#b8975a'],scalar:0.9,ticks:350,gravity:0.7});
+  c({particleCount:45, spread:70, startVelocity:28, origin:{x:0.2,y:0.65}, angle:60, colors:['#d4af37','#c8a86a','#e8d0a0','#ffd700','#b8975a'], scalar:0.9, ticks:350, gravity:0.7});
+  c({particleCount:45, spread:70, startVelocity:28, origin:{x:0.8,y:0.65}, angle:120, colors:['#d4af37','#c8a86a','#e8d0a0','#ffd700','#b8975a'], scalar:0.9, ticks:350, gravity:0.7});
+  setTimeout(()=>{
+    c({particleCount:25, spread:60, startVelocity:18, origin:{x:0.15,y:0.7}, angle:75, colors:['#d4af37','#c8a86a'], scalar:0.8, ticks:320});
+    c({particleCount:25, spread:60, startVelocity:18, origin:{x:0.85,y:0.7}, angle:105, colors:['#d4af37','#c8a86a'], scalar:0.8, ticks:320});
+  }, 300);
+  setTimeout(()=>{
+    c({particleCount:15, spread:90, startVelocity:14, origin:{x:0.5,y:0.8}, colors:['#e8d0a0','#c8a86a'], gravity:0.5, scalar:0.6, ticks:400});
+  }, 600);
 }
+
 var onda=document.getElementById('ondaVideo');
 var conf=document.getElementById('confetiVideo');
 var hint=document.getElementById('hint');
+var overlay=document.getElementById('overlay');
 var stage=document.getElementById('stage');
 var cardLayer=document.getElementById('cardLayer');
-onda.muted=true;onda.play().catch(()=>{});
-var soundOn=false,clickCount=0,opened=false;
-function enableSound(){if(soundOn)return;soundOn=true;onda.muted=false;onda.volume=0.6;onda.play();conf.muted=false;}
-function firstClick(){enableSound();clickCount=1;hint.textContent='Ahora ábrelo ✨';if(navigator.vibrate)navigator.vibrate(20);}
-function openSeq(){
-  if(opened)return;opened=true;
-  hint.style.opacity='0';
-  if(navigator.vibrate)navigator.vibrate([40,30,80]);
-  conf.classList.add('active');conf.currentTime=0;conf.muted=false;conf.volume=0.9;conf.play();
-  onda.style.opacity='0';
-  setTimeout(()=>{onda.pause();},400);
-  conf.ontimeupdate=()=>{
-    if(conf.currentTime>=2.2 && !conf.classList.contains('zoom-final')){
-      conf.classList.add('zoom-final');
-    }
-    if(conf.currentTime>=2.85){
-      conf.pause();stage.classList.add('out');cardLayer.classList.add('active');
-      setTimeout(launchGoldConfetti,100);
-    }
-  }
+
+onda.muted=true; 
+onda.play().catch(()=>{});
+
+var soundOn=false, clickCount=0, opened=false;
+
+function enableSound(){ 
+  if(soundOn) return; 
+  soundOn=true; 
+  onda.muted=false; 
+  onda.volume=0.6; 
+  onda.play().catch(()=>{}); 
+  conf.muted=false; 
 }
-document.getElementById('seal').onclick=()=>{if(clickCount===0)firstClick();else openSeq();};
-hint.onclick=()=>{if(clickCount===0)firstClick();else openSeq();};
-function goIndex(){location.href='index.html?id='+getId();}
+
+function firstClick(){ 
+  enableSound(); 
+  clickCount=1; 
+  hint.textContent='Ahora ábrelo ✨'; 
+}
+
+function openSeq(){
+  if(opened) return; 
+  opened=true;
+  overlay.style.opacity='0';
+  
+  conf.classList.add('active'); 
+  conf.currentTime=0; 
+  conf.muted=false; 
+  conf.volume=0.9; 
+  
+  var playPromise = conf.play();
+  if (playPromise !== undefined) {
+    playPromise.then(() => {
+      onda.pause();
+    }).catch(() => {
+      conf.play();
+      onda.pause();
+    });
+  }
+
+  conf.ontimeupdate=()=>{
+    var targetTime = conf.duration ? Math.max(conf.duration - 0.1, 2.8) : 2.85;
+    if(conf.currentTime >= targetTime){
+      conf.ontimeupdate = null;
+      conf.pause();
+      
+      stage.classList.add('out');
+      cardLayer.classList.add('active');
+      
+      setTimeout(launchGoldConfetti, 150);
+    }
+  };
+}
+
+document.getElementById('seal').onclick=()=>{ if(clickCount===0) firstClick(); else openSeq(); };
+hint.onclick=()=>{ if(clickCount===0) firstClick(); else openSeq(); };
+
+function goIndex(){ location.href='index.html?id='+getId(); }
 document.getElementById('sealFinal').onclick=goIndex;
 document.getElementById('verBtn').onclick=goIndex;
 </script>
