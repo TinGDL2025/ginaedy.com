@@ -59,7 +59,7 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
   </div>
   <div class="video-box">
     <video id="ondaVideo" autoplay loop muted playsinline preload="auto"><source src="sobre_onda.mp4" type="video/mp4"></video>
-    <video id="confetiVideo" playsinline muted><source src="sobre_confeti.mp4" type="video/mp4"></video>
+    <video id="confetiVideo" playsinline muted preload="auto"><source src="sobre_confeti.mp4" type="video/mp4"></video>
     <div class="overlay"><button id="hint">Toca el sello</button></div>
     <div class="seal-hit" id="seal"></div>
   </div>
@@ -126,15 +126,20 @@ function firstClick(){ enableSound(); clickCount=1; hint.textContent='Ahora ábr
 function openSeq(){
   if(opened) return; opened=true;
   hint.style.opacity='0';
-  setTimeout(()=>{ conf.classList.add('active'); conf.currentTime=0; conf.muted=false; conf.volume=0.9; conf.play(); onda.pause(); },120);
-  conf.ontimeupdate=()=>{
-    if(conf.currentTime>=2.85){
-      conf.pause();
-      stage.classList.add('out');
-      cardLayer.classList.add('active');
-      setTimeout(launchGoldConfetti, 100);
-    }
-  }
+  setTimeout(()=>{
+    conf.classList.add('active');
+    conf.currentTime=0;
+    conf.muted=false;
+    conf.volume=0.9;
+    conf.play();
+    onda.pause();
+  },120);
+  // CAMBIO: espera a que termine TODO el video confeti, no 2.85s
+  conf.onended = () => {
+    stage.classList.add('out');
+    cardLayer.classList.add('active');
+    setTimeout(launchGoldConfetti, 100);
+  };
 }
 document.getElementById('seal').onclick=()=>{ if(clickCount===0) firstClick(); else openSeq(); };
 hint.onclick=()=>{ if(clickCount===0) firstClick(); else openSeq(); };
