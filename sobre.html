@@ -8,7 +8,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#f2ebe1;overflow:hidden}
-.stage{width:96vw;max-width:680px;position:relative;transition:opacity .9s ease;display:flex;flex-direction:column;align-items:center}
+.stage{width:96vw;max-width:680px;position:relative;transition:opacity 1.2s ease;display:flex;flex-direction:column;align-items:center}
 .stage.out{opacity:0;pointer-events:none}
 .top-envelope{text-align:center;margin-bottom:6px;display:flex;flex-direction:column;align-items:center;gap:0}
 .guest-top{font-family:'Cormorant Garamond',serif;font-size:28px;color:#1a3a2f;font-weight:500;display:none}
@@ -22,7 +22,7 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 .seal-hit{position:absolute;left:50%;top:49%;transform:translate(-50%,-50%);width:150px;height:150px;border-radius:50%;z-index:5;cursor:pointer}
 .overlay{position:absolute;inset:0;z-index:4;display:flex;align-items:flex-end;justify-content:center;padding-bottom:18px;pointer-events:none}
 .overlay button{pointer-events:auto;background:rgba(255,255,255,.9);border:0;padding:8px 18px;border-radius:20px;font-size:11px;letter-spacing:.2em;cursor:pointer}
-.card-layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;pointer-events:none;opacity:0;transition:opacity .9s ease}
+.card-layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;pointer-events:none;opacity:0;transition:opacity 1.4s ease}
 .card-layer.active{pointer-events:auto;opacity:1}
 .card{width:95%;max-width:400px;background:#fff;border-radius:22px;padding:42px 32px 36px;text-align:center;position:relative;min-height:520px;display:flex;flex-direction:column;justify-content:center;align-items:center}
 .small-label{font-size:10px;letter-spacing:.32em;color:#9a9a9a;font-family:system-ui,sans-serif}
@@ -83,21 +83,18 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 const APP_URL = 'https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYToJd8tgpmw/exec';
 function getId(){ return new URLSearchParams(location.search).get('id') || '001'; }
 async function loadGuest(){
-  const id = getId();
-  const el1 = document.getElementById('guestTop');
-  const el2 = document.getElementById('guest');
-  const cacheKey = 'guest_'+id;
-  const cached = localStorage.getItem(cacheKey);
-  if(cached){
-    el1.textContent=cached; el2.textContent=cached;
-    el1.classList.add('visible'); el2.classList.add('visible');
-  }
+  const id=getId();
+  const el1=document.getElementById('guestTop');
+  const el2=document.getElementById('guest');
+  const cacheKey='guest_'+id;
+  const cached=localStorage.getItem(cacheKey);
+  if(cached){ el1.textContent=cached; el2.textContent=cached; el1.classList.add('visible'); el2.classList.add('visible'); }
   try{
     const r=await fetch(APP_URL+'?t='+Date.now());
     const d=await r.json();
     const it=d.find(x=>String(x.id)===String(id));
     if(it && it.titular){
-      localStorage.setItem(cacheKey, it.titular);
+      localStorage.setItem(cacheKey,it.titular);
       el1.textContent=it.titular; el2.textContent=it.titular;
       el1.classList.add('visible'); el2.classList.add('visible');
     }
@@ -130,21 +127,16 @@ function openSeq(){
     conf.volume=0.9;
     conf.play();
     onda.pause();
+    // FUSION DESVANECIDA: a los 0.3s empieza a aparecer mi hoja
+    setTimeout(()=>{
+      cardLayer.classList.add('active');
+    },300);
   },120);
 
-  // AJUSTE AUTOMATICO AL FINAL DEL VIDEO
-  let switched=false;
-  function showCard(){
-    if(switched) return; switched=true;
+  // Cuando el video termina, ocultamos el stage del sobre y lanzamos confeti dorado
+  conf.onended = () => {
     stage.classList.add('out');
-    cardLayer.classList.add('active');
-    setTimeout(launchGoldConfetti, 150);
-  }
-  conf.onended = showCard;
-  conf.ontimeupdate = () => {
-    if(conf.duration && conf.currentTime >= conf.duration - 0.35){
-      showCard();
-    }
+    setTimeout(launchGoldConfetti, 200);
   };
 }
 document.getElementById('seal').onclick=()=>{ if(clickCount===0) firstClick(); else openSeq(); };
