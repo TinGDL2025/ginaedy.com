@@ -9,41 +9,44 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#f2ebe1;overflow:hidden}
 
-/* ESCENARIO Y CONTENEDOR AJUSTADO A LA TARJETA FINAL */
-.stage{width:95%;max-width:400px;position:relative;transition:opacity .6s ease-out;display:flex;justify-content:center}
+/* CONTENEDOR PRINCIPAL - MEDIDAS MARCO ROJO/VERDE */
+.stage{width:95%;max-width:440px;position:relative;transition:opacity .6s ease-out;display:flex;justify-content:center}
 .stage.out{opacity:0;pointer-events:none}
 
 .video-box{
   width:100%;
-  max-width:400px;
-  min-height:520px;
-  aspect-ratio:1/1.3;
+  max-width:440px;
+  min-height:560px;
+  aspect-ratio:1/1.27;
   overflow:hidden;
   background:#f2ebe1;
   position:relative;
   border-radius:22px;
 }
 
+/* ZOOM AL VIDEO PARA QUE LA HOJA AZUL INTERNA LLENE EL MARCO ROJO */
 .video-box video{
   width:100%;
   height:100%;
   object-fit:cover;
   display:block;
   background:#f2ebe1;
+  transform: scale(1.52); /* Zoom aplicado para expandir la hoja del video */
+  transform-origin: center center;
 }
 
 #ondaVideo{position:absolute;inset:0;z-index:1;width:100%;height:100%}
 #confetiVideo{position:absolute;inset:0;z-index:2;display:none;width:100%;height:100%}
 #confetiVideo.active{display:block}
 
-.seal-hit{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:160px;height:160px;border-radius:50%;z-index:5;cursor:pointer}
-.overlay{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:30px 0;pointer-events:none;transition:opacity .3s ease}
+.seal-hit{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:180px;height:180px;border-radius:50%;z-index:5;cursor:pointer}
+.overlay{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:32px 0;pointer-events:none;transition:opacity .3s ease}
 .overlay button{pointer-events:auto;background:rgba(255,255,255,.9);border:0;padding:8px 18px;border-radius:20px;font-size:11px;letter-spacing:.2em;cursor:pointer}
 
-/* HOJA FINAL CON DIMENSIONES EXACTAS A LA VENTANA DE VIDEO */
+/* HOJA FINAL MARCO ROJO - MANTIENE SU TAMAÑO FIJO */
 .card-layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;pointer-events:none;opacity:0;transition:opacity .6s ease-in-out}
 .card-layer.active{pointer-events:auto;opacity:1}
-.card{width:95%;max-width:400px;background:#fff;border-radius:22px;padding:42px 32px 36px;text-align:center;position:relative;min-height:520px;display:flex;flex-direction:column;justify-content:center;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.05)}
+.card{width:95%;max-width:440px;background:#fff;border-radius:22px;padding:42px 32px 36px;text-align:center;position:relative;min-height:560px;display:flex;flex-direction:column;justify-content:center;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.05)}
 
 .small-label{font-size:10px;letter-spacing:.32em;color:#9a9a9a;font-family:system-ui,sans-serif}
 .con-amor{font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:#8a6a5a;margin-top:8px}
@@ -63,10 +66,10 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 .ver{font-family:system-ui,sans-serif;font-size:9px;letter-spacing:.24em;color:#5a6a65;margin-top:18px;cursor:pointer}
 #goldConfetti{position:absolute;inset:-30px;width:calc(100% + 60px);height:calc(100% + 60px);pointer-events:none;z-index:5}
 
-/* AJUSTES PARA DISPOSITIVOS MÓVILES */
+/* MÓVILES */
 @media (max-width:600px){
   .stage{width:92vw}
-  .video-box{width:92vw;min-height:560px;aspect-ratio:1/1.2;border-radius:22px}
+  .video-box{width:92vw;min-height:560px;aspect-ratio:1/1.25;border-radius:22px}
   .card{width:92vw;min-height:560px;padding:36px 24px 32px}
 }
 </style>
