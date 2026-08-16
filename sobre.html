@@ -135,7 +135,7 @@ function openSeq(){
   if(opened)return;opened=true;
   hint.style.opacity='0';
   // QUITAR MODO ONDA Y PASAR A MODO CONFETI CON DIFUMINADO
-  videoBox.classList.remove('onda-mode');
+  setTimeout(()=>videoBox.classList.remove('onda-mode'), 150);
   if(navigator.vibrate)navigator.vibrate([40,30,80]);
   conf.classList.add('active');conf.currentTime=0;conf.muted=false;conf.volume=0.9;conf.play();onda.style.opacity='0';
   setTimeout(()=>{onda.pause();},400);
