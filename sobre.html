@@ -83,7 +83,7 @@ async function loadGuest(){
     const it=d.find(x=>String(x.id)===String(getId()));
     if(it){
       document.getElementById('guest').textContent=it.titular;
-      document.getElementById('labelId').textContent='ID: '+it.id;
+      document.getElementById('labelId').textContent=it.titular;
     } else {
       document.getElementById('labelId').textContent='ID: '+getId();
     }
