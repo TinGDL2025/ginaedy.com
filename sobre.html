@@ -53,7 +53,7 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
     <video id="ondaVideo" autoplay loop muted playsinline preload="auto"><source src="sobre_onda.mp4" type="video/mp4"></video>
     <video id="confetiVideo" playsinline muted><source src="sobre_confeti.mp4" type="video/mp4"></video>
     <div class="overlay">
-      <div class="label" style="text-align:center; line-height:1.2">   <div style="font-family:'Cormorant Garamond', serif; font-style:italic; color:#c2a68a; font-size:22px;">Tienes una invitación</div>   <div id="labelId" style="font-family:'Cormorant Garamond', serif; font-weight:700; color:#1e3d2f; font-size:26px; margin-top:6px; letter-spacing:.02em">ID: 001</div> </div>
+      <div class="label" style="text-align:center; line-height:1.2"><div style="font-family:'Cormorant Garamond', serif; font-style:italic; color:#c2a68a; font-size:22px;">Tienes una invitación</div><div id="labelId" style="font-family:'Cormorant Garamond', serif; font-weight:700; color:#1e3d2f; font-size:26px; margin-top:6px; letter-spacing:.02em">Cargando...</div></div>
       <button id="hint">Toca el sello</button>
     </div>
     <div class="seal-hit" id="seal"></div>
@@ -64,7 +64,7 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
     <canvas id="goldConfetti"></canvas>
     <div class="small-label">TIENES UNA INVITACIÓN</div>
     <div class="con-amor">Con amor,</div>
-    <div class="guest" id="guest">Eduardo Magallón</div>
+    <div class="guest" id="guest">Cargando...</div>
     <div class="divider"></div>
     <div class="nos-casamos">Nos casamos</div>
     <div class="gina">Gina & Edy</div>
@@ -79,16 +79,21 @@ const APP_URL='https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43Ur
 function getId(){return new URLSearchParams(location.search).get('id')||'001';}
 async function loadGuest(){
   try{
-    const r=await fetch(APP_URL);const d=await r.json();
-    const it=d.find(x=>String(x.id)===String(getId()));
+    const url = APP_URL + '?t=' + Date.now();
+    const r = await fetch(url, {cache:'no-store'});
+    const d = await r.json();
+    const lista = Array.isArray(d) ? d : (d.data || []);
+    const it = lista.find(x=>String(x.id)===String(getId()));
     if(it){
-      document.getElementById('guest').textContent=it.titular;
-      document.getElementById('labelId').textContent=it.titular;
+      document.getElementById('guest').textContent = it.titular;
+      document.getElementById('labelId').textContent = it.titular;
     } else {
-      document.getElementById('labelId').textContent='ID: '+getId();
+      document.getElementById('guest').textContent = 'Invitado';
+      document.getElementById('labelId').textContent = 'ID: '+getId();
     }
   }catch(e){
-    document.getElementById('labelId').textContent='ID: '+getId();
+    document.getElementById('guest').textContent = 'Invitado';
+    document.getElementById('labelId').textContent = 'ID: '+getId();
   }
 }
 loadGuest();
