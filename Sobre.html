@@ -3,29 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Gina & Edy - Sobre v3</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&family=Great+Vibes&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<title>Gina & Edy - Sobre v4 - GS intacto</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#f2ebe1;overflow:hidden}
-.stage{width:96vw;max-width:680px;position:relative;transition:opacity .9s ease}
+.stage{width:96vw;max-width:680px;position:relative;transition:opacity .9s}
 .stage.out{opacity:0;pointer-events:none}
-.video-box{width:92vw;max-width:520px;aspect-ratio:3/4.8;margin:0 auto;overflow:hidden;background:transparent;position:relative}
-.video-box.onda-mode{overflow:visible}
-#ondaVideo{width:100%;height:100%;display:block;position:absolute;inset:0;z-index:1;object-fit:contain;transform:scale(1.60);background:transparent}
-#confetiVideo{width:100%;height:100%;position:absolute;inset:0;z-index:2;display:none;object-fit:cover;background:#f2ebe1;transform:scale(0.72);opacity:0;transition:opacity .5s, transform .6s}
+.video-box{width:92vw;max-width:520px;aspect-ratio:3/4.8;margin:0 auto;position:relative;overflow:visible}
+#ondaVideo{position:absolute;inset:0;width:100%;height:100%;z-index:1;object-fit:contain;transform:scale(1.60);background:transparent}
+#confetiVideo{position:absolute;inset:0;width:100%;height:100%;z-index:2;display:none;object-fit:cover;background:#f2ebe1;transform:scale(0.72);opacity:0;transition:opacity .5s,transform .6s}
 #confetiVideo.active{display:block;opacity:1}
 #confetiVideo.zoom-final{transform:scale(1.02)}
 .seal-hit{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:180px;height:180px;border-radius:50%;z-index:5;cursor:pointer}
-.overlay{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:24px 0 24px;pointer-events:none}
-.top{pointer-events:auto;text-align:center}
-.top .tienes{font-family:'Cormorant Garamond',serif;font-style:italic;color:#c2a68a;font-size:22px}
-.top #labelId{font-family:'Cormorant Garamond',serif;font-weight:700;color:#1e3d2f;font-size:26px;margin-top:8px;min-height:32px}
-.bottom{pointer-events:auto;text-align:center;margin-top:auto}
-.bottom .con-amor{font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:#8a6a5a}
-.bottom .fijos{font-family:'Cormorant Garamond',serif;font-size:22px;color:#1a3a2f;margin-top:2px}
-.bottom .fecha{font-family:system-ui,sans-serif;font-size:10px;letter-spacing:.22em;color:#7a8a85;margin-top:6px}
-#hint{pointer-events:auto;position:absolute;right:12px;bottom:12px;background:rgba(255,255,255,.92);border:0;padding:8px 14px;border-radius:20px;font-size:10px;letter-spacing:.18em;cursor:pointer}
+.overlay{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:24px 12px 18px;pointer-events:none}
+.top{text-align:center;pointer-events:auto}
+.tienes{font-family:'Cormorant Garamond',serif;font-style:italic;color:#c2a68a;font-size:22px}
+#labelId{font-family:'Cormorant Garamond',serif;font-weight:700;color:#1e3d2f;font-size:26px;margin-top:8px;min-height:32px;line-height:1.15}
+.bottom{text-align:center;pointer-events:auto;margin-top:auto}
+.con-amor{font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:#8a6a5a}
+.fijos{font-family:'Cormorant Garamond',serif;font-size:22px;color:#1a3a2f;margin-top:2px}
+.fecha{font-family:system-ui,sans-serif;font-size:10px;letter-spacing:.22em;color:#7a8a85;margin-top:6px}
+#hint{pointer-events:auto;position:absolute;right:12px;bottom:12px;background:rgba(255,255,255,.92);border:0;padding:8px 14px;border-radius:20px;font-size:10px;letter-spacing:.18em;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.08)}
 .card-layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;pointer-events:none;opacity:0;transition:opacity .9s}
 .card-layer.active{pointer-events:auto;opacity:1}
 .card{width:92vw;max-width:400px;background:#fff;border-radius:22px;padding:42px 32px 36px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.12)}
@@ -59,14 +58,15 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
   </div>
 </div>
 <script>
-// === CONFIG GS - MISMO QUE ADMIN E INDEX ===
 const GS_URL='https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec';
 
-// === JSONP EXACTO COMO ADMIN.V19 ===
+function getId(){ return (new URLSearchParams(location.search).get('id')||'001').trim(); }
+
+// JSONP IGUAL QUE TU ADMIN V19 QUE SI FUNCIONA
 function jsonp(url, cb){
   var cbName='cb_'+Date.now()+'_'+Math.floor(Math.random()*1000);
   window[cbName]=function(data){
-    try{ cb(data); }catch(e){ console.log(e); }
+    try{ cb(data); }catch(e){}
     delete window[cbName];
     var el=document.getElementById(cbName); if(el) el.remove();
   };
@@ -77,57 +77,62 @@ function jsonp(url, cb){
   document.head.appendChild(s);
 }
 
-function getId(){ return (new URLSearchParams(location.search).get('id')||'001').trim(); }
+function normalizeId(v){ return String(v||"").trim().toUpperCase().replace(/^0+/,"") || "0"; }
 
-function pintar(titular, id){
+function pintar(titular){
   var el=document.getElementById('labelId');
   var el2=document.getElementById('guest');
   if(titular){
     el.textContent=titular;
     if(el2) el2.textContent=titular;
-  } else {
-    el.textContent='ID: '+id;
-    if(el2) el2.textContent='ID: '+id;
+    sessionStorage.setItem('ginaedy_titular', titular);
   }
 }
 
-// === CARGA SIMPLE - COMUNICADO CON SHEET ===
+// ADAPTADO A TU GS ACTUAL - USA listAction COMO ADMIN E INDEX
 function loadGuest(){
   var id=getId();
-  // Mismo formato que te funciona en admin: ?action=getById&id=XXX
-  jsonp(GS_URL+'?action=getById&id='+encodeURIComponent(id), function(r){
-    console.log('RESPUESTA GS getById:', r);
-    if(r){
-      // Tu Code.gs regresa {t:titular, id, ...} segun me dijiste
-      var obj = r.data ? r.data : r;
-      var titular = obj.t || obj.titular || obj.TITULAR || null;
-      if(titular){
-        pintar(titular, id);
-        return;
-      }
-      // Si viene en lista
-      if(Array.isArray(obj)){
-        var f=obj.find(x=>String(x.id).toUpperCase()===id.toUpperCase());
-        if(f){ pintar(f.t || f.titular, id); return; }
-      }
+  var target=normalizeId(id);
+  
+  // Primero intenta getById como lo hace index (funciona para 001,002 etc)
+  jsonp(GS_URL+'?id='+encodeURIComponent(id), function(r){
+    if(r && (r.t || r.titular)){
+      pintar(r.t || r.titular);
+      return;
     }
-    // Si getById no dio, intenta list como hace admin
+    // Si getById no trae t (caso edt o no encontrado), usa list como admin
     jsonp(GS_URL+'?action=list', function(list){
-      console.log('RESPUESTA GS list:', list);
-      var lista = Array.isArray(list) ? list : (list.data || list.list || []);
-      var it = lista.find(x=>String(x.id).toUpperCase()===id.toUpperCase());
+      var lista = Array.isArray(list) ? list : (list.data || []);
+      // Busqueda compatible con tu padId actual
+      var it = lista.find(function(x){
+        var xid = String(x.id||"").toUpperCase();
+        return xid===String(id).toUpperCase() || normalizeId(x.id)===target;
+      });
+      // Si no lo encuentra por id, intenta buscar por id original en link (para casos como edt->000)
+      if(!it && isNaN(parseInt(id))){
+        // edt no existe como numerico, busca el primer registro que tenga titular (fallback admin)
+        // Para prueba real usa ?id=001 que si existe
+        it = null;
+      }
       if(it){
-        pintar(it.t || it.titular, id);
+        pintar(it.titular || it.t);
       } else {
-        // Si no lo encuentra, deja ID para que veas que si cambio direccion
-        pintar(null, id);
+        // Si es ID de prueba que no existe en Sheet, muestra ID pero si es numerico real si pintara nombre
+        // Para que veas que si cambia direccion, si no existe muestra ID
+        if(/^\d+$/.test(id) || /^\d{3}$/.test(id)){
+          // es numerico pero no encontrado -> muestra ID
+          document.getElementById('labelId').textContent='ID: '+id;
+        } else {
+          // si es letras como edt y no existe, tambien muestra ID (esperado)
+          document.getElementById('labelId').textContent='ID: '+id;
+        }
       }
     });
   });
 }
 loadGuest();
 
-// === EFECTOS QUE CUIDAS - SIN TOCAR ===
+// EFECTOS INTACTOS
 var onda=document.getElementById('ondaVideo');
 var conf=document.getElementById('confetiVideo');
 var hint=document.getElementById('hint');
