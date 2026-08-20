@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Gina & Edy - Sobre v8 Final</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&family=Great+Vibes&display=swap" rel="stylesheet">
+<title>Gina & Edy - Sobre DEFINITIVO - copia index</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#f2ebe1;overflow:hidden}
@@ -28,7 +28,6 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 .card-layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;pointer-events:none;opacity:0;transition:opacity .9s}
 .card-layer.active{pointer-events:auto;opacity:1}
 .card{width:92vw;max-width:400px;background:#fff;border-radius:22px;padding:42px 32px 36px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.12)}
-#guest{font-family:'Cormorant Garamond',serif;font-size:28px;color:#1a3a2f;margin-top:8px;min-height:32px}
 </style>
 </head>
 <body>
@@ -51,56 +50,54 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
     <div class="seal-hit" id="seal"></div>
   </div>
 </div>
+
 <div class="card-layer" id="cardLayer">
   <div class="card">
     <div style="font-size:10px;letter-spacing:.32em;color:#9a9a9a">TIENES UNA INVITACIÓN</div>
-    <div id="guest"></div>
-    <div class="serif" style="font-size:24px;margin-top:8px">Nos casamos</div>
-    <div style="font-size:14px;color:#6a6a6a;margin-top:4px">Gina & Edy<br><span style="font-size:10px;letter-spacing:2px">02.01.27</span></div>
-    <div style="margin-top:22px;cursor:pointer" id="goBtn">VER INVITACIÓN COMPLETA</div>
+    <div id="guest" style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#1a3a2f;margin-top:8px"></div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:24px;margin-top:8px">Nos casamos</div>
+    <div style="font-size:12px;color:#888;margin-top:4px">Gina & Edy<br>02.01.27</div>
+    <div style="margin-top:22px;cursor:pointer;background:#1f3d2b;color:#fff;padding:10px 20px;border-radius:20px;font-size:11px;letter-spacing:1px" id="goBtn">VER INVITACIÓN COMPLETA</div>
   </div>
 </div>
 
 <script>
-// BLOQUE GS - MISMA CONEXION QUE INDEX.HTML
+// ===== COPIA EXACTA DE TU INDEX.HTML QUE SI FUNCIONA PARA B2 =====
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec";
 
 function renderData(obj){
   if(!obj) return;
-  // obj.t es B2 de tu Sheet - columna B
-  var top = document.getElementById('labelId');
-  var card = document.getElementById('guest');
-  
-  if(obj.status === "no encontrado"){
-    if(top) top.textContent = "ID: "+(obj.id||"");
-    if(card) card.textContent = "Invitado"; // aqui era donde decia Invitado, ahora muestra ID no encontrado? lo dejamos como Invitado para no romper, pero si quieres que diga ID, cambia aqui
-    // Si quieres que tambien diga ID en la carta: card.textContent = "ID: "+obj.id;
+  // Si ID no existe (como carrito que no esta en tu CSV)
+  if(obj.status==="no encontrado"){
+    let top=document.getElementById('labelId');
+    let card=document.getElementById('guest');
+    if(top) top.textContent="ID: "+(obj.id||"");
+    if(card) card.textContent="Invitado";
     return;
   }
-  var titular = obj.t || obj.titular || "";
+  // B2 viene en obj.t = columna B de tu Sheet
+  var titular = obj.t || "";
   if(titular){
-    if(top) top.textContent = titular; // sobre onda
-    if(card) card.textContent = titular; // carta donde decia Invitado
+    document.getElementById('labelId').textContent = titular; // arriba donde pedia
+    document.getElementById('guest').textContent = titular; // donde decia Invitado
   }
 }
 
-const idParam = new URLSearchParams(window.location.search).get('id')||'001';
-var s = document.createElement('script');
-s.src = APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData";
+// MISMA LINEA QUE INDEX
+const idParam=new URLSearchParams(window.location.search).get('id')||'001';
+let s=document.createElement('script'); 
+s.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData"; 
 document.body.appendChild(s);
 </script>
 
 <script>
-// BLOQUE VIDEO ONDA + CONFETI - SEPARADO
+// VIDEO ONDA + CONFETI - SEPARADO, NO TOCA GS
 var onda=document.getElementById('ondaVideo');
 var conf=document.getElementById('confetiVideo');
 var hint=document.getElementById('hint');
 var stage=document.getElementById('stage');
 var cardLayer=document.getElementById('cardLayer');
-
-onda.muted=true;
-onda.play().catch(function(){});
-
+onda.muted=true; onda.play().catch(function(){});
 var soundOn=false,clickCount=0,opened=false;
 function enableSound(){ if(soundOn) return; soundOn=true; onda.muted=false; onda.volume=0.6; onda.play(); conf.muted=false; }
 function firstClick(){ enableSound(); clickCount=1; hint.textContent='Ahora ábrelo ✨'; if(navigator.vibrate) navigator.vibrate(20); }
@@ -108,9 +105,7 @@ function openSeq(){
   if(opened) return; opened=true;
   hint.style.opacity='0';
   if(navigator.vibrate) navigator.vibrate([40,30,80]);
-  conf.classList.add('active');
-  conf.currentTime=0; conf.muted=false; conf.volume=0.9;
-  conf.play().catch(function(){});
+  conf.classList.add('active'); conf.currentTime=0; conf.muted=false; conf.volume=0.9; conf.play().catch(function(){});
   setTimeout(function(){ onda.style.opacity='0'; },500);
   setTimeout(function(){ onda.pause(); },800);
   conf.ontimeupdate=function(){
