@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Gina & Edy - Sobre v6 - conexion index</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&family=Great+Vibes&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<title>Sobre v5 FINAL - solo JSONP</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#f2ebe1;overflow:hidden}
@@ -19,12 +19,12 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 .overlay{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:24px 12px 18px;pointer-events:none}
 .top{text-align:center;pointer-events:auto}
 .tienes{font-family:'Cormorant Garamond',serif;font-style:italic;color:#c2a68a;font-size:22px}
-#labelId{font-family:'Cormorant Garamond',serif;font-weight:700;color:#1e3d2f;font-size:26px;margin-top:8px;min-height:32px;line-height:1.15}
+#labelId{font-family:'Cormorant Garamond',serif;font-weight:700;color:#1e3d2f;font-size:26px;margin-top:8px;min-height:32px}
 .bottom{text-align:center;pointer-events:auto;margin-top:auto}
 .con-amor{font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:#8a6a5a}
 .fijos{font-family:'Cormorant Garamond',serif;font-size:22px;color:#1a3a2f;margin-top:2px}
 .fecha{font-family:system-ui,sans-serif;font-size:10px;letter-spacing:.22em;color:#7a8a85;margin-top:6px}
-#hint{pointer-events:auto;position:absolute;right:12px;bottom:12px;background:rgba(255,255,255,.92);border:0;padding:8px 14px;border-radius:20px;font-size:10px;letter-spacing:.18em;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+#hint{pointer-events:auto;position:absolute;right:12px;bottom:12px;background:rgba(255,255,255,.92);border:0;padding:8px 14px;border-radius:20px;font-size:10px;letter-spacing:.18em;cursor:pointer}
 .card-layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;pointer-events:none;opacity:0;transition:opacity .9s}
 .card-layer.active{pointer-events:auto;opacity:1}
 .card{width:92vw;max-width:400px;background:#fff;border-radius:22px;padding:42px 32px 36px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.12)}
@@ -57,34 +57,54 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
     <div style="margin-top:20px;cursor:pointer" id="goBtn">VER INVITACIÓN COMPLETA</div>
   </div>
 </div>
-
 <script>
-// CONEXION EXACTA DE TU INDEX.HTML QUE SI FUNCIONA - NO TOCO GS
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec";
-
-function renderData(obj){
-  console.log('renderData GS:', obj);
-  if(!obj) return;
-  if(obj.status==="no encontrado"){
-    document.getElementById('labelId').textContent = "ID: "+(obj.id||"");
-    return;
-  }
-  // B2 viene en obj.t (columna B de tu Sheet)
-  var titular = obj.t || obj.titular || "";
-  if(titular){
-    document.getElementById('labelId').textContent = titular;
-    document.getElementById('guest').textContent = titular;
-    try{ sessionStorage.setItem('ginaedy_titular', titular); }catch(e){}
-  }
+console.log('SOBRE V5 FINAL - SOLO JSONP - SIN FETCH');
+const GS_URL='https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec';
+function getId(){ return (new URLSearchParams(location.search).get('id')||'001').trim(); }
+function jsonp(url, cb){
+  var cbName='cb_'+Date.now()+'_'+Math.floor(Math.random()*1000);
+  console.log('JSONP REQUEST:', url);
+  window[cbName]=function(data){
+    console.log('JSONP RESPONSE:', data);
+    try{ cb(data); }catch(e){ console.error(e); }
+    delete window[cbName];
+    var el=document.getElementById(cbName); if(el) el.remove();
+  };
+  var s=document.createElement('script');
+  s.id=cbName;
+  s.src=url + (url.indexOf('?')>=0 ? '&' : '?') + 'callback='+cbName;
+  s.onerror=function(){ console.error('JSONP ERROR:', s.src); delete window[cbName]; s.remove(); cb(null); };
+  document.head.appendChild(s);
 }
-
-// ESTA ES LA LINEA DE TU INDEX QUE SI CONECTA - LA MISMA
-const idParam=new URLSearchParams(window.location.search).get('id')||'001';
-let s=document.createElement('script');
-s.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData";
-document.body.appendChild(s);
-
-// EFECTOS QUE CUIDAS - INTACTOS
+function normalizeId(v){ return String(v||"").trim().toUpperCase().replace(/^0+/,"") || "0"; }
+function pintar(titular){
+  console.log('PINTANDO:', titular);
+  var el=document.getElementById('labelId');
+  var el2=document.getElementById('guest');
+  if(titular){ el.textContent=titular; if(el2) el2.textContent=titular; }
+}
+function loadGuest(){
+  var id=getId();
+  var target=normalizeId(id);
+  // Usa getById como index
+  jsonp(GS_URL+'?id='+encodeURIComponent(id), function(r){
+    if(r && (r.t || r.titular)){
+      pintar(r.t || r.titular);
+      return;
+    }
+    // Fallback a list como admin
+    jsonp(GS_URL+'?action=list', function(list){
+      var lista = Array.isArray(list) ? list : (list.data || []);
+      var it = lista.find(function(x){
+        var xid = String(x.id||"").toUpperCase();
+        return xid===String(id).toUpperCase() || normalizeId(x.id)===target;
+      });
+      if(it){ pintar(it.titular || it.t); }
+      else { document.getElementById('labelId').textContent='ID: '+id; }
+    });
+  });
+}
+loadGuest();
 var onda=document.getElementById('ondaVideo');
 var conf=document.getElementById('confetiVideo');
 var hint=document.getElementById('hint');
@@ -109,7 +129,7 @@ function openSeq(){
 }
 document.getElementById('seal').onclick=()=>{ if(clickCount===0) firstClick(); else openSeq(); };
 hint.onclick=()=>{ if(clickCount===0) firstClick(); else openSeq(); };
-function goIndex(){ location.href='index.html?id='+idParam; }
+function goIndex(){ location.href='index.html?id='+getId(); }
 document.getElementById('goBtn').onclick=goIndex;
 </script>
 </body>
