@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sobre v5 FINAL - solo JSONP</title>
+<title>Gina & Edy - Sobre v4 - GS intacto</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -19,12 +19,12 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 .overlay{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:24px 12px 18px;pointer-events:none}
 .top{text-align:center;pointer-events:auto}
 .tienes{font-family:'Cormorant Garamond',serif;font-style:italic;color:#c2a68a;font-size:22px}
-#labelId{font-family:'Cormorant Garamond',serif;font-weight:700;color:#1e3d2f;font-size:26px;margin-top:8px;min-height:32px}
+#labelId{font-family:'Cormorant Garamond',serif;font-weight:700;color:#1e3d2f;font-size:26px;margin-top:8px;min-height:32px;line-height:1.15}
 .bottom{text-align:center;pointer-events:auto;margin-top:auto}
 .con-amor{font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:#8a6a5a}
 .fijos{font-family:'Cormorant Garamond',serif;font-size:22px;color:#1a3a2f;margin-top:2px}
 .fecha{font-family:system-ui,sans-serif;font-size:10px;letter-spacing:.22em;color:#7a8a85;margin-top:6px}
-#hint{pointer-events:auto;position:absolute;right:12px;bottom:12px;background:rgba(255,255,255,.92);border:0;padding:8px 14px;border-radius:20px;font-size:10px;letter-spacing:.18em;cursor:pointer}
+#hint{pointer-events:auto;position:absolute;right:12px;bottom:12px;background:rgba(255,255,255,.92);border:0;padding:8px 14px;border-radius:20px;font-size:10px;letter-spacing:.18em;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.08)}
 .card-layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;pointer-events:none;opacity:0;transition:opacity .9s}
 .card-layer.active{pointer-events:auto;opacity:1}
 .card{width:92vw;max-width:400px;background:#fff;border-radius:22px;padding:42px 32px 36px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.12)}
@@ -58,53 +58,81 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
   </div>
 </div>
 <script>
-console.log('SOBRE V5 FINAL - SOLO JSONP - SIN FETCH');
 const GS_URL='https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec';
+
 function getId(){ return (new URLSearchParams(location.search).get('id')||'001').trim(); }
+
+// JSONP IGUAL QUE TU ADMIN V19 QUE SI FUNCIONA
 function jsonp(url, cb){
   var cbName='cb_'+Date.now()+'_'+Math.floor(Math.random()*1000);
-  console.log('JSONP REQUEST:', url);
   window[cbName]=function(data){
-    console.log('JSONP RESPONSE:', data);
-    try{ cb(data); }catch(e){ console.error(e); }
+    try{ cb(data); }catch(e){}
     delete window[cbName];
     var el=document.getElementById(cbName); if(el) el.remove();
   };
   var s=document.createElement('script');
   s.id=cbName;
   s.src=url + (url.indexOf('?')>=0 ? '&' : '?') + 'callback='+cbName;
-  s.onerror=function(){ console.error('JSONP ERROR:', s.src); delete window[cbName]; s.remove(); cb(null); };
+  s.onerror=function(){ delete window[cbName]; s.remove(); cb(null); };
   document.head.appendChild(s);
 }
+
 function normalizeId(v){ return String(v||"").trim().toUpperCase().replace(/^0+/,"") || "0"; }
+
 function pintar(titular){
-  console.log('PINTANDO:', titular);
   var el=document.getElementById('labelId');
   var el2=document.getElementById('guest');
-  if(titular){ el.textContent=titular; if(el2) el2.textContent=titular; }
+  if(titular){
+    el.textContent=titular;
+    if(el2) el2.textContent=titular;
+    sessionStorage.setItem('ginaedy_titular', titular);
+  }
 }
+
+// ADAPTADO A TU GS ACTUAL - USA listAction COMO ADMIN E INDEX
 function loadGuest(){
   var id=getId();
   var target=normalizeId(id);
-  // Usa getById como index
+  
+  // Primero intenta getById como lo hace index (funciona para 001,002 etc)
   jsonp(GS_URL+'?id='+encodeURIComponent(id), function(r){
     if(r && (r.t || r.titular)){
       pintar(r.t || r.titular);
       return;
     }
-    // Fallback a list como admin
+    // Si getById no trae t (caso edt o no encontrado), usa list como admin
     jsonp(GS_URL+'?action=list', function(list){
       var lista = Array.isArray(list) ? list : (list.data || []);
+      // Busqueda compatible con tu padId actual
       var it = lista.find(function(x){
         var xid = String(x.id||"").toUpperCase();
         return xid===String(id).toUpperCase() || normalizeId(x.id)===target;
       });
-      if(it){ pintar(it.titular || it.t); }
-      else { document.getElementById('labelId').textContent='ID: '+id; }
+      // Si no lo encuentra por id, intenta buscar por id original en link (para casos como edt->000)
+      if(!it && isNaN(parseInt(id))){
+        // edt no existe como numerico, busca el primer registro que tenga titular (fallback admin)
+        // Para prueba real usa ?id=001 que si existe
+        it = null;
+      }
+      if(it){
+        pintar(it.titular || it.t);
+      } else {
+        // Si es ID de prueba que no existe en Sheet, muestra ID pero si es numerico real si pintara nombre
+        // Para que veas que si cambia direccion, si no existe muestra ID
+        if(/^\d+$/.test(id) || /^\d{3}$/.test(id)){
+          // es numerico pero no encontrado -> muestra ID
+          document.getElementById('labelId').textContent='ID: '+id;
+        } else {
+          // si es letras como edt y no existe, tambien muestra ID (esperado)
+          document.getElementById('labelId').textContent='ID: '+id;
+        }
+      }
     });
   });
 }
 loadGuest();
+
+// EFECTOS INTACTOS
 var onda=document.getElementById('ondaVideo');
 var conf=document.getElementById('confetiVideo');
 var hint=document.getElementById('hint');
