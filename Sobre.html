@@ -3,31 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Gina & Edy - Sobre v9 CORREGIDO</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<title>Gina & Edy - Sobre v11 - Replica Gemini B2</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#f2ebe1;overflow:hidden}
-.stage{width:95%;max-width:440px;position:relative;transition:opacity .9s;display:flex;justify-content:center}
-.stage.out{opacity:0;pointer-events:none}
+*{margin:0;padding:0;box-sizing:border-box}
+body{min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#f2ebe1}
+.stage{width:95%;max-width:440px;position:relative}
 .video-box{width:100%;max-width:440px;min-height:560px;aspect-ratio:1/1.27;overflow:hidden;background:#f2ebe1;position:relative;border-radius:22px}
-.video-box video{width:100%;height:100%;object-fit:cover;display:block;background:#f2ebe1;transform:scale(1.52);transform-origin:center center}
-#ondaVideo{position:absolute;inset:0;z-index:1;width:100%;height:100%}
-#confetiVideo{position:absolute;inset:0;z-index:2;display:none;width:100%;height:100%}
+.video-box video{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.52);transform-origin:center}
+#ondaVideo{position:absolute;inset:0;z-index:1}
+#confetiVideo{position:absolute;inset:0;z-index:2;display:none}
 #confetiVideo.active{display:block}
 .seal-hit{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:180px;height:180px;border-radius:50%;z-index:5;cursor:pointer}
-.overlay{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:32px 0 18px;pointer-events:none;transition:opacity .3s}
-.overlay button{pointer-events:auto;background:rgba(255,255,255,.92);border:0;padding:8px 18px;border-radius:20px;font-size:11px;letter-spacing:.2em;cursor:pointer}
-.top{text-align:center;pointer-events:auto}
-.tienes{font-family:'Cormorant Garamond',serif;font-style:italic;color:#c2a68a;font-size:22px}
-#labelId{font-family:'Cormorant Garamond',serif;font-weight:700;color:#1e3d2f;font-size:26px;margin-top:8px;min-height:32px}
-.bottom{text-align:center;pointer-events:auto;margin-top:auto}
-.con-amor{font-family:'EB Garamond',serif;font-style:italic;font-size:14px;color:#8a6a5a}
-.fijos{font-family:'Cormorant Garamond',serif;font-size:22px;color:#1a3a2f;margin-top:2px}
-.fecha{font-family:system-ui,sans-serif;font-size:10px;letter-spacing:.22em;color:#7a8a85;margin-top:6px}
+.overlay{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:32px 0;pointer-events:none}
+.overlay button{pointer-events:auto;background:rgba(255,255,255,.9);border:0;padding:8px 18px;border-radius:20px;font-size:11px;letter-spacing:.2em;cursor:pointer}
 .card-layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;pointer-events:none;opacity:0;transition:opacity .6s}
 .card-layer.active{pointer-events:auto;opacity:1}
-.card{width:95%;max-width:440px;background:#fff;border-radius:22px;padding:42px 32px 36px;text-align:center;min-height:560px;display:flex;flex-direction:column;justify-content:center;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.05)}
+.card{width:95%;max-width:440px;background:#fff;border-radius:22px;padding:42px 32px 36px;text-align:center;min-height:560px;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.small-label{font-size:10px;letter-spacing:.32em;color:#9a9a9a}
+.guest{font-family:'Cormorant Garamond',serif;font-size:28px;color:#1a3a2f;margin-top:4px;font-weight:500}
+#labelId{font-family:'Cormorant Garamond',serif;font-size:26px;color:#1e3d2f;margin-top:6px;font-weight:700;min-height:32px}
 </style>
 </head>
 <body>
@@ -37,14 +32,9 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
     <video id="ondaVideo" autoplay loop muted playsinline preload="auto"><source src="sobre_onda.mp4" type="video/mp4"></video>
     <video id="confetiVideo" playsinline muted preload="auto"><source src="sobre_confeti.mp4" type="video/mp4"></video>
     <div class="overlay" id="overlay">
-      <div class="top">
-        <div class="tienes">Tienes una invitación</div>
+      <div style="text-align:center">
+        <div style="font-size:10px;letter-spacing:.3em">Tienes una invitación</div>
         <div id="labelId"></div>
-      </div>
-      <div class="bottom">
-        <div class="con-amor">Con amor,</div>
-        <div class="fijos">Gorgina Isabel & Eduardo</div>
-        <div class="fecha">02 . 01 . 27</div>
       </div>
       <button id="hint">Toca el sello</button>
     </div>
@@ -54,65 +44,85 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 
 <div class="card-layer" id="cardLayer">
   <div class="card">
-    <div style="font-size:10px;letter-spacing:.32em;color:#9a9a9a">TIENES UNA INVITACIÓN</div>
-    <div id="guest" style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#1a3a2f;margin-top:8px"></div>
-    <div style="font-family:'Cormorant Garamond',serif;font-size:24px;margin-top:8px">Nos casamos</div>
-    <div style="font-size:12px;color:#888;margin-top:4px">Gina & Edy<br>02.01.27</div>
-    <div style="margin-top:22px;cursor:pointer;background:#1f3d2b;color:#fff;padding:10px 20px;border-radius:20px;font-size:11px" id="goBtn">VER INVITACIÓN COMPLETA</div>
-    <div style="font-size:8px;color:#bbb;margin-top:20px">v9 CORREGIDO - tamaño 440 + leyenda inicial + copia index</div>
+    <div class="small-label">TIENES UNA INVITACIÓN</div>
+    <div class="guest" id="guest"></div>
+    <div style="font-size:22px;margin-top:14px">Gina & Edy</div>
+    <div style="font-size:10px;letter-spacing:.2em;margin-top:6px">02.01.27</div>
+    <div style="margin-top:28px;cursor:pointer;background:#1f3d2b;color:#fff;padding:10px 20px;border-radius:20px;font-size:11px" id="verBtn">VER INVITACIÓN COMPLETA</div>
+    <div style="font-size:8px;color:#bbb;margin-top:20px">v11 - replica gemini B2</div>
   </div>
 </div>
 
 <script>
-// v9 CORREGIDO - copia exacta index.html que si jala B2
-// Tamaño restaurado a 440px + leyenda inicial como pediste
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec";
+// v11 - Replica exacta logica Gemini que si pinta B2 al final
+// v11 mantiene contexto de v10 pero usando fetch lista como sobre_gemini_ultimo.html linea 113
+const APP_URL = 'https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec';
+function getId(){ return new URLSearchParams(location.search).get('id') || '001'; }
 
-function renderData(obj){
-  if(!obj) return;
-  if(obj.status==="no encontrado"){
-    document.getElementById('labelId').textContent="ID: "+(obj.id||"");
-    document.getElementById('guest').textContent="Invitado";
-    return;
-  }
-  var titular = obj.t || "";
-  if(titular){
-    document.getElementById('labelId').textContent = titular;
-    document.getElementById('guest').textContent = titular;
+async function loadGuest(){
+  try{
+    const r = await fetch(APP_URL);
+    const d = await r.json();
+    const id = getId();
+    const it = d.find(x=>{
+      const xid = String(x.id||'').toLowerCase().trim();
+      const gid = String(id).toLowerCase().trim();
+      return xid === gid || xid.replace(/^0+/,'') === gid.replace(/^0+/,'');
+    });
+    if(it && it.titular){
+      document.getElementById('guest').textContent = it.titular;
+      document.getElementById('labelId').textContent = it.titular;
+      return;
+    }
+    fallbackJSONP();
+  }catch(e){
+    fallbackJSONP();
   }
 }
+function fallbackJSONP(){
+  window.renderData = function(obj){
+    if(!obj) return;
+    if(obj.status==="no encontrado"){
+      document.getElementById('labelId').textContent = "ID: "+obj.id;
+      document.getElementById('guest').textContent = "Invitado";
+      return;
+    }
+    var t = obj.t || obj.titular || "";
+    if(t){
+      document.getElementById('labelId').textContent = t;
+      document.getElementById('guest').textContent = t;
+    }
+  };
+  var s = document.createElement('script');
+  s.src = APP_URL+"?id="+getId()+"&callback=renderData";
+  document.body.appendChild(s);
+}
+loadGuest();
 
-const idParam=new URLSearchParams(window.location.search).get('id')||'001';
-let s=document.createElement('script'); 
-s.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData"; 
-document.body.appendChild(s);
-</script>
-
-<script>
 var onda=document.getElementById('ondaVideo');
 var conf=document.getElementById('confetiVideo');
 var hint=document.getElementById('hint');
 var overlay=document.getElementById('overlay');
 var stage=document.getElementById('stage');
 var cardLayer=document.getElementById('cardLayer');
-onda.muted=true; onda.play().catch(function(){});
-var soundOn=false,clickCount=0,opened=false;
-function enableSound(){ if(soundOn) return; soundOn=true; onda.muted=false; onda.volume=0.6; onda.play(); conf.muted=false; }
+onda.muted=true; onda.play().catch(()=>{});
+var soundOn=false, clickCount=0, opened=false;
+function enableSound(){ if(soundOn) return; soundOn=true; onda.muted=false; onda.volume=0.6; onda.play().catch(()=>{}); conf.muted=false; }
 function firstClick(){ enableSound(); clickCount=1; hint.textContent='Ahora ábrelo ✨'; }
 function openSeq(){
   if(opened) return; opened=true;
   overlay.style.opacity='0';
-  conf.classList.add('active'); conf.currentTime=0; conf.muted=false; conf.volume=0.9; conf.play().catch(function(){});
-  setTimeout(function(){ onda.style.opacity='0'; },500);
-  setTimeout(function(){ onda.pause(); },800);
-  conf.ontimeupdate=function(){
-    if(conf.currentTime>=2.2 && !conf.classList.contains('zoom-final')) conf.classList.add('zoom-final');
-    if(conf.currentTime>=2.85){ conf.pause(); stage.classList.add('out'); cardLayer.classList.add('active'); }
+  conf.classList.add('active'); conf.currentTime=0; conf.muted=false; conf.volume=0.9;
+  var p=conf.play(); if(p!==undefined){ p.then(()=>{onda.pause();}).catch(()=>{conf.play(); onda.pause();}); }
+  conf.ontimeupdate=()=>{
+    var target = conf.duration ? Math.max(conf.duration-0.1,2.8) : 2.85;
+    if(conf.currentTime>=target){ conf.ontimeupdate=null; conf.pause(); stage.classList.add('out'); cardLayer.classList.add('active'); }
   };
 }
-document.getElementById('seal').onclick=function(){ if(clickCount===0) firstClick(); else openSeq(); };
-hint.onclick=function(){ if(clickCount===0) firstClick(); else openSeq(); };
-document.getElementById('goBtn').onclick=function(){ location.href='index.html?id='+idParam; };
+document.getElementById('seal').onclick=()=>{ if(clickCount===0) firstClick(); else openSeq(); };
+hint.onclick=()=>{ if(clickCount===0) firstClick(); else openSeq(); };
+function goIndex(){ location.href='index.html?id='+getId(); }
+document.getElementById('verBtn').onclick=goIndex;
 </script>
 </body>
 </html>
