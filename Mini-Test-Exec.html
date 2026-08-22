@@ -1,0 +1,11 @@
+<!DOCTYPE html><html><body>
+<h2 id="out">Cargando...</h2>
+<script>
+const URL='https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec';
+function renderData(o){ document.getElementById('out').textContent='OK: '+JSON.stringify(o); console.log(o); }
+let s=document.createElement('script');
+s.src=URL+'?id=001&callback=renderData';
+document.body.appendChild(s);
+s.onerror=()=>{ document.getElementById('out').textContent='ERROR script no cargo'; };
+</script>
+</body></html>
