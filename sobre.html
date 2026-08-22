@@ -121,49 +121,48 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 })();
 </script>
 
-<!-- SECCION 2: DB - TU ENLACE EXACTO QUE SI FUNCIONA - exec?id=001 -->
+<!-- SECCION 2 y 3: FORMULA EXACTA DE INDEX.HTML REPLICADA EN SOBRE -->
 <script>
-(() => {
-  // TU ENLACE EXACTO QUE SI FUNCIONA
-  const APP_URL='https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec';
-  const id = new URLSearchParams(location.search).get('id')||'001';
-  const urlFinal = APP_URL + '?id=' + encodeURIComponent(id);
-  console.log('[DB] Llamando a GS con tu enlace que funciona:', urlFinal);
+const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec';
+const idParam = new URLSearchParams(window.location.search).get('id')||'001';
 
-  fetch(urlFinal)
-    .then(r => r.json())
-    .then(obj => {
-      console.log('[DB] Respuesta GS:', obj);
-      const B2 = obj.t || obj.titular || '';
-      console.log('[DB] B2 =', B2);
-      // Puente a seccion 3
-      window.dispatchEvent(new CustomEvent('sheet-ready', {detail: B2}));
-    })
-    .catch(err => {
-      console.error('[DB] Error fetch:', err);
-      window.dispatchEvent(new CustomEvent('sheet-ready', {detail: null}));
-    });
-})();
-</script>
+// Misma funcion renderData de index.html pero pintando labelId y guest de sobre
+function renderData(obj){
+  console.log('[SOBRE] Payload de GS:', obj);
+  if(!obj) return;
 
-<!-- SECCION 3: PUENTE - Pinta B2 en cualquier lugar -->
-<script>
-(() => {
-  window.addEventListener('sheet-ready', (e) => {
-    const B2 = e.detail;
+  // FORMULA FALTANTE QUE TIENE INDEX Y NO TENIA SOBRE:
+  // Si id no existe como 00j, 00x
+  if(obj.status==="no encontrado"){
+    const msg = "ID no encontrado: "+(obj.id||idParam);
+    console.log('[SOBRE] '+msg);
     const elLabel = document.getElementById('labelId');
     const elGuest = document.getElementById('guest');
-    if(B2){
-      if(elLabel) elLabel.textContent = B2;
-      if(elGuest) elGuest.textContent = B2;
-      console.log('[PUENTE] Pintado:', B2);
-    } else {
-      if(elLabel) elLabel.textContent = 'ID: '+(new URLSearchParams(location.search).get('id')||'001');
-      if(elGuest) elGuest.textContent = 'Invitado';
-    }
-  });
-})();
-</script>
+    if(elLabel) elLabel.textContent = msg;
+    if(elGuest) elGuest.textContent = msg;
+    return;
+  }
 
+  // Si ya confirmado (misma logica de index)
+  if(obj.status==="ya_confirmado"){
+    obj.confirmado=true;
+  }
+
+  // B2 = obj.t (columna B) - logica basica transicion
+  const B2 = obj.t || obj.titular || '';
+  console.log('[SOBRE] A2='+idParam+' => B2='+B2);
+
+  const elLabel = document.getElementById('labelId');
+  const elGuest = document.getElementById('guest');
+  if(elLabel) elLabel.textContent = B2; // primera tarjeta
+  if(elGuest) elGuest.textContent = B2;  // segunda tarjeta final (antes era Invitado)
+}
+
+// Misma llamada que index.html: ?id=001&callback=renderData
+let s=document.createElement('script');
+s.src=APPS_SCRIPT_URL+"?id="+encodeURIComponent(idParam)+"&callback=renderData";
+console.log('[SOBRE] Llamando a GS como index:', s.src);
+document.body.appendChild(s);
+</script>
 </body>
 </html>
