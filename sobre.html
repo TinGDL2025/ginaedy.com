@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Gina & Edy - Sobre Final ID</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Great+Vibes&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent; -webkit-touch-callout:none}
@@ -121,48 +124,66 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 })();
 </script>
 
-<!-- SECCION 2 y 3: FORMULA EXACTA DE INDEX.HTML REPLICADA EN SOBRE -->
 <script>
 const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec';
 const idParam = new URLSearchParams(window.location.search).get('id')||'001';
 
-// Misma funcion renderData de index.html pero pintando labelId y guest de sobre
-function renderData(obj){
-  console.log('[SOBRE] Payload de GS:', obj);
-  if(!obj) return;
-
-  // FORMULA FALTANTE QUE TIENE INDEX Y NO TENIA SOBRE:
-  // Si id no existe como 00j, 00x
-  if(obj.status==="no encontrado"){
-    const msg = "ID no encontrado: "+(obj.id||idParam);
-    console.log('[SOBRE] '+msg);
-    const elLabel = document.getElementById('labelId');
-    const elGuest = document.getElementById('guest');
+function pintarSobre(B2, obj){
+  const elLabel = document.getElementById('labelId');
+  const elGuest = document.getElementById('guest');
+  if(!B2){
+    const msg = obj && obj.status==="no encontrado" ? "ID no encontrado: "+(obj.id||idParam) : "ID: "+idParam;
     if(elLabel) elLabel.textContent = msg;
     if(elGuest) elGuest.textContent = msg;
     return;
   }
-
-  // Si ya confirmado (misma logica de index)
-  if(obj.status==="ya_confirmado"){
-    obj.confirmado=true;
-  }
-
-  // B2 = obj.t (columna B) - logica basica transicion
-  const B2 = obj.t || obj.titular || '';
-  console.log('[SOBRE] A2='+idParam+' => B2='+B2);
-
-  const elLabel = document.getElementById('labelId');
-  const elGuest = document.getElementById('guest');
-  if(elLabel) elLabel.textContent = B2; // primera tarjeta
-  if(elGuest) elGuest.textContent = B2;  // segunda tarjeta final (antes era Invitado)
+  if(elLabel) elLabel.textContent = B2;
+  if(elGuest) elGuest.textContent = B2;
 }
 
-// Misma llamada que index.html: ?id=001&callback=renderData
+function renderData(obj){
+  console.log('[SOBRE] JSONP:', obj);
+  if(!obj){ pintarSobre(null, null); return; }
+  if(obj.status==="no encontrado"){
+    pintarSobre(null, obj); return;
+  }
+  if(obj.status==="ya_confirmado") obj.confirmado=true;
+  const B2 = obj.t || obj.titular || '';
+  pintarSobre(B2, obj);
+}
+
+// 1. Intento JSONP con cache-bust (como index)
+const bust = Date.now();
 let s=document.createElement('script');
-s.src=APPS_SCRIPT_URL+"?id="+encodeURIComponent(idParam)+"&callback=renderData";
-console.log('[SOBRE] Llamando a GS como index:', s.src);
+s.src=APPS_SCRIPT_URL+"?id="+encodeURIComponent(idParam)+"&callback=renderData&v="+bust;
+console.log('[SOBRE] Llamando JSONP:', s.src);
+s.onerror = () => {
+  console.log('[SOBRE] JSONP fallo, intento fetch fallback');
+  fetchFallback();
+};
 document.body.appendChild(s);
+
+// 2. Fallback fetch por si JSONP no responde en 3s (evita Cargando infinito)
+let fallbackHecho=false;
+function fetchFallback(){
+  if(fallbackHecho) return; fallbackHecho=true;
+  const url = APPS_SCRIPT_URL+"?id="+encodeURIComponent(idParam)+"&v="+Date.now();
+  console.log('[SOBRE] Fetch fallback:', url);
+  fetch(url).then(r=>r.json()).then(obj=>{
+    console.log('[SOBRE] Fetch OK:', obj);
+    renderData(obj);
+  }).catch(e=>{
+    console.error('[SOBRE] Fetch error:', e);
+    pintarSobre(null, null);
+  });
+}
+setTimeout(()=>{
+  const el = document.getElementById('labelId');
+  if(el && el.textContent==='Cargando...'){
+    console.log('[SOBRE] Timeout 3s sigue Cargando, hago fetch');
+    fetchFallback();
+  }
+}, 3000);
 </script>
 </body>
 </html>
