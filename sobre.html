@@ -75,29 +75,44 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 </div>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
-// --- FUSION V3: RESPALDO 100% FORMATO + LOGICA GEMINI QUE SI PINTA FAMILIA ROSALES ---
+// --- FUSION V5: AUTOMATIZACION MASIVA - UNA LINEA B2 A CUALQUIER LUGAR ---
+// Respaldo 100% formato intacto, solo esta linea conecta Sheet
 const APP_URL='https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec';
 function getId(){return new URLSearchParams(location.search).get('id')||'001';}
-async function loadGuest(){
-  try{
-    const r=await fetch(APP_URL);
-    const d=await r.json();
-    const lista = Array.isArray(d) ? d : (d.data || []);
-    const it=lista.find(x=>String(x.id)===String(getId()));
-    if(it){
-      const nombre = it.titular || it.t || '';
-      const el1=document.getElementById('labelId');
-      const el2=document.getElementById('guest');
-      if(el1) el1.textContent=nombre; // primera tarjeta (sobre onda)
-      if(el2) el2.textContent=nombre; // segunda tarjeta (final confeti)
-      console.log('FUSION V3 pintó:', nombre);
-    }
-  }catch(e){
-    console.log('Error sheet V3', e);
+
+function renderData(obj){
+  // Esta es LA LINEA que conecta B2 a cualquier lugar
+  var lista = [];
+  if(Array.isArray(obj)) lista = obj; // Gemini devuelve array
+  else if(obj && Array.isArray(obj.data)) lista = obj.data;
+  else if(obj && (obj.t || obj.titular)){
+    // Si viene objeto directo {t:'Familia Rosales'}
+    var solo = obj.t || obj.titular;
+    document.getElementById('labelId').textContent = solo;
+    document.getElementById('guest').textContent = solo;
+    return;
+  }
+  
+  // Busca A2 = id y trae B2 = titular
+  var it = lista.find(x=>String(x.id)===String(getId()));
+  if(it){
+    var nombre = it.titular || it.t || ''; // B2
+    // PINTA EN CUALQUIER LUGAR - aqui 2 lugares masivos
+    document.getElementById('labelId').textContent = nombre; // primera tarjeta
+    document.getElementById('guest').textContent = nombre;    // segunda tarjeta final
+  } else if(obj && obj.status==="no encontrado"){
+    document.getElementById('labelId').textContent = 'ID: '+getId();
+    document.getElementById('guest').textContent = 'Invitado';
   }
 }
-loadGuest();
-// --- FIN FUSION V3 ---
+
+// Conexión a Sheet via JSONP (bypassa CORS) - trae TODA la columna A y B
+(function(){
+  var s=document.createElement('script');
+  s.src=APP_URL+'?callback=renderData&t='+Date.now();
+  document.body.appendChild(s);
+})();
+// --- FIN FUSION V5 MASIVA ---
 function launchGoldConfetti(){
   const canvas=document.getElementById('goldConfetti');
   const c=confetti.create(canvas,{resize:true,useWorker:true});
