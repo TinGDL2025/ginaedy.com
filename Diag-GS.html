@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>DIAG GS</title>
+<meta http-equiv="Cache-Control" content="no-cache"></head><body>
+<h2>Diagnóstico GS para 001,002,003,00j</h2>
+<div id="log" style="font-family:monospace;white-space:pre-wrap"></div>
+<script>
+const APP='https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec';
+const ids=['001','002','003','00j','00x'];
+
+function log(m){ document.getElementById('log').textContent+=m+'\n'; console.log(m); }
+
+ids.forEach(id=>{
+  // JSONP
+  const cb='cb_'+id+'_'+Date.now();
+  window[cb]=function(obj){
+    log('--- JSONP '+id+' OK: '+JSON.stringify(obj).substring(0,500));
+  };
+  const s=document.createElement('script');
+  s.src=APP+'?id='+id+'&callback='+cb+'&v='+Date.now();
+  s.onerror=()=>log('--- JSONP '+id+' ERROR carga script');
+  document.body.appendChild(s);
+  
+  // FETCH
+  fetch(APP+'?id='+id+'&v='+Date.now())
+    .then(r=>r.text())
+    .then(t=>{
+      log('--- FETCH '+id+' RAW: '+t.substring(0,500));
+      try{ log('--- FETCH '+id+' JSON: '+JSON.stringify(JSON.parse(t)).substring(0,500)); }catch(e){}
+    })
+    .catch(e=>log('--- FETCH '+id+' FAIL: '+e));
+});
+</script>
+</body></html>
