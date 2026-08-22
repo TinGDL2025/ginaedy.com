@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Gina & Edy - Sobre Completo SECCIONADO</title>
+<title>Gina & Edy - Sobre Final ID</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Great+Vibes&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent; -webkit-touch-callout:none}
@@ -74,14 +74,10 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
   </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- SECCION 1: VISUAL PURO - Fondos, videos, textos fijos -->
-<!-- NO TOCA BASE DE DATOS, NO USA getId, NO PINTA labelId/guest -->
-<!-- ============================================================ -->
+<!-- SECCION 1: VISUAL PURO - NO TOCA DB -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
 (() => {
-  // Todo encerrado, no contamina global
   const onda = document.getElementById('ondaVideo');
   const conf = document.getElementById('confetiVideo');
   const hint = document.getElementById('hint');
@@ -91,14 +87,12 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
   const seal = document.getElementById('seal');
   const sealFinal = document.getElementById('sealFinal');
   const verBtn = document.getElementById('verBtn');
-
   function launchGoldConfetti(){
     const canvas=document.getElementById('goldConfetti');
     const c=confetti.create(canvas,{resize:true,useWorker:true});
     c({particleCount:45,spread:70,startVelocity:28,origin:{x:0.2,y:0.65},angle:60,colors:['#d4af37','#c8a86a','#e8d0a0','#ffd700','#b8975a'],scalar:0.9,ticks:350,gravity:0.7});
     c({particleCount:45,spread:70,startVelocity:28,origin:{x:0.8,y:0.65},angle:120,colors:['#d4af37','#c8a86a','#e8d0a0','#ffd700','#b8975a'],scalar:0.9,ticks:350,gravity:0.7});
   }
-
   onda.muted=true; onda.play().catch(()=>{});
   let soundOn=false,clickCount=0,opened=false;
   function enableSound(){ if(soundOn) return; soundOn=true; onda.muted=false; onda.volume=0.6; onda.play(); conf.muted=false; }
@@ -118,8 +112,6 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
   }
   seal.onclick=()=>{ if(clickCount===0) firstClick(); else openSeq(); };
   hint.onclick=()=>{ if(clickCount===0) firstClick(); else openSeq(); };
-
-  // goIndex aislado: extrae id sin usar funcion global getId de DB
   function goToIndex(){
     const id = new URLSearchParams(location.search).get('id')||'001';
     location.href='index.html?id='+id;
@@ -129,62 +121,42 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 })();
 </script>
 
-<!-- ============================================================ -->
-<!-- SECCION 2: BASE DE DATOS - Conexion Sheet - AISLADA -->
-<!-- NO TOCA VIDEOS, NO TOCA FONDOS, SOLO TRAE B2 -->
-<!-- ============================================================ -->
+<!-- SECCION 2: DB - TU ENLACE EXACTO QUE SI FUNCIONA - exec?id=001 -->
 <script>
 (() => {
+  // TU ENLACE EXACTO QUE SI FUNCIONA
   const APP_URL='https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec';
-  const idFromUrl = new URLSearchParams(location.search).get('id')||'001';
+  const id = new URLSearchParams(location.search).get('id')||'001';
+  const urlFinal = APP_URL + '?id=' + encodeURIComponent(id);
+  console.log('[DB] Llamando a GS con tu enlace que funciona:', urlFinal);
 
-  // Funcion matematica exacta: A2 -> B2
-  window.__renderSheetData = function(payload){
-    console.log('[DB] Payload crudo:', payload);
-    let lista = [];
-    if(Array.isArray(payload)) lista = payload;
-    else if(payload && Array.isArray(payload.data)) lista = payload.data;
-    else if(payload && (payload.t || payload.titular)){
-      // Objeto directo
-      const B2 = payload.t || payload.titular;
-      console.log('[DB] Directo A2='+payload.id+' => B2='+B2);
+  fetch(urlFinal)
+    .then(r => r.json())
+    .then(obj => {
+      console.log('[DB] Respuesta GS:', obj);
+      const B2 = obj.t || obj.titular || '';
+      console.log('[DB] B2 =', B2);
+      // Puente a seccion 3
       window.dispatchEvent(new CustomEvent('sheet-ready', {detail: B2}));
-      return;
-    }
-    const fila = lista.find(r => String(r.id) === String(idFromUrl));
-    if(fila){
-      const B2 = fila.titular || fila.t || '';
-      console.log('[DB] Encontrado A2='+idFromUrl+' => B2='+B2);
-      window.dispatchEvent(new CustomEvent('sheet-ready', {detail: B2}));
-    } else {
-      console.log('[DB] No encontrado A2='+idFromUrl);
+    })
+    .catch(err => {
+      console.error('[DB] Error fetch:', err);
       window.dispatchEvent(new CustomEvent('sheet-ready', {detail: null}));
-    }
-  };
-
-  // Pide a Sheet via JSONP (no fetch, no CORS)
-  const s = document.createElement('script');
-  s.src = APP_URL+'?id='+encodeURIComponent(idFromUrl)+'&callback=__renderSheetData';
-  console.log('[DB] Request:', s.src);
-  document.body.appendChild(s);
+    });
 })();
 </script>
 
-<!-- ============================================================ -->
-<!-- SECCION 3: PUENTE - Pinta B2 en cualquier lugar - AISLADA -->
-<!-- Esta es la UNICA que toca labelId y guest, rutina sencilla -->
-<!-- ============================================================ -->
+<!-- SECCION 3: PUENTE - Pinta B2 en cualquier lugar -->
 <script>
 (() => {
-  // Escucha evento de DB, pinta donde quieras
   window.addEventListener('sheet-ready', (e) => {
     const B2 = e.detail;
-    console.log('[PUENTE] Pintando B2:', B2);
     const elLabel = document.getElementById('labelId');
     const elGuest = document.getElementById('guest');
     if(B2){
-      if(elLabel) elLabel.textContent = B2; // primera tarjeta
-      if(elGuest) elGuest.textContent = B2; // segunda tarjeta final
+      if(elLabel) elLabel.textContent = B2;
+      if(elGuest) elGuest.textContent = B2;
+      console.log('[PUENTE] Pintado:', B2);
     } else {
       if(elLabel) elLabel.textContent = 'ID: '+(new URLSearchParams(location.search).get('id')||'001');
       if(elGuest) elGuest.textContent = 'Invitado';
