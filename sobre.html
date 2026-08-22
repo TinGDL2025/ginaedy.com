@@ -3,13 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Gina & Edy - Sobre DEBUG</title>
+<title>Gina & Edy - Sobre</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Great+Vibes&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#f2ebe1;overflow:hidden;font-family:system-ui}
-.debug{position:fixed;top:8px;left:8px;right:8px;background:#000;color:#0f0;padding:8px;font-size:11px;z-index:999;white-space:pre-wrap;max-height:120px;overflow:auto}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#f2ebe1;overflow:hidden}
 .stage{width:96vw;max-width:680px;position:relative;transition:opacity .9s ease}
 .stage.out{opacity:0;pointer-events:none}
 .video-box{width:92vw;max-width:520px;aspect-ratio:3/4.8;margin:0 auto;overflow:hidden;background:transparent;position:relative}
@@ -23,9 +21,9 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 .card-layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;pointer-events:none;opacity:0;transition:opacity .9s}
 .card-layer.active{pointer-events:auto;opacity:1}
 .card{width:92vw;max-width:400px;background:#fff;border-radius:22px;padding:42px 32px 36px;text-align:center;min-height:560px;display:flex;flex-direction:column;justify-content:center;align-items:center;box-shadow:0 20px 60px rgba(0,0,0,.12)}
+.guest{font-family:'Cormorant Garamond',serif;font-size:28px;color:#1a3a2f;margin-top:4px}
 .small-label{font-size:10px;letter-spacing:.32em;color:#9a9a9a}
 .con-amor{font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:#8a6a5a;margin-top:8px}
-.guest{font-family:'Cormorant Garamond',serif;font-size:28px;color:#1a3a2f;margin-top:4px}
 .divider{width:42px;height:1px;background:#e6d5c3;margin:18px auto}
 .nos-casamos{font-family:'Great Vibes',cursive;font-size:48px;color:#1a3a2f}
 .gina{font-family:'Cormorant Garamond',serif;font-size:22px;color:#1a3a2f;margin-top:14px}
@@ -36,7 +34,6 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 </style>
 </head>
 <body>
-<div class="debug" id="debug">Iniciando...\n</div>
 <div class="stage" id="stage">
   <div class="video-box" id="videoBox">
     <video id="ondaVideo" autoplay loop muted playsinline><source src="sobre_onda.mp4" type="video/mp4"></video>
@@ -62,81 +59,44 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
-const d=document.getElementById('debug');
-function log(m){ d.textContent+=m+'\n'; console.log(m); }
 (() => {
-  const onda=document.getElementById('ondaVideo'), conf=document.getElementById('confetiVideo'), hint=document.getElementById('hint'), stage=document.getElementById('stage'), cardLayer=document.getElementById('cardLayer'), seal=document.getElementById('seal'), sealFinal=document.getElementById('sealFinal'), verBtn=document.getElementById('verBtn'), videoBox=document.getElementById('videoBox');
-  onda.muted=true; onda.play().catch(()=>{});
-  let soundOn=false,clickCount=0,opened=false;
+  const onda=document.getElementById('ondaVideo'), conf=document.getElementById('confetiVideo'), hint=document.getElementById('hint'), stage=document.getElementById('stage'), cardLayer=document.getElementById('cardLayer'), seal=document.getElementById('seal'), sealFinal=document.getElementById('sealFinal'), verBtn=document.getElementById('verBtn');
+  onda.muted=true; onda.play().catch(()=>{}); let soundOn=false,clickCount=0,opened=false;
   function enableSound(){ if(soundOn) return; soundOn=true; onda.muted=false; onda.volume=0.6; onda.play(); conf.muted=false; }
   function firstClick(){ enableSound(); clickCount=1; hint.textContent='Ahora ábrelo ✨'; }
-  function openSeq(){
-    if(opened) return; opened=true; hint.style.opacity='0';
-    conf.classList.add('active'); conf.currentTime=0; conf.muted=false; conf.volume=0.9; conf.play();
-    setTimeout(()=>{ onda.style.opacity='0'; },500);
-    setTimeout(()=>{ onda.pause(); },800);
-    conf.ontimeupdate=()=>{
-      if(conf.currentTime>=2.2 && !conf.classList.contains('zoom-final')) conf.classList.add('zoom-final');
-      if(conf.currentTime>=2.85){ conf.pause(); stage.classList.add('out'); cardLayer.classList.add('active'); }
-    }
-  }
-  seal.onclick=()=>{ if(clickCount===0) firstClick(); else openSeq(); };
-  hint.onclick=()=>{ if(clickCount===0) firstClick(); else openSeq(); };
+  function openSeq(){ if(opened) return; opened=true; hint.style.opacity='0'; conf.classList.add('active'); conf.currentTime=0; conf.muted=false; conf.volume=0.9; conf.play(); setTimeout(()=>{ onda.style.opacity='0'; },500); setTimeout(()=>{ onda.pause(); },800); conf.ontimeupdate=()=>{ if(conf.currentTime>=2.2 && !conf.classList.contains('zoom-final')) conf.classList.add('zoom-final'); if(conf.currentTime>=2.85){ conf.pause(); stage.classList.add('out'); cardLayer.classList.add('active'); } } }
+  seal.onclick=()=>{ if(clickCount===0) firstClick(); else openSeq(); }; hint.onclick=()=>{ if(clickCount===0) firstClick(); else openSeq(); };
   function goToIndex(){ const id=new URLSearchParams(location.search).get('id')||'001'; location.href='index.html?id='+id; }
   sealFinal.onclick=goToIndex; verBtn.onclick=goToIndex;
 })();
 </script>
 
+<!-- FORMULA EXACTA DE INDEX.HTML QUE SI FUNCIONA CON TU EXEC -->
 <script>
-const APPS='https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec';
-const idParam=new URLSearchParams(location.search).get('id')||'001';
-log('ID en URL: '+idParam);
-log('Dominio: '+location.origin);
-
-function pintar(B2,obj){
-  log('pintar() B2='+B2+' obj='+JSON.stringify(obj).substring(0,300));
-  const l=document.getElementById('labelId'), g=document.getElementById('guest');
-  if(obj && obj.status==='no encontrado'){
-    const msg='ID no encontrado: '+(obj.id||idParam);
-    if(l) l.textContent=msg; if(g) g.textContent=msg;
-    log('Resultado: '+msg); return;
-  }
-  if(!B2){
-    const msg='ID: '+idParam;
-    if(l) l.textContent=msg; if(g) g.textContent=msg;
-    log('Resultado fallback: '+msg); return;
-  }
-  if(l) l.textContent=B2; if(g) g.textContent=B2;
-  log('Resultado OK B2: '+B2);
-}
+// MISMA URL QUE INDEX
+const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec';
 
 function renderData(obj){
-  log('renderData llamado: '+JSON.stringify(obj).substring(0,500));
-  if(!obj){ pintar(null,null); return; }
-  if(obj.status==='ya_confirmado'){
-    const B2=obj.tConfirmado||obj.t||obj.titular||'';
-    pintar(B2,obj); return;
+  console.log('GS obj:', obj);
+  if(!obj) return;
+  if(obj.status==="no encontrado"){
+    document.getElementById('labelId').textContent="ID no encontrado: "+(obj.id||'');
+    document.getElementById('guest').textContent="ID no encontrado: "+(obj.id||'');
+    return;
   }
-  const B2=obj.t||obj.titular||'';
-  pintar(B2,obj);
+  // B2 = obj.t igual que index
+  const B2 = obj.t || obj.titular || '';
+  document.getElementById('labelId').textContent = B2;
+  document.getElementById('guest').textContent = B2;
 }
 
-const cbUrl=APPS+'?id='+encodeURIComponent(idParam)+'&callback=renderData&v='+Date.now();
-log('Cargando JSONP: '+cbUrl);
+// MISMA LLAMADA QUE INDEX - SIN &v= para no romper tu GS
+const idParam = new URLSearchParams(window.location.search).get('id')||'001';
 let s=document.createElement('script');
-s.src=cbUrl;
-s.onerror=()=>{ log('JSONP ERROR, intento no callback'); fetch(APPS+'?id='+idParam).then(r=>r.text()).then(t=>{ log('FETCH RAW: '+t.substring(0,500)); try{ renderData(JSON.parse(t)); }catch(e){ log('FETCH parse error'); pintar(null,null);} }).catch(e=>{ log('FETCH FAIL: '+e); pintar(null,null); }); };
+s.src=APPS_SCRIPT_URL+"?id="+encodeURIComponent(idParam)+"&callback=renderData";
+console.log('Llamando:', s.src);
 document.body.appendChild(s);
-
-setTimeout(()=>{
-  const l=document.getElementById('labelId');
-  if(l && l.textContent==='Cargando...'){
-    log('Timeout 4s sigue Cargando, forzar fetch');
-    fetch(APPS+'?id='+idParam).then(r=>r.text()).then(t=>{ log('FETCH TIMEOUT RAW: '+t.substring(0,500)); try{ renderData(JSON.parse(t)); }catch(e){ pintar(null,null);} });
-  }
-},4000);
 </script>
 </body>
 </html>
