@@ -1,102 +1,196 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Gina & Edy - Sobre</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Great+Vibes&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#f2ebe1;overflow:hidden}
-.stage{width:96vw;max-width:680px;position:relative;transition:opacity .9s ease}
-.stage.out{opacity:0;pointer-events:none}
-.video-box{width:92vw;max-width:520px;aspect-ratio:3/4.8;margin:0 auto;overflow:hidden;background:transparent;position:relative}
-#ondaVideo{width:100%;height:100%;object-fit:contain;transform:scale(1.60);position:absolute;inset:0}
-#confetiVideo{display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;transform:scale(0.72);opacity:0;transition:opacity .5s,transform .6s}
-#confetiVideo.active{display:block;opacity:1}
-#confetiVideo.zoom-final{transform:scale(1.02)}
-.seal-hit{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:150px;height:150px;border-radius:50%;z-index:5;cursor:pointer}
-.overlay{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:28px 0 36px;pointer-events:none}
-.overlay button{pointer-events:auto;background:rgba(255,255,255,.92);border:0;padding:8px 18px;border-radius:20px;font-size:11px;cursor:pointer}
-.card-layer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:50;pointer-events:none;opacity:0;transition:opacity .9s}
-.card-layer.active{pointer-events:auto;opacity:1}
-.card{width:92vw;max-width:400px;background:#fff;border-radius:22px;padding:42px 32px 36px;text-align:center;min-height:560px;display:flex;flex-direction:column;justify-content:center;align-items:center;box-shadow:0 20px 60px rgba(0,0,0,.12)}
-.guest{font-family:'Cormorant Garamond',serif;font-size:28px;color:#1a3a2f;margin-top:4px}
-.small-label{font-size:10px;letter-spacing:.32em;color:#9a9a9a}
-.con-amor{font-family:'EB Garamond',serif;font-style:italic;font-size:13px;color:#8a6a5a;margin-top:8px}
-.divider{width:42px;height:1px;background:#e6d5c3;margin:18px auto}
-.nos-casamos{font-family:'Great Vibes',cursive;font-size:48px;color:#1a3a2f}
-.gina{font-family:'Cormorant Garamond',serif;font-size:22px;color:#1a3a2f;margin-top:14px}
-.fecha{font-size:10px;letter-spacing:.2em;color:#7a8a85;margin-top:6px}
-.seal-wrap{position:relative;margin-top:28px;width:68px;height:68px;cursor:pointer}
-.seal-final{width:68px;height:68px;border-radius:50%;background:radial-gradient(circle at 30% 30%, #e8d0a0, #c8a86a);border:1px solid #b8975a;color:#5a3a20;display:flex;align-items:center;justify-content:center}
-.ver{font-size:9px;letter-spacing:.24em;color:#5a6a65;margin-top:18px;cursor:pointer}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitación Digital - Boda</title>
+    <style>
+        /* Estilos base limpios que respetan el diseño original */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            color: #444;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .detalles {
+            margin: 20px 0;
+            text-align: left;
+            background: #fafafa;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .detalles p {
+            margin: 8px 0;
+            font-size: 16px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #mensaje-estado {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-<div class="stage" id="stage">
-  <div class="video-box" id="videoBox">
-    <video id="ondaVideo" autoplay loop muted playsinline><source src="sobre_onda.mp4" type="video/mp4"></video>
-    <video id="confetiVideo" playsinline muted><source src="sobre_confeti.mp4" type="video/mp4"></video>
-    <div class="overlay">
-      <div style="text-align:center"><div style="font-family:'Cormorant Garamond',serif;font-style:italic;color:#c2a68a;font-size:22px;">Tienes una invitación</div><div id="labelId" style="font-family:'Cormorant Garamond',serif;font-weight:700;color:#1e3d2f;font-size:26px;margin-top:6px">Cargando...</div></div>
-      <button id="hint">Toca el sello</button>
+
+    <div class="container">
+        <h1>¡Estás Invitado!</h1>
+        <div id="cargando">Cargando los datos de tu invitación...</div>
+
+        <div id="contenido-invitacion" style="display: none;">
+            <div class="detalles">
+                <p><strong>Titular:</strong> <span id="lbl-titular"></span></p>
+                <p><strong>Lugares Asignados:</strong> <span id="lbl-lugares"></span></p>
+                <p><strong>Mesa:</strong> <span id="lbl-mesa"></span></p>
+            </div>
+
+            <form id="form-confirmacion" onsubmit="enviarAsistencia(event)">
+                <div class="form-group">
+                    <label for="inputLugaresConfirmados">Lugares que confirman asistir:</label>
+                    <input type="number" id="inputLugaresConfirmados" required min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="inputNombresConfirmados">Nombres de los asistentes:</label>
+                    <input type="text" id="inputNombresConfirmados" placeholder="Escribe los nombres completos" required>
+                </div>
+
+                <button type="submit" id="btn-enviar">Confirmar Asistencia</button>
+            </form>
+            <div id="mensaje-estado"></div>
+        </div>
     </div>
-    <div class="seal-hit" id="seal"></div>
-  </div>
-</div>
-<div class="card-layer" id="cardLayer">
-  <div class="card">
-    <div class="small-label">TIENES UNA INVITACIÓN</div>
-    <div class="con-amor">Con amor,</div>
-    <div class="guest" id="guest">Cargando...</div>
-    <div class="divider"></div>
-    <div class="nos-casamos">Nos casamos</div>
-    <div class="gina">Gina & Edy</div>
-    <div class="fecha">02.01.27</div>
-    <div class="seal-wrap" id="sealFinal"><div class="seal-final">G&E</div></div>
-    <div class="ver" id="verBtn">VER INVITACIÓN COMPLETA</div>
-  </div>
-</div>
 
-<script>
-(() => {
-  const onda=document.getElementById('ondaVideo'), conf=document.getElementById('confetiVideo'), hint=document.getElementById('hint'), stage=document.getElementById('stage'), cardLayer=document.getElementById('cardLayer'), seal=document.getElementById('seal'), sealFinal=document.getElementById('sealFinal'), verBtn=document.getElementById('verBtn');
-  onda.muted=true; onda.play().catch(()=>{}); let soundOn=false,clickCount=0,opened=false;
-  function enableSound(){ if(soundOn) return; soundOn=true; onda.muted=false; onda.volume=0.6; onda.play(); conf.muted=false; }
-  function firstClick(){ enableSound(); clickCount=1; hint.textContent='Ahora ábrelo ✨'; }
-  function openSeq(){ if(opened) return; opened=true; hint.style.opacity='0'; conf.classList.add('active'); conf.currentTime=0; conf.muted=false; conf.volume=0.9; conf.play(); setTimeout(()=>{ onda.style.opacity='0'; },500); setTimeout(()=>{ onda.pause(); },800); conf.ontimeupdate=()=>{ if(conf.currentTime>=2.2 && !conf.classList.contains('zoom-final')) conf.classList.add('zoom-final'); if(conf.currentTime>=2.85){ conf.pause(); stage.classList.add('out'); cardLayer.classList.add('active'); } } }
-  seal.onclick=()=>{ if(clickCount===0) firstClick(); else openSeq(); }; hint.onclick=()=>{ if(clickCount===0) firstClick(); else openSeq(); };
-  function goToIndex(){ const id=new URLSearchParams(location.search).get('id')||'001'; location.href='index.html?id='+id; }
-  sealFinal.onclick=goToIndex; verBtn.onclick=goToIndex;
-})();
-</script>
+    <script>
+        // REEMPLAZA ESTA URL CON TU WEB APP DE GOOGLE APPS SCRIPT EXACTA (la misma que usa tu admin e index)
+        const URL_GOOGLE_SCRIPT = "TU_URL_DE_GOOGLE_APPS_SCRIPT_AQUI";
 
-<!-- FORMULA EXACTA DE INDEX.HTML QUE SI FUNCIONA CON TU EXEC -->
-<script>
-// MISMA URL QUE INDEX
-const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec';
+        // Obtener el ID de la URL (ejemplo: sobre.html?id=001)
+        const urlParams = new URLSearchParams(window.location.search);
+        const idInvitado = urlParams.get('id');
 
-function renderData(obj){
-  console.log('GS obj:', obj);
-  if(!obj) return;
-  if(obj.status==="no encontrado"){
-    document.getElementById('labelId').textContent="ID no encontrado: "+(obj.id||'');
-    document.getElementById('guest').textContent="ID no encontrado: "+(obj.id||'');
-    return;
-  }
-  // B2 = obj.t igual que index
-  const B2 = obj.t || obj.titular || '';
-  document.getElementById('labelId').textContent = B2;
-  document.getElementById('guest').textContent = B2;
-}
+        document.addEventListener("DOMContentLoaded", () => {
+            if (!idInvitado) {
+                document.getElementById("cargando").innerText = "No se encontró un código de invitación válido en el enlace.";
+                return;
+            }
 
-// MISMA LLAMADA QUE INDEX - SIN &v= para no romper tu GS
-const idParam = new URLSearchParams(window.location.search).get('id')||'001';
-let s=document.createElement('script');
-s.src=APPS_SCRIPT_URL+"?id="+encodeURIComponent(idParam)+"&callback=renderData";
-console.log('Llamando:', s.src);
-document.body.appendChild(s);
-</script>
+            // Petición GET para recuperar los datos del invitado desde el Google Sheet sin tocar formatos
+            fetch(`${URL_GOOGLE_SCRIPT}?id=${idInvitado}`)
+                .then(response => response.json())
+                .then(resultado => {
+                    // Soporte para respuestas estándar de Apps Script
+                    const datos = resultado.data || resultado;
+                    
+                    if (resultado.status === "success" || datos) {
+                        document.getElementById("lbl-titular").innerText = datos["Titular Invitación"] || "Invitado";
+                        document.getElementById("lbl-lugares").innerText = datos["Lugares Asignados"] || "0";
+                        document.getElementById("lbl-mesa").innerText = datos["Mesa"] || datos["Mesa Asignada"] || "Por asignar";
+                        
+                        // Precargar si ya hubiera datos previos
+                        if(datos["Lugares Confirmados"]) {
+                            document.getElementById("inputLugaresConfirmados").value = datos["Lugares Confirmados"];
+                        }
+                        if(datos["Nombres Confirmados (quién viene)"]) {
+                            document.getElementById("inputNombresConfirmados").value = datos["Nombres Confirmados (quién viene)"];
+                        }
+
+                        document.getElementById("cargando").style.display = "none";
+                        document.getElementById("contenido-invitacion").style.display = "block";
+                    } else {
+                        document.getElementById("cargando").innerText = "Invitación no encontrada en el sistema.";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al conectar:", error);
+                    document.getElementById("cargando").innerText = "Error al cargar la información. Inténtalo más tarde.";
+                });
+        });
+
+        // Función para enviar la asistencia mediante POST respetando la lógica actual de tu GS
+        function enviarAsistencia(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById("btn-enviar");
+            const mensajeEstado = document.getElementById("mensaje-estado");
+            
+            btn.disabled = true;
+            btn.innerText = "Enviando...";
+            mensajeEstado.innerText = "";
+
+            const payload = {
+                id: idInvitado,
+                lugaresConfirmados: document.getElementById("inputLugaresConfirmados").value,
+                nombresConfirmados: document.getElementById("inputNombresConfirmados").value
+            };
+
+            fetch(URL_GOOGLE_SCRIPT, {
+                method: "POST",
+                mode: "no-cors", // Requerido para llamadas externas a Google Apps Script
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                mensajeEstado.style.color = "green";
+                mensajeEstado.innerText = "¡Muchas gracias! Tu confirmación ha sido guardada con éxito.";
+                btn.innerText = "¡Confirmado!";
+            })
+            .catch(error => {
+                console.error("Error al enviar:", error);
+                mensajeEstado.style.color = "red";
+                mensajeEstado.innerText = "Hubo un problema al registrar. Por favor, intenta de nuevo.";
+                btn.disabled = false;
+                btn.innerText = "Confirmar Asistencia";
+            });
+        }
+    </script>
 </body>
 </html>
