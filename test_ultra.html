@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Test Ultra Simple</title></head>
+<body style="background:#f2ebe1;display:flex;align-items:center;justify-content:center;min-height:100vh">
+<div style="background:white;padding:40px;border-radius:20px;text-align:center">
+<div style="font-style:italic;color:#c2a68a">Esta es tu invitación</div>
+<div id="titularTxt" style="font-size:28px;font-weight:700;color:#1e3d2f;margin:12px 0">Cargando...</div>
+<div style="font-size:12px;color:#888">disfrútala</div>
+<div style="font-size:10px;color:#aaa;margin-top:10px" id="debug"></div>
+</div>
+<script>
+const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec";
+function renderData(obj){
+  console.log('GS obj:',obj);
+  document.getElementById('debug').textContent=JSON.stringify(obj).substring(0,200);
+  if(!obj) return;
+  if(obj.status==="no encontrado"){
+    document.getElementById('titularTxt').textContent="ID no encontrado: "+(obj.id||"");
+    return;
+  }
+  let B2=obj.t||'';
+  document.getElementById('titularTxt').textContent=B2;
+}
+const idParam=new URLSearchParams(window.location.search).get('id')||'001';
+let s=document.createElement('script'); s.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData"; document.body.appendChild(s);
+</script>
+</body></html>
