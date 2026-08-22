@@ -75,44 +75,45 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 </div>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script>
-// --- FUSION V5: AUTOMATIZACION MASIVA - UNA LINEA B2 A CUALQUIER LUGAR ---
-// Respaldo 100% formato intacto, solo esta linea conecta Sheet
+// --- FUSION V6: MATEMATICA EXACTA A2 -> B2, NO SUERTE ---
+// Sheet: Columna A = id (A2=001), Columna B = titular (B2=Familia Rosales)
+// URL: ?id=001  =>  A2 = 001
 const APP_URL='https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec';
-function getId(){return new URLSearchParams(location.search).get('id')||'001';}
+function getId(){return new URLSearchParams(location.search).get('id')||'001';} // extrae A2 de URL
 
-function renderData(obj){
-  // Esta es LA LINEA que conecta B2 a cualquier lugar
-  var lista = [];
-  if(Array.isArray(obj)) lista = obj; // Gemini devuelve array
-  else if(obj && Array.isArray(obj.data)) lista = obj.data;
-  else if(obj && (obj.t || obj.titular)){
-    // Si viene objeto directo {t:'Familia Rosales'}
-    var solo = obj.t || obj.titular;
-    document.getElementById('labelId').textContent = solo;
-    document.getElementById('guest').textContent = solo;
+// TRAZA MATEMATICA: id -> find -> B2
+function renderData(payload){
+  console.log('1. PAYLOAD CRUDO DE SHEET:', payload);
+  // Caso 1: payload es objeto directo {id:'001', t:'Familia Rosales'} cuando usas ?id=001&callback
+  if(payload && !Array.isArray(payload) && !payload.data && (payload.t || payload.titular)){
+    var B2 = payload.t || payload.titular; // B2 = celda B2
+    console.log('2. A2='+payload.id+' -> B2='+B2+' (directo)');
+    document.getElementById('labelId').textContent = B2;
+    document.getElementById('guest').textContent = B2;
     return;
   }
-  
-  // Busca A2 = id y trae B2 = titular
-  var it = lista.find(x=>String(x.id)===String(getId()));
-  if(it){
-    var nombre = it.titular || it.t || ''; // B2
-    // PINTA EN CUALQUIER LUGAR - aqui 2 lugares masivos
-    document.getElementById('labelId').textContent = nombre; // primera tarjeta
-    document.getElementById('guest').textContent = nombre;    // segunda tarjeta final
-  } else if(obj && obj.status==="no encontrado"){
-    document.getElementById('labelId').textContent = 'ID: '+getId();
-    document.getElementById('guest').textContent = 'Invitado';
+  // Caso 2: payload es array [{id:'001', titular:'Familia Rosales'}, ...] cuando usas ?callback
+  var LISTA = Array.isArray(payload) ? payload : (payload.data || []);
+  console.log('2. LISTA DE SHEET:', LISTA);
+  var A2 = String(getId());
+  var FILA = LISTA.find(r => String(r.id) === A2); // ecuacion: r.id == A2
+  console.log('3. BUSQUEDA: A2='+A2+' encontrado:', FILA);
+  if(FILA){
+    var B2 = FILA.titular || FILA.t || ''; // B2 = columna B
+    console.log('4. RESULTADO: A2='+A2+' => B2='+B2);
+    document.getElementById('labelId').textContent = B2; // pinta primera tarjeta
+    document.getElementById('guest').textContent = B2;    // pinta segunda tarjeta final
   }
 }
 
-// Conexión a Sheet via JSONP (bypassa CORS) - trae TODA la columna A y B
+// Conexion exacta: ?id=001&callback=renderData => GS hace getById('001') => {id:'001', t:'Familia Rosales'}
 (function(){
   var s=document.createElement('script');
-  s.src=APP_URL+'?callback=renderData&t='+Date.now();
+  s.src=APP_URL+'?id='+encodeURIComponent(getId())+'&callback=renderData';
+  console.log('0. REQUEST A SHEET:', s.src);
   document.body.appendChild(s);
 })();
-// --- FIN FUSION V5 MASIVA ---
+// --- FIN MATEMATICA ---
 function launchGoldConfetti(){
   const canvas=document.getElementById('goldConfetti');
   const c=confetti.create(canvas,{resize:true,useWorker:true});
