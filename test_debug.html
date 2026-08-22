@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Debug Ultra</title></head>
+<body style="background:#f2ebe1;display:flex;align-items:center;justify-content:center;min-height:100vh">
+<div style="background:white;padding:30px;border-radius:20px;text-align:center;max-width:500px;word-break:break-all">
+<div id="url" style="font-size:10px;color:#aaa"></div>
+<div id="titularTxt" style="font-size:24px;font-weight:700;margin:12px 0">Cargando...</div>
+<div id="status" style="font-size:11px;color:#888"></div>
+</div>
+<script>
+const APPS_SCRIPT_URL="https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec";
+function renderData(obj){
+  document.getElementById('titularTxt').textContent=obj.t||JSON.stringify(obj).substring(0,100);
+  document.getElementById('status').textContent='renderData OK: '+JSON.stringify(obj).substring(0,300);
+  console.log('GS OK',obj);
+}
+const idParam=new URLSearchParams(window.location.search).get('id')||'001';
+const finalUrl=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData";
+document.getElementById('url').textContent=finalUrl;
+let s=document.createElement('script');
+s.src=finalUrl;
+s.onload=()=>{document.getElementById('status').textContent='script onload pero renderData no llamado - revisa Red'; console.log('script onload');};
+s.onerror=()=>{document.getElementById('titularTxt').textContent='Error carga GS onerror'; document.getElementById('status').textContent='onerror'; console.log('script onerror');};
+document.body.appendChild(s);
+// timeout
+setTimeout(()=>{if(document.getElementById('titularTxt').textContent==='Cargando...'){document.getElementById('status').textContent='Timeout 8s: GS no respondió renderData - mira pestaña Red > script.google.com > Respuesta';}},8000);
+</script>
+</body></html>
