@@ -124,8 +124,8 @@ body{min-height:100dvh;display:flex;align-items:center;justify-content:center;ba
 })();
 </script>
 
-<script>
 
+<script>
 const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec';
 const idParam = new URLSearchParams(window.location.search).get('id')||'001';
 
@@ -143,21 +143,48 @@ function pintarSobre(B2, obj){
 }
 
 function renderData(obj){
-  console.log('[SOBRE] JSONP:', obj);
+  console.log('[SOBRE] renderData OK:', obj);
   if(!obj){ pintarSobre(null, null); return; }
-  if(obj.status==="no encontrado"){
-    pintarSobre(null, obj); return;
-  }
+  if(obj.status==="no encontrado"){ pintarSobre(null, obj); return; }
   if(obj.status==="ya_confirmado") obj.confirmado=true;
   const B2 = obj.t || obj.titular || '';
   pintarSobre(B2, obj);
 }
 
-// EXACTAMENTE IGUAL QUE TU INDEX.HTML - SIN &v= NI FETCH
+// Fallback como admin.html
+function jsonpFallback(){
+  const cbName='cb_'+Date.now()+Math.random().toString(36).slice(2);
+  window[cbName]=function(obj){
+    console.log('[SOBRE] jsonp fallback OK:', obj);
+    renderData(obj);
+    delete window[cbName];
+  };
+  let s2=document.createElement('script');
+  s2.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback="+cbName;
+  s2.onerror=()=>{ console.log('fallback onerror'); document.getElementById('labelId').textContent='Error carga GS'; delete window[cbName]; };
+  document.body.appendChild(s2);
+}
+
+let rendered=false;
+const origPintar=pintarSobre;
+window.pintarSobre=function(B2,obj){ rendered=true; origPintar(B2,obj); };
+
+// Intento 1 igual que index.html - SIN encodeURIComponent
 let s=document.createElement('script');
-s.src=APPS_SCRIPT_URL+"?id="+encodeURIComponent(idParam)+"&callback=renderData";
-s.onerror=()=>{ console.log('JSONP error'); document.getElementById('labelId').textContent='Error carga GS'; };
+s.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData";
+s.onload=()=>{ console.log('script onload, esperando renderData...'); setTimeout(()=>{ if(!document.getElementById('labelId').textContent || document.getElementById('labelId').textContent==='Cargando...'){ console.log('renderData no llego, fallback'); jsonpFallback(); } },1500); };
+s.onerror=()=>{ console.log('JSONP error, probando fallback'); jsonpFallback(); };
 document.body.appendChild(s);
+
+// Timeout final
+setTimeout(()=>{ 
+  const label=document.getElementById('labelId');
+  if(label && label.textContent==='Cargando...'){ 
+    console.log('timeout final, fallback'); 
+    jsonpFallback(); 
+  } 
+},3000);
 </script>
+
 </body>
 </html>
