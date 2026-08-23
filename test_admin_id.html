@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Test Admin JSONP ID</title></head>
+<body style="background:#f2ebe1;display:flex;align-items:center;justify-content:center;min-height:100vh">
+<div style="background:white;padding:30px;border-radius:20px;text-align:center;max-width:500px">
+<div id="url" style="font-size:9px;color:#aaa;word-break:break-all"></div>
+<div id="titular" style="font-size:24px;font-weight:700;margin:12px 0">Cargando...</div>
+<div id="status" style="font-size:11px;color:#888"></div>
+</div>
+<script>
+const GS_URL='https://script.google.com/macros/s/AKfycbwWk1g0LJWg1eQ3f2VH5c43UrsMIiB8YLPXpVchr5Ejaynvn38c8cH_TDuYDuYToJd8tgpmw/exec';
+const idParam=new URLSearchParams(window.location.search).get('id')||'001';
+document.getElementById('url').textContent=GS_URL+"?id="+idParam;
+
+function jsonp(u,cb){
+  const n='cb_'+Date.now()+Math.random().toString(36).slice(2);
+  let handled=false;
+  const timer=setTimeout(()=>{if(!handled){handled=true;delete window[n];if(s&&s.parentNode)s.remove();document.getElementById('status').textContent='timeout 10s';}},10000);
+  window[n]=d=>{if(!handled){handled=true;clearTimeout(timer);try{cb(d);}finally{delete window[n];if(s&&s.parentNode)s.remove();}}};
+  const s=document.createElement('script');
+  s.src=u+(u.includes('?')?'&':'?')+'callback='+n;
+  s.onload=()=>{console.log('onload',n); document.getElementById('status').textContent='onload '+n;};
+  s.onerror=()=>{if(!handled){handled=true;clearTimeout(timer);delete window[n];if(s&&s.parentNode)s.remove();document.getElementById('titular').textContent='Error carga GS onerror';document.getElementById('status').textContent='onerror';}};
+  document.body.appendChild(s);
+}
+
+jsonp(GS_URL+"?id="+encodeURIComponent(idParam),function(obj){
+  console.log('GS obj:',obj);
+  document.getElementById('status').textContent='OK: '+JSON.stringify(obj).substring(0,300);
+  if(!obj){document.getElementById('titular').textContent='null';return;}
+  if(obj.status==="no encontrado"){document.getElementById('titular').textContent="ID no encontrado: "+(obj.id||idParam);return;}
+  document.getElementById('titular').textContent=obj.t||'sin t';
+});
+</script>
+</body></html>
