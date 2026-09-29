@@ -50,6 +50,29 @@ td{padding:8px 6px;border-top:1px solid var(--line);font-size:11px;vertical-alig
 .header-title{letter-spacing:3px;font-size:11px;font-weight:700;text-transform:uppercase}
 .header-actions{display:flex;gap:8px;align-items:center}
 .hint-box{font-size:11px;color:#27ae60;margin-top:4px;font-weight:600;display:none}
+
+/* === V20 SUBRUTINA MESA VISUAL - ventana emergente (NO MODIFICA FORMATO V19) === */
+#mesaModal{position:fixed;inset:0;display:none;z-index:9999;align-items:center;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(4px)}
+#mesaModal.show{display:flex;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.mesa-modal-box{background:#fffaf3;border-radius:22px;padding:20px 20px 16px;max-width:520px;width:92%;box-shadow:0 20px 60px rgba(0,0,0,.25);border:1px solid #f0e8db;animation:pop .22s ease}
+@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
+.mesa-stage{width:100%;aspect-ratio:1;max-width:420px;margin:0 auto;position:relative;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at center, #fff 0%, #fffaf3 68%)}
+.mesa-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:140px;height:140px;border-radius:50%;background:#fdf6e3;border:3px solid #d6c7a1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:inset 0 0 0 6px #fff,0 4px 12px rgba(0,0,0,.08);z-index:2}
+.mesa-center b{font-size:32px;color:#1f3d2b;line-height:1}
+.mesa-center span.tit{font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:#8a7a60;font-weight:800;margin-top:6px;max-width:115px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mesa-center span.sub{font-size:9px;color:#1f3d2b;font-weight:700;margin-top:2px}
+.silla{position:absolute;width:64px;height:72px;display:flex;flex-direction:column;align-items:center;transform:translate(-50%,-50%);transition:transform .15s;z-index:3;cursor:default}
+.silla:hover{transform:translate(-50%,-50%) scale(1.08)}
+.silla-respaldo{width:44px;height:14px;border-radius:8px 8px 3px 3px;border:1.5px solid rgba(0,0,0,.15)}
+.silla-asiento{width:58px;height:50px;border-radius:12px;border:1.5px solid rgba(0,0,0,.15);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3px;box-shadow:0 2px 6px rgba(0,0,0,.12);margin-top:-2px}
+.silla-asiento b{font-size:9px;line-height:1.05;text-align:center;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+.silla-asiento i{font-size:7px;font-style:normal;opacity:.85;margin-top:2px;letter-spacing:.3px;text-transform:uppercase;font-weight:800}
+.silla-num{position:absolute;top:-6px;right:-4px;background:#1f3d2b;color:#fff;font-size:7px;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.silla.vacia .silla-respaldo,.silla.vacia .silla-asiento{background:#22c55e;border-color:#16a34a;color:#fff}
+.silla.adulto .silla-respaldo,.silla.adulto .silla-asiento{background:#3b82f6;border-color:#2563eb;color:#fff}
+.silla.menor .silla-respaldo,.silla.menor .silla-asiento{background:#facc15;border-color:#eab308;color:#422006}
+
 </style>
 </head>
 <body>
@@ -408,6 +431,7 @@ function render(list){
     else if(s>=9) cls+='warn-yellow';
     else if(mesasM[i]!=s) cls+='confirmed';
     const d=document.createElement('div');d.className=cls;
+    d.style.cursor='pointer';d.setAttribute('onclick',`abrirMesa(${i})`);d.title=`Ver Mesa ${i} - ventana emergente`;
     d.innerHTML=`<div class="m-label">Mesa ${i}</div><div class="m-num">${s}</div><div class="m-free">${libres} libres</div>`;
     gridM.appendChild(d);
   }
@@ -489,5 +513,108 @@ function guardar(){
 
 window.onload=cargar;
 </script>
+
+<!-- V20 ventana emergente - MESA VISUAL (210,210 radio 158, ang -90 + i*36) -->
+<div id="mesaModal" onclick="if(event.target.id==='mesaModal') cerrarMesa()">
+<div class="mesa-modal-box">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+<div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:800;color:#1f3d2b" id="mesaModalTitle">Mesa</div>
+<button onclick="cerrarMesa()" style="border:1px solid #e8ddd0;background:#fff;border-radius:50%;width:28px;height:28px;cursor:pointer;font-weight:800">✕</button>
+</div>
+<div class="mesa-stage" id="mesaStage"></div>
+<div style="display:flex;gap:12px;justify-content:center;margin-top:14px;font-size:10px;font-weight:700;color:#5a4e3a">
+<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:4px;background:#3b82f6;display:inline-block;border:1px solid #2563eb"></span>Adulto</span>
+<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:4px;background:#facc15;display:inline-block;border:1px solid #eab308"></span>Menor</span>
+<span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:4px;background:#22c55e;display:inline-block;border:1px solid #16a34a"></span>Vacía</span>
+</div>
+<div id="mesaResumen" style="text-align:center;font-size:10px;color:#777;margin-top:8px"></div>
+</div>
+</div>
+<script>
+// === V20 SUBRUTINA MESA VISUAL INTEGRADA CON SHEET ===
+function getPersonasDeMesa(mesaNum){
+  const personas=[];
+  (window.DATA||[]).forEach(it=>{
+    if(parseInt(it.mesa)!==parseInt(mesaNum)) return;
+    const grupoStr=(it.grupo||'').toString().trim();
+    const titular=it.titular||'';
+    let nombres=[];
+    if(grupoStr){
+      nombres=grupoStr.split(/[\n,]+/).map(s=>s.trim()).filter(Boolean);
+    } else if(titular){
+      nombres=[titular];
+    }
+    // Si grupo no incluye titular y es individual, asegurar titular
+    const esFamilia = String(titular).toLowerCase().startsWith('fam');
+    if(!esFamilia && titular && !nombres.includes(titular)){
+      // titular ya va como parte del conteo pero respetamos grupo
+      // para visual, si grupo está vacío, ya tenemos titular
+    }
+    const k = parseInt(it.k!=null?it.k:it.adultos)||0;
+    const l = parseInt(it.l!=null?it.l:it.ninos)||0;
+    const ad = parseInt(it.ad!=null?it.ad:(esFamilia?0:1))||0;
+    // Adultos = k + ad, Menores = l
+    nombres.forEach((nom, idx)=>{
+      let tipo='adulto';
+      if(idx >= (k+ad)) tipo='menor';
+      // Si l==0 y hay más nombres, todo adulto
+      if(l===0) tipo='adulto';
+      // Marcar menor si nombre contiene (niño) o similar
+      if(/niñ/i.test(nom) && k>0) { /* heuristica */ }
+      personas.push({nombre:nom, tipo:tipo, titular: titular, id: it.id});
+    });
+  });
+  // Manecillas de reloj: dejar vacías al final, solo primeras N ocupadas
+  return personas.slice(0,10);
+}
+function getTitularPrincipal(mesaNum){
+  // Cuenta total de personas por titular (columna con mayor número de X)
+  const conteo={};
+  const detalle={};
+  (window.DATA||[]).forEach(it=>{
+    if(parseInt(it.mesa)!==parseInt(mesaNum)) return;
+    const titular=it.titular||'—';
+    const total = parseInt(it.lugaresM||it.lugares||0) || ((it.grupo||'').split(/[\n,]+/).filter(Boolean).length) || 1;
+    conteo[titular]=(conteo[titular]||0)+total;
+    detalle[titular]=titular;
+  });
+  let maxTit='—',maxVal=0;
+  Object.entries(conteo).forEach(([t,v])=>{ if(v>maxVal){maxVal=v; maxTit=t;} });
+  return {titular:maxTit, total:maxVal, conteo:conteo};
+}
+function abrirMesa(mesaNum){
+  const stage=document.getElementById('mesaStage');
+  const personas=getPersonasDeMesa(mesaNum);
+  const principal=getTitularPrincipal(mesaNum);
+  stage.innerHTML='';
+  const centro=document.createElement('div'); centro.className='mesa-center';
+  centro.innerHTML=`<b>${mesaNum}</b><span class="tit" title="${principal.titular}">${principal.titular}</span><span class="sub">${principal.total>0?principal.total+' pers.':''}</span>`;
+  stage.appendChild(centro);
+  const cx=210,cy=210,radius=158;
+  for(let i=0;i<10;i++){
+    const angleDeg=-90+(i*36); // -90 + i*36 perfectamente centrado
+    const rad=angleDeg*Math.PI/180;
+    const x=cx+radius*Math.cos(rad);
+    const y=cy+radius*Math.sin(rad);
+    const pers=personas[i];
+    let tipo='vacia',nombre='Vacía',label='Vacía';
+    if(pers){ tipo=pers.tipo; nombre=pers.nombre; label=tipo==='menor'?'Menor':'Adulto'; }
+    const silla=document.createElement('div');
+    silla.className=`silla ${tipo}`;
+    silla.style.left=x+'px'; silla.style.top=y+'px';
+    silla.innerHTML=`<div class="silla-num">${i+1}</div><div class="silla-respaldo"></div><div class="silla-asiento"><b>${nombre}</b><i>${label}</i></div>`;
+    silla.title=pers?`${pers.nombre} - ${pers.titular} (${pers.id||''})`:`Silla ${i+1} libre`;
+    stage.appendChild(silla);
+  }
+  document.getElementById('mesaModalTitle').textContent=`Mesa ${mesaNum} — ${personas.length}/10 ocupadas`;
+  const adultos=personas.filter(p=>p.tipo==='adulto').length;
+  const menores=personas.filter(p=>p.tipo==='menor').length;
+  document.getElementById('mesaResumen').textContent=`${adultos} adultos, ${menores} menores, ${10-personas.length} libres — Titular principal: ${principal.titular} (${principal.total})`;
+  document.getElementById('mesaModal').classList.add('show');
+}
+function cerrarMesa(){ document.getElementById('mesaModal').classList.remove('show'); }
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') cerrarMesa(); });
+</script>
+
 </body>
 </html>
