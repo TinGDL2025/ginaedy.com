@@ -205,6 +205,14 @@ function cargar(){
   });
 }
 
+function getVal(it, names){
+  if(!it) return '';
+  for(let n of names){ if(it[n]!==undefined && String(it[n]).trim()!=='') return it[n]; }
+  const norm=s=> String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
+  const map={}; Object.keys(it).forEach(k=>{ map[norm(k)]=it[k]; });
+  for(let n of names){ const nn=norm(n); if(map[nn]!==undefined && String(map[nn]).trim()!=='') return map[nn]; }
+  return '';
+}
 function getMesaNum(it){
   const raw = (it.mesa!=null?it.mesa:(it.Mesa!=null?it.Mesa:''))+'';
   const mm = raw.match(/\d+/);
@@ -216,14 +224,6 @@ function getLugaresM(it){
   const ad=parseInt(it.ad!=null?it.ad:(esFamilia(it.titular)?0:1))||0;
   const m=parseInt(it.lugaresM||it.lugares||0)||0;
   return m>0?m:(k+l+ad);
-}
-function getVal(it, names){
-  if(!it) return '';
-  for(let n of names){ if(it[n]!==undefined && String(it[n]).trim()!=='') return it[n]; }
-  const norm=s=> String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
-  const map={}; Object.keys(it).forEach(k=>{ map[norm(k)]=it[k]; });
-  for(let n of names){ const nn=norm(n); if(map[nn]!==undefined && String(map[nn]).trim()!=='') return map[nn]; }
-  return '';
 }
 function calcularMesas(){
   mesasSiVan={};
@@ -446,17 +446,17 @@ function render(list){
       waText=`Whatsapp (${envios})`;
     }
 
-    const mesaNum=parseInt(it.mesa)||'';
+    const mesaNum=getMesaNum(it)||'';
     let mesaInfo=`Mesa ${mesaNum}`;
     
     let btnHtml='';
     if(esConf) btnHtml=`<div class="envio-box"><span style="background:#eee;padding:4px 10px;border-radius:10px;font-size:10px">Confirmado</span><a href="${getLinkCorrecto(it)}" target="_blank" class="sobre-link">ver sobre</a><button class="btn-cancel" onclick="cancelar('${it.id}')">cancelar</button></div>`;
     else btnHtml=`<div class="envio-box"><button class="btn-wa ${waClass}" onclick="wa('${it.id}')">${waText}</button><a href="${getLinkCorrecto(it)}" target="_blank" class="sobre-link">ver sobre</a><button class="btn-cancel" onclick="cancelar('${it.id}')">cancelar</button></div>`;
 
-    // FIX: columna R = Grupo - Nombres Completos, columna T = Nombres Confirmados (quién viene)
-    // Si está confirmado, mostrar T, si no, mostrar R. Así no sobra un dato como en la flecha roja.
+    // FIX: R = Grupo - Nombres Completos, T = Nombres Confirmados (quién viene)
+    // Si está confirmado, muestra T para no sobrar 1 dato, si no muestra R
     const nombresR = getVal(it, ['Grupo - Nombres Completos','grupo','Grupo'])||'';
-    const nombresT = getVal(it, ['Nombres Confirmados (quién viene)','Nombres Confirmados','nombresConfirmados'])||'';
+    const nombresT = getVal(it, ['Nombres Confirmados (quién viene)','Nombres Confirmados','nombresConfirmados','Nombres confirmados quien viene'])||'';
     const mostrarNombres = (esConf && nombresT) ? nombresT : (nombresR||it.grupo||'');
     const tr=document.createElement('tr');
     tr.innerHTML=`<td>${idx+1}</td><td><b>${it.titular}</b> <span class="small">(${it.id})</span><br><span class="small">${mostrarNombres}</span></td><td>${mesaInfo}</td><td>${esConf?'Confirmado':it.estatus||'Pendiente'}</td><td>${btnHtml}</td>`;
