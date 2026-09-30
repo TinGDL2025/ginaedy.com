@@ -51,17 +51,17 @@ td{padding:8px 6px;border-top:1px solid var(--line);font-size:11px;vertical-alig
 .header-actions{display:flex;gap:8px;align-items:center}
 .hint-box{font-size:11px;color:#27ae60;margin-top:4px;font-weight:600;display:none}
 
-/* === V20 VENTANA EMERGENTE - MESA VISUAL (NO TOCA FORMATO V19) === */
+/* === V20 VENTANA EMERGENTE - MESA VISUAL DINAMICA (NO TOCA FORMATO V19) === */
 #mesaModal{position:fixed;inset:0;display:none;z-index:9999;align-items:center;justify-content:center;background:rgba(0,0,0,.55);backdrop-filter:blur(4px)}
 #mesaModal.show{display:flex;animation:fadeIn .18s ease}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .mesa-modal-box{background:#fffaf3;border-radius:22px;padding:20px 20px 16px;max-width:520px;width:92%;box-shadow:0 20px 60px rgba(0,0,0,.25);border:1px solid #f0e8db;animation:pop .2s ease}
 @keyframes pop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
 .mesa-stage{width:100%;aspect-ratio:1;max-width:420px;margin:0 auto;position:relative;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at center,#fff 0%,#fffaf3 68%)}
-.mesa-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:140px;height:140px;border-radius:50%;background:#fdf6e3;border:3px solid #d6c7a1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:inset 0 0 0 6px #fff,0 4px 12px rgba(0,0,0,.08);z-index:2}
-.mesa-center b{font-size:32px;color:#1f3d2b;line-height:1}
-.mesa-center span.tit{font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:#8a7a60;font-weight:800;margin-top:6px;max-width:115px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mesa-center span.sub{font-size:9px;color:#1f3d2b;font-weight:700;margin-top:2px}
+.mesa-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:144px;height:144px;border-radius:50%;background:#fdf6e3;border:3px solid #d6c7a1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:inset 0 0 0 6px #fff,0 4px 12px rgba(0,0,0,.08);z-index:2}
+.mesa-center b{font-size:34px;color:#1f3d2b;line-height:1}
+.mesa-center span.tit{font-size:10.5px;letter-spacing:.6px;text-transform:uppercase;color:#8a7a60;font-weight:800;margin-top:6px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mesa-center span.sub{font-size:9px;color:#1f3d2b;font-weight:700;margin-top:3px}
 .silla{position:absolute;width:64px;height:72px;display:flex;flex-direction:column;align-items:center;transform:translate(-50%,-50%);transition:transform .15s;z-index:3}
 .silla:hover{transform:translate(-50%,-50%) scale(1.08)}
 .silla-respaldo{width:44px;height:14px;border-radius:8px 8px 3px 3px;border:1.5px solid rgba(0,0,0,.15)}
@@ -514,7 +514,7 @@ function guardar(){
 window.onload=cargar;
 </script>
 
-<!-- V20 VENTANA EMERGENTE - MESA VISUAL VINCULADA A SHEET (210,210 r158 -90+i*36) -->
+<!-- V20 VENTANA EMERGENTE DINAMICA 25 MESAS - 210,210 r158 -90+i*36 -->
 <div id="mesaModal" onclick="if(event.target.id==='mesaModal') cerrarMesa()">
 <div class="mesa-modal-box">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
@@ -532,92 +532,137 @@ window.onload=cargar;
 </div>
 </div>
 <script>
-// === V20 VINCULADO 100% A TU SHEET REAL ===
+// === V20 DINAMICO - LEE COLUMNA T (Nombres Confirmados / Grupo) Y CATEGORIAS C-G ===
 function gv(it, keys){
-  // busca campo sin importar mayúsculas/espacios/guiones
   if(!it) return '';
-  const lowerMap={};
-  Object.keys(it).forEach(k=>{ lowerMap[k.toLowerCase().replace(/[^a-z0-9]/g,'')] = it[k]; });
+  const lower={};
+  Object.keys(it).forEach(k=>{ lower[k.toLowerCase().replace(/[^a-z0-9]/g,'')] = it[k]; });
   for(let key of keys){
     const nk=key.toLowerCase().replace(/[^a-z0-9]/g,'');
-    if(lowerMap[nk]!==undefined && lowerMap[nk]!==null && lowerMap[nk]!=='') return lowerMap[nk];
-    if(it[key]!==undefined && it[key]!=='') return it[key];
+    if(lower[nk]!==undefined && lower[nk]!==null && String(lower[nk]).trim()!=='') return lower[nk];
+    if(it[key]!==undefined && String(it[key]).trim()!=='') return it[key];
   }
   return '';
+}
+function getCategoria(it){
+  // Columnas C-G: Familia Gina, Familia Edy, Amigos Gina, Amigos Edy, Amigos en Común / Otros
+  // En tu Sheet vienen como 'x' en la celda
+  const cats=[
+    {keys:['familiagina','familia gina','C','familiaginax'], label:'Familia Gina'},
+    {keys:['familiaedy','familia edy','D'], label:'Familia Edy'},
+    {keys:['amigosgina','amigos gina','E'], label:'Amigos Gina'},
+    {keys:['amigosedy','amigos edy','F'], label:'Amigos Edy'},
+    {keys:['amigoscomun','amigos en comun','amigos en común / otros','amigos en comun / otros','G','amigoscomunotros'], label:'Amigos en Común / Otros'}
+  ];
+  // busca campo que tenga x
+  for(let c of cats){
+    for(let k of c.keys){
+      const v = gv(it, [k]);
+      if(v && String(v).toLowerCase().includes('x')) return c.label;
+    }
+    // también revisa si la key directa existe con x
+    const direct = Object.keys(it||{}).find(k=> k.toLowerCase().includes(c.label.toLowerCase().split(' ')[0]) && String(it[k]).toLowerCase().includes('x'));
+    if(direct) {
+      // mapear
+      if(c.label.toLowerCase().includes('gina') && c.label.toLowerCase().includes('familia')) return c.label;
+    }
+  }
+  // Fallback: busca en todas las keys si valor es 'x' y key parece categoria
+  for(let key of Object.keys(it||{})){
+    const val = String(it[key]||'').trim().toLowerCase();
+    if(val==='x' || val==='X'){
+      const lk=key.toLowerCase();
+      if(lk.includes('gina') && lk.includes('familia')) return 'Familia Gina';
+      if(lk.includes('edy') && lk.includes('familia')) return 'Familia Edy';
+      if(lk.includes('gina') && lk.includes('amigos')) return 'Amigos Gina';
+      if(lk.includes('edy') && lk.includes('amigos')) return 'Amigos Edy';
+      if(lk.includes('comun') || lk.includes('otros')) return 'Amigos en Común / Otros';
+    }
+  }
+  // si no hay x, usa categoria por defecto desde campo cat o similar
+  const catField = gv(it, ['categoria','cat','Categoria','tipo']);
+  if(catField) return catField;
+  return 'Sin categoría';
 }
 
 function getPersonasDeMesa(mesaNum){
   const personas=[];
   if(!window.DATA || DATA.length===0) return personas;
   DATA.forEach(it=>{
-    const mesa = parseInt(gv(it, ['mesa','Mesa','mesaNum']))||0;
+    const mesa = parseInt(gv(it, ['mesa','Mesa']))||0;
     if(mesa !== parseInt(mesaNum)) return;
-    const titular = (gv(it, ['titular','Titular Invitación','titularInvitacion'])||'').toString().trim();
-    // Columnas de tu CSV/Sheet:
-    const grupoRaw = (gv(it, ['grupo','Grupo - Nombres Completos','GrupoNombresCompletos','Nombres Confirmados (quién viene)','nombresconfirmados'])||'').toString();
-    const adultosInv = parseInt(gv(it, ['k','adultos','Adultos invitados','adultosinvitados']))||0;
-    const ninosInv = parseInt(gv(it, ['l','ninos','Ninos invitados','ninosinvitados']))||0;
-    const lugaresAsig = parseInt(gv(it, ['lugaresM','lugares','Lugares Asignados','lugaresasignados','lugaresConfirmados']))||0;
 
-    // Lista de nombres desde Grupo - Nombres Completos
-    let nombres=[];
-    if(grupoRaw){
-      nombres = grupoRaw.split(/[,\n]+/).map(s=>s.trim()).filter(Boolean);
+    // COLUMNA T: Nombres Confirmados (quién viene) - si está vacía, usa Grupo - Nombres Completos
+    let nombresRaw = gv(it, ['Nombres Confirmados (quién viene)','Nombres Confirmados','nombresConfirmados','nombres confirmados quien viene','T']);
+    if(!nombresRaw){
+      nombresRaw = gv(it, ['Grupo - Nombres Completos','Grupo Nombres Completos','grupo','Grupo','R']);
     }
-    // Fallback: si no hay grupo, usar titular
+    // Si aún vacío, usa Titular como único ocupante
+    const titular = (gv(it, ['titular','Titular Invitación'])||'').toString().trim();
+    let nombres=[];
+    if(nombresRaw){
+      nombres = String(nombresRaw).split(/[,\n]+/).map(s=>s.trim()).filter(Boolean);
+    }
     if(nombres.length===0 && titular){
       nombres=[titular];
     }
-    // Si Lugares Asignados > nombres, completar con titular + n
+
+    const adultosInv = parseInt(gv(it, ['Adultos invitados','adultosinvitados','k','adultos','Adultos']))||0;
+    const ninosInv = parseInt(gv(it, ['Ninos invitados','ninosinvitados','l','ninos','Ninos']))||0;
+    const lugaresAsig = parseInt(gv(it, ['Lugares Asignados','lugaresasignados','lugaresM','lugares','Lugares']))||0;
     const totalEsperado = lugaresAsig>0 ? lugaresAsig : (adultosInv + ninosInv || nombres.length || 1);
+
+    // completar si faltan nombres (ej. 4 lugares pero solo 1 nombre)
     while(nombres.length < totalEsperado){
       const base = titular.replace(/^Familia\s+/i,'').split(' ')[0] || 'Inv';
-      nombres.push(`${base} +${nombres.length+1}`);
+      nombres.push(`${base} ${nombres.length+1}`);
     }
-    // Determinar tipo: primeros adultosInv = adulto, resto menor
-    // Si tu sheet dice Adultos 2 Ninos 2 -> idx 0,1 adulto, 2,3 menor
-    // Si Adultos 0 Ninos 0 pero hay 1 lugar (ej Poncho) -> adulto
+
+    // Determinar adulto/menor por posición: primeros adultosInv = adulto, resto menor
     let numAdultos = adultosInv;
-    if(adultosInv===0 && ninosInv===0){
-      numAdultos = totalEsperado; // todo adulto por defecto
-    } else if(adultosInv===0 && ninosInv>0){
-      numAdultos = totalEsperado - ninosInv;
-    }
-    if(numAdultos<0) numAdultos=0;
+    if(adultosInv===0 && ninosInv===0) numAdultos = totalEsperado;
+    else if(adultosInv===0 && ninosInv>0) numAdultos = Math.max(0, totalEsperado - ninosInv);
 
     nombres.forEach((nom, idx)=>{
       let tipo='adulto';
       if(idx >= numAdultos) tipo='menor';
-      // si nombre contiene indicio de niño y hay ninos, forzamos menor
-      if(ninosInv>0 && idx>=adultosInv) tipo='menor';
-      personas.push({nombre:nom, tipo:tipo, titular:titular, id:gv(it,['id','ID'])||''});
+      personas.push({nombre:nom, tipo:tipo, titular:titular, id:gv(it,['id','ID'])||'', categoria:getCategoria(it)});
     });
   });
+  // Manecillas reloj: primeros N ocupados, vacías al final, max 10 por mesa
   return personas.slice(0,10);
 }
 
 function getTitularPrincipal(mesaNum){
-  const conteo={};
-  if(!window.DATA) return {titular:'—', total:0};
+  // Centro: título de columna C-G con más personas en esa mesa
+  const conteoCat={};
+  const conteoTit={};
+  if(!window.DATA) return {titular:'—', total:0, categoria:'—'};
   DATA.forEach(it=>{
     if(parseInt(gv(it,['mesa','Mesa']))!==parseInt(mesaNum)) return;
     const titular = gv(it,['titular','Titular Invitación'])||'—';
-    const total = parseInt(gv(it,['lugaresM','lugares','Lugares Asignados','lugaresasignados']))|| (parseInt(gv(it,['k','adultos','Adultos invitados']))+parseInt(gv(it,['l','ninos','Ninos invitados']))||1);
-    conteo[titular]=(conteo[titular]||0)+total;
+    const cat = getCategoria(it);
+    const total = parseInt(gv(it,['Lugares Asignados','lugaresM','lugares']))|| (parseInt(gv(it,['Adultos invitados','k','adultos'])||0)+parseInt(gv(it,['Ninos invitados','l','ninos'])||0))||1;
+    conteoCat[cat]=(conteoCat[cat]||0)+total;
+    conteoTit[titular]=(conteoTit[titular]||0)+total;
   });
-  let maxTit='—',maxVal=0;
-  Object.entries(conteo).forEach(([t,v])=>{ if(v>maxVal){maxVal=v; maxTit=t;} });
-  return {titular:maxTit, total:maxVal};
+  let maxCat='—',maxVal=0;
+  Object.entries(conteoCat).forEach(([c,v])=>{ if(v>maxVal){maxVal=v; maxCat=c;} });
+  // Si quieres mostrar titular en lugar de categoria, usa maxTit
+  let maxTit='—',maxTitVal=0;
+  Object.entries(conteoTit).forEach(([t,v])=>{ if(v>maxTitVal){maxTitVal=v; maxTit=t;} });
+  return {titular:maxTit, total:maxTitVal, categoria:maxCat, totalCat:maxVal};
 }
 
 function abrirMesa(mesaNum){
   const stage=document.getElementById('mesaStage');
+  if(!stage) return;
   const personas=getPersonasDeMesa(mesaNum);
   const principal=getTitularPrincipal(mesaNum);
-  if(!stage){ alert('No se encontró mesaStage'); return; }
   stage.innerHTML='';
   const centro=document.createElement('div'); centro.className='mesa-center';
-  centro.innerHTML=`<b>${mesaNum}</b><span class="tit" title="${principal.titular}">${principal.titular}</span><span class="sub">${principal.total>0?principal.total+' pers.':''}</span>`;
+  // Centro: número de mesa + título columna C-G con más personas
+  centro.innerHTML=`<b>${mesaNum}</b><span class="tit" title="${principal.categoria}">${principal.categoria}</span><span class="sub">${principal.totalCat>0?principal.totalCat+' pers. • '+principal.titular:principal.titular}</span>`;
   stage.appendChild(centro);
   const cx=210,cy=210,radius=158;
   for(let i=0;i<10;i++){
@@ -632,14 +677,14 @@ function abrirMesa(mesaNum){
     silla.className=`silla ${tipo}`;
     silla.style.left=x+'px'; silla.style.top=y+'px';
     silla.innerHTML=`<div class="silla-num">${i+1}</div><div class="silla-respaldo"></div><div class="silla-asiento"><b>${nombre}</b><i>${label}</i></div>`;
-    silla.title=pers?`${pers.nombre} - ${pers.titular}`:`Silla ${i+1} libre`;
+    silla.title=pers?`${pers.nombre} (${pers.categoria} - ${pers.titular})`:`Silla ${i+1} libre`;
     stage.appendChild(silla);
   }
-  document.getElementById('mesaModalTitle').textContent=`Mesa ${mesaNum} — ${personas.length}/10 ocupadas`;
+  document.getElementById('mesaModalTitle').textContent=`MESA ${mesaNum} — ${personas.length}/10 OCUPADAS`;
   const adultos=personas.filter(p=>p.tipo==='adulto').length;
   const menores=personas.filter(p=>p.tipo==='menor').length;
-  document.getElementById('mesaResumen').textContent=`${adultos} adultos, ${menores} menores, ${10-personas.length} libres — Principal: ${principal.titular} (${principal.total})`;
-  document.getElementById('mesaDebug').textContent=`DATA: ${DATA.length} registros | Mesa ${mesaNum}: ${personas.length} personas detectadas | Sheet: ${Object.keys(DATA[0]||{}).slice(0,4).join(', ')}...`;
+  document.getElementById('mesaResumen').textContent=`${adultos} adultos, ${menores} menores, ${10-personas.length} libres — Principal: ${principal.categoria} (${principal.totalCat})`;
+  document.getElementById('mesaDebug').textContent=`DATA: ${DATA.length} regs | Mesa ${mesaNum}: ${personas.length} detectadas | Col T: Nombres Confirmados`;
   document.getElementById('mesaModal').classList.add('show');
 }
 function cerrarMesa(){ document.getElementById('mesaModal').classList.remove('show'); }
