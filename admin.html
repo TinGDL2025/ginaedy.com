@@ -205,10 +205,28 @@ function cargar(){
   });
 }
 
+
 function getMesaNum(it){
-  const raw=(it.mesa!=null?it.mesa:(it.Mesa!=null?it.Mesa:''))+'';
-  const mm=raw.match(/\d+/);
-  return mm?parseInt(mm[0]):0;
+  // Extrae número aunque venga "Mesa 6", "Mesa: 6", " 6 "
+  const raw = (it.mesa!=null?it.mesa:(it.Mesa!=null?it.Mesa:it.mesaAsignada||''))+'';
+  const m = raw.match(/\d+/);
+  return m ? parseInt(m[0]) : 0;
+}
+function getVal(it, names){
+  if(!it) return '';
+  // directa
+  for(let n of names){
+    if(it[n]!==undefined && String(it[n]).trim()!=='') return it[n];
+  }
+  // normalizada sin acentos
+  const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
+  const map={};
+  Object.keys(it).forEach(k=>{ map[norm(k)] = it[k]; });
+  for(let n of names){
+    const nn = norm(n);
+    if(map[nn]!==undefined && String(map[nn]).trim()!=='') return map[nn];
+  }
+  return '';
 }
 function calcularMesas(){
   mesasSiVan={};
@@ -216,17 +234,18 @@ function calcularMesas(){
   DATA.forEach(it=>{
     const mesa=getMesaNum(it);
     if(mesa>=1&&mesa<=TOTAL_MESAS){
-      const esConf=String(it.estatus||'').toLowerCase().includes('confirm');
-      const k=parseInt(it.k!=null?it.k:it.adultos)||0;
-      const l=parseInt(it.l!=null?it.l:it.ninos)||0;
-      const ad=parseInt(it.ad!=null?it.ad:(esFamilia(it.titular)?0:1))||0;
-      let m=parseInt(it.lugaresM||it.lugares||0)||0;
+      const esConf=String(getVal(it, ['estatus','Estado','status','V'])||'').toLowerCase().includes('confirm');
+      const k=parseInt(getVal(it, ['k','adultos','Adultos invitados'])||0)||0;
+      const l=parseInt(getVal(it, ['l','ninos','Ninos invitados'])||0)||0;
+      const ad=parseInt(getVal(it, ['ad'])||(String(it.titular||'').toLowerCase().startsWith('familia')?0:1))||0;
+      let m=parseInt(getVal(it, ['lugaresM','lugares','Lugares Asignados','m'])||0)||0;
       if(m===0) m=k+l+ad;
-      const s=parseInt(it.s!=null?it.s:it.lugaresConf)||0;
+      const s=parseInt(getVal(it, ['s','lugaresConf','Lugares Confirmados','S'])||0)||0;
       mesasSiVan[mesa]+= esConf ? (s||m) : m;
     }
   });
 }
+
 
 function poblarSelectMesas(){
   const sel=document.getElementById('mesa');const act=sel.value;sel.innerHTML='<option value="">-- Mesa --</option>';
@@ -358,25 +377,26 @@ function render(list){
   let invitaciones=list.length, confirmadas=0;
   let kTotal=0,lTotal=0,adTotal=0,mTotal=0,sTotal=0,abTotal=0,acTotal=0,adConf=0;
   let kPor=0,lPor=0,adPor=0,mPor=0;
-  let mesasM={}, mesasS={};
-  for(let i=1;i<=TOTAL_MESAS;i++){mesasM[i]=0; mesasS[i]=0;}
+  let mesasM={}, mesasS={}, mesasConf={};
+  for(let i=1;i<=TOTAL_MESAS;i++){mesasM[i]=0; mesasS[i]=0; mesasConf[i]=false;}
 
   list.forEach(it=>{
-    const k=parseInt(it.k!=null?it.k:it.adultos)||0;
-    const l=parseInt(it.l!=null?it.l:it.ninos)||0;
-    let m=parseInt(it.lugaresM||it.lugares||0)||0;
-    const s=parseInt(it.s!=null?it.s:it.lugaresConf)||0;
-    const ad=parseInt(it.ad!=null?it.ad:(esFamilia(it.titular)?0:1))||0;
+    const k=parseInt(getVal(it, ['k','adultos','Adultos invitados'])||0)||0;
+    const l=parseInt(getVal(it, ['l','ninos','Ninos invitados'])||0)||0;
+    let m=parseInt(getVal(it, ['lugaresM','lugares','Lugares Asignados','m'])||0)||0;
+    const s=parseInt(getVal(it, ['s','lugaresConf','Lugares Confirmados','S'])||0)||0;
+    const ad=parseInt(getVal(it, ['ad'])||(esFamilia(it.titular)?0:1))||0;
     const ab=it.ab!=null?parseInt(it.ab):k;
     const ac=it.ac!=null?parseInt(it.ac):l;
     const mesa=getMesaNum(it);
-    const esConf=String(it.estatus||'').toLowerCase().includes('confirm');
+    const esConf=String(getVal(it, ['estatus','Estado','status','V','Estatus'])||it.estatus||'').toLowerCase().includes('confirm');
     if(m===0) m=k+l+ad;
 
     kTotal+=k; lTotal+=l; adTotal+=ad; mTotal+=m;
     if(mesa>=1&&mesa<=TOTAL_MESAS){
       mesasM[mesa]+=m;
       mesasS[mesa]+= esConf ? (s||m) : m;
+      if(esConf) mesasConf[mesa]=true;
     }
 
     if(esConf){
@@ -416,9 +436,11 @@ function render(list){
     let cls='mesa ';
     if(s>=CAP) cls+='full';
     else if(s>=9) cls+='warn-yellow';
-    else if(mesasM[i]!=s) cls+='confirmed';
+    else if(mesasConf[i]) cls+='confirmed';
     const d=document.createElement('div');d.className=cls;
     d.innerHTML=`<div class="m-label">Mesa ${i}</div><div class="m-num">${s}</div><div class="m-free">${libres} libres</div>`;
+    // debug para ver qué tiene cada mesa
+    d.title=`Mesa ${i}: ocupados=${s} asignados=${mesasM[i]} confirmado=${mesasConf[i]?'si':'no'}`;
     gridM.appendChild(d);
   }
 
@@ -442,10 +464,10 @@ function render(list){
     if(esConf) btnHtml=`<div class="envio-box"><span style="background:#eee;padding:4px 10px;border-radius:10px;font-size:10px">Confirmado</span><a href="${getLinkCorrecto(it)}" target="_blank" class="sobre-link">ver sobre</a><button class="btn-cancel" onclick="cancelar('${it.id}')">cancelar</button></div>`;
     else btnHtml=`<div class="envio-box"><button class="btn-wa ${waClass}" onclick="wa('${it.id}')">${waText}</button><a href="${getLinkCorrecto(it)}" target="_blank" class="sobre-link">ver sobre</a><button class="btn-cancel" onclick="cancelar('${it.id}')">cancelar</button></div>`;
 
-    // Columna R = it.grupo (Grupo - Nombres Completos), Columna T = Nombres Confirmados (quién viene)
-    // Cuando está confirmado, debe mostrar T, no R
-    const nombresR = it.grupo||'';
-    const nombresT = it.nombresConfirmados||it['Nombres Confirmados']||it['Nombres Confirmados (quién viene)']||it.T||'';
+    // R = Grupo - Nombres Completos, T = Nombres Confirmados (quién viene), V = señal de confirmado
+    const nombresR = getVal(it, ['Grupo - Nombres Completos','grupo','Grupo'])||it.grupo||'';
+    const nombresT = getVal(it, ['Nombres Confirmados (quién viene)','Nombres Confirmados','nombresConfirmados','T'])||'';
+    // Si V dice Confirmado, usar T, si no, R
     const mostrar = (esConf && nombresT) ? nombresT : nombresR;
     const tr=document.createElement('tr');
     tr.innerHTML=`<td>${idx+1}</td><td><b>${it.titular}</b> <span class="small">(${it.id})</span><br><span class="small">${mostrar}</span></td><td>${mesaInfo}</td><td>${esConf?'Confirmado':it.estatus||'Pendiente'}</td><td>${btnHtml}</td>`;
