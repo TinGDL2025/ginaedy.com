@@ -35,6 +35,28 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 .btn-small.active{background:white;color:#2f4a44;border-color:#2f4a44;box-shadow:0 6px 18px rgba(47,74,68,0.15);transform:translateY(-1px)}
 .frozen{background:#2f4a44;color:white;border-radius:20px;padding:18px;margin-top:20px;text-align:center} 
 </style>
+
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#2f4a44">
+<link rel="apple-touch-icon" href="./1.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Gina & Edy">
+<style>
+/* === PWA GINA & EDY - AGREGADO SIN TOCAR FORMATO EXISTENTE - Usa mismos colores y fuentes === */
+.pwa-card{ background:white; border-radius:28px; padding:28px 24px; box-shadow:0 10px 40px rgba(47,74,68,0.08); border:1px solid rgba(201,168,138,0.15); margin-top:24px; text-align:center; }
+.pwa-overlay{ position:fixed; inset:0; display:none; z-index:99999; align-items:center; justify-content:center; background:rgba(47,74,68,0.55); backdrop-filter:blur(6px); padding:20px; }
+.pwa-overlay.show{ display:flex; animation:pwaFade .22s ease; }
+@keyframes pwaFade{ from{opacity:0} to{opacity:1} }
+.pwa-box{ background:#fdfaf6; border-radius:28px; padding:28px 22px; max-width:420px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.25); border:1px solid #e8e0d6; text-align:center; animation:pwaPop .24s ease; }
+@keyframes pwaPop{ from{transform:scale(.94);opacity:0} to{transform:scale(1);opacity:1} }
+.pwa-logo{ width:68px; height:68px; border-radius:50%; background:white; display:flex; align-items:center; justify-content:center; margin:0 auto 12px auto; box-shadow:0 6px 18px rgba(47,74,68,0.12); border:1px solid #e8e0d6; overflow:hidden; }
+.pwa-logo img{ width:100%; height:100%; object-fit:cover; }
+.pwa-badge{ display:inline-block; background:#fdfaf6; border:1px solid #c9a88a33; border-radius:30px; padding:6px 14px; font-size:10px; letter-spacing:2px; margin-bottom:10px; color:#8a9a96; }
+.pwa-step{ display:flex; gap:12px; align-items:flex-start; text-align:left; background:white; border-radius:16px; padding:14px; margin-top:10px; border:1px solid #e8e0d6; }
+.pwa-step b.num{ background:#2f4a44; color:white; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0; }
+</style>
+
 </head>
 
 <body>
@@ -231,6 +253,184 @@ function confirmarFinal(){
   if(box){box.style.display='block'; box.innerHTML='Enviando...';} if(btn)btn.textContent='ENVIANDO...';
   let iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=APPS_SCRIPT_URL+'?'+params.toString(); document.body.appendChild(iframe);
   iframe.onload=function(){ setTimeout(()=>{ let s2=document.createElement('script'); s2.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData&rand="+Date.now(); document.body.appendChild(s2); if(box) box.style.display='none'; if(btn) btn.textContent='CONFIRMAR ASISTENCIA'; },1500); };
+}
+</script>
+
+
+<!-- === PWA + TUNEL FOTOS - AGREGADO - NO TOCA FORMATO EXISTENTE === -->
+<div id="seccionPWA" class="card" style="display:none; border:2px solid #2f4a44; background:white;">
+  <div style="text-align:center">
+    <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
+    <span class="badge" style="background:#2f4a44;color:white;border-color:#2f4a44">ACCESO RÁPIDO</span>
+    <h2 class="serif" style="font-size:24px; margin-top:8px;">Guarda tu acceso</h2>
+    <p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">Con el icono de la boda en tu pantalla podrás abrir tu invitación en 1 toque y subir fotos al túnel el día del evento.</p>
+  </div>
+  <div style="margin-top:18px; background:#fdfaf6; border-radius:16px; padding:16px; border:1px dashed #c9a88a55">
+    <p style="font-size:11px;letter-spacing:1.5px;color:#8a9a96;font-weight:600">INCLUYE:</p>
+    <div style="display:flex; gap:10px; margin-top:10px; text-align:left">
+      <div style="flex:1;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6"><p style="font-size:18px">💌</p><p style="font-size:11px;font-weight:600;margin-top:4px">Invitación</p><p style="font-size:10px;color:#888;margin-top:2px">Acceso rápido</p></div>
+      <div style="flex:1;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6"><p style="font-size:18px">📸</p><p style="font-size:11px;font-weight:600;margin-top:4px">Túnel fotos</p><p style="font-size:10px;color:#888;margin-top:2px">Activo 18:00-02:00</p></div>
+    </div>
+    <p style="font-size:10px;color:#8a9a96;margin-top:12px;line-height:1.4">Podrás usarlo desde la iglesia, no necesitas escanear el QR. En la mesa del salón también habrá QR como respaldo. Solo funciona en horario del evento.</p>
+  </div>
+  <button id="btnGuardarAcceso" class="btn" style="margin-top:18px">📲 GUARDAR EN MI CELULAR</button>
+  <button id="btnNoGuardar" class="btn-outline" style="margin-top:10px; border-color:#e8e0d6; color:#8a9a96;">AHORA NO, GRACIAS</button>
+  <p id="pwaStatus" style="font-size:11px;color:#8a9a96;margin-top:10px;display:none"></p>
+</div>
+
+<div id="pwaModal" class="pwa-overlay" onclick="if(event.target.id==='pwaModal') cerrarPwaModal()">
+  <div class="pwa-box">
+    <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
+    <h3 class="serif" style="font-size:22px;">Cómo guardar en iPhone</h3>
+    <p style="font-size:12px;color:#666;margin-top:8px;line-height:1.4">Safari no permite guardado automático. Sigue estos 3 pasos:</p>
+    <div class="pwa-step"><b class="num">1</b><div><p style="font-size:12px;font-weight:600">Toca Compartir</p><p style="font-size:11px;color:#666">El icono de cuadro con flecha arriba, abajo en Safari.</p><div style="margin-top:6px;background:#2f4a44;color:white;border-radius:8px;padding:6px 10px;display:inline-block;font-size:11px">⎙ Compartir</div></div></div>
+    <div class="pwa-step"><b class="num">2</b><div><p style="font-size:12px;font-weight:600">Agregar a pantalla de inicio</p><p style="font-size:11px;color:#666">Desliza hacia abajo y tócalo.</p></div></div>
+    <div class="pwa-step"><b class="num">3</b><div><p style="font-size:12px;font-weight:600">Toca Agregar</p><p style="font-size:11px;color:#666">Arriba a la derecha. Verás el logo de Gina & Edy en tu escritorio.</p></div></div>
+    <div style="margin-top:14px;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6;text-align:left">
+      <p style="font-size:11px;font-weight:600">📸 Túnel de fotos:</p>
+      <p style="font-size:11px;color:#555;margin-top:4px;line-height:1.4">Una vez guardado, ábrelo el día del evento. Desde las <b>18:00</b> verás el botón <b>Subir al túnel</b> que te lleva directo a fotosfiesta (ngrok) en tu PC del salón. También funciona el QR de tu mesa.</p>
+      <p style="font-size:10px;color:#c9a88a;margin-top:6px">⏰ Solo activo en horario del evento.</p>
+    </div>
+    <button onclick="cerrarPwaModal()" class="btn" style="margin-top:14px">ENTENDIDO</button>
+  </div>
+</div>
+
+<div id="pwaModalAndroid" class="pwa-overlay" onclick="if(event.target.id==='pwaModalAndroid') cerrarPwaModalAndroid()">
+  <div class="pwa-box">
+    <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
+    <h3 class="serif" style="font-size:22px;">Acceso creado</h3>
+    <p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">¡Listo! Busca el icono <b>Gina & Edy</b> en tu pantalla principal.</p>
+    <div style="margin-top:14px;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6;text-align:left">
+      <p style="font-size:11px;font-weight:600">📸 ¿Cómo usar el túnel?</p>
+      <p style="font-size:11px;color:#555;margin-top:4px;line-height:1.4">1. El día del evento abre el acceso desde tu escritorio (o desde la iglesia).<br>2. De 18:00 a 02:00 verás el botón <b>📸 SUBIR AL TÚNEL</b><br>3. Sube fotos, llegan directo a la PC del salón (fotosfiesta).</p>
+      <p style="font-size:10px;color:#888;margin-top:8px">Respaldo: QR en tu mesa del salón.</p>
+    </div>
+    <button onclick="cerrarPwaModalAndroid()" class="btn" style="margin-top:14px">PERFECTO</button>
+  </div>
+</div>
+
+<div id="btnFlotanteTunel" style="display:none; position:fixed; bottom:90px; right:20px; z-index:999; background:#2f4a44; color:white; padding:14px 18px; border-radius:30px; box-shadow:0 10px 30px rgba(0,0,0,0.25); cursor:pointer; font-size:12px; letter-spacing:1px; font-weight:600; align-items:center; gap:8px;" onclick="abrirTunel()">
+  📸 SUBIR AL TÚNEL
+</div>
+
+
+<script>
+// === PWA + TUNEL - AGREGADO - NO TOCA LÓGICA EXISTENTE ===
+const TUNEL_URL = "https://TU_NGROK_URL_AQUI.ngrok.io"; // <-- CAMBIA AQUÍ POR TU URL DE FOTOSFIESTA
+const HORARIO_INICIO = new Date('2027-01-02T18:00:00').getTime();
+const HORARIO_FIN = new Date('2027-01-03T02:00:00').getTime();
+
+let deferredPrompt = null;
+const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isAndroid = /Android/.test(navigator.userAgent);
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault();
+  deferredPrompt = e;
+  const btn = document.getElementById('btnGuardarAcceso');
+  if(btn) btn.style.display='flex';
+});
+
+function mostrarSeccionPWA(){
+  const sec = document.getElementById('seccionPWA');
+  if(sec) { sec.style.display='block'; sec.scrollIntoView({behavior:'smooth', block:'center'}); }
+  // Mostrar botón flotante si está en horario (para pruebas, siempre muestra si ya confirmaron y quieren probar)
+  verificarHorarioTunel();
+}
+
+function verificarHorarioTunel(){
+  const ahora = Date.now();
+  const btn = document.getElementById('btnFlotanteTunel');
+  if(!btn) return;
+  // Para producción: solo en horario. Para pruebas ahora, si quieres verlo, comenta la condición
+  if(ahora >= HORARIO_INICIO && ahora <= HORARIO_FIN){
+    btn.style.display='flex';
+  } else {
+    // Durante pruebas, si ya confirmaron, mostrar igual pero con aviso de horario
+    if(isStandalone || localStorage.getItem('pwaInstalado')){
+      btn.style.display='flex';
+      btn.innerHTML='📸 TÚNEL (PRUEBA - Solo activo 18:00-02:00)';
+    }
+  }
+}
+
+function abrirTunel(){
+  const ahora = Date.now();
+  if(ahora < HORARIO_INICIO || ahora > HORARIO_FIN){
+    if(!confirm('El túnel solo estará activo de 18:00 a 02:00 el día del evento. ¿Quieres abrirlo en modo prueba?')) return;
+  }
+  window.open(TUNEL_URL, '_blank');
+}
+
+function cerrarPwaModal(){ document.getElementById('pwaModal').classList.remove('show'); document.getElementById('pwaModal').style.display='none'; }
+function cerrarPwaModalAndroid(){ document.getElementById('pwaModalAndroid').classList.remove('show'); document.getElementById('pwaModalAndroid').style.display='none'; }
+
+// Botones
+document.getElementById('btnGuardarAcceso')?.addEventListener('click', async ()=>{
+  const status = document.getElementById('pwaStatus');
+  if(isIos){
+    document.getElementById('pwaModal').style.display='flex';
+    document.getElementById('pwaModal').classList.add('show');
+    return;
+  }
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    const {outcome} = await deferredPrompt.userChoice;
+    if(outcome==='accepted'){
+      if(status){ status.style.display='block'; status.textContent='¡Acceso creado! Busca Gina & Edy en tu escritorio.'; }
+      localStorage.setItem('pwaInstalado','1');
+      document.getElementById('pwaModalAndroid').style.display='flex';
+      document.getElementById('pwaModalAndroid').classList.add('show');
+    } else {
+      if(status){ status.style.display='block'; status.textContent='No se agregó. Puedes intentarlo de nuevo.'; }
+    }
+    deferredPrompt=null;
+  } else {
+    // PC o Android sin prompt capturado (ya instalado o navegador no compatible)
+    if(status){ status.style.display='block'; status.innerHTML='En tu navegador busca: <b>⋮ Menú > Guardar y compartir > Crear acceso directo</b> o <b>Instalar app</b>. Usa el logo 1.png'; }
+    if(isAndroid){
+      alert('En Android: toca ⋮ (arriba derecha) > Agregar a pantalla principal > Agregar. Se creará con el logo de la boda.');
+    } else {
+      alert('En PC Chrome: en la barra de direcciones verás un icono de instalar ⊞ o en menú ⋮ > Guardar y compartir > Crear acceso directo.');
+    }
+  }
+});
+
+document.getElementById('btnNoGuardar')?.addEventListener('click', ()=>{
+  document.getElementById('seccionPWA').style.display='none';
+});
+
+// === HOOK A TU CONFIRMACIÓN EXISTENTE SIN TOCARLA ===
+// Guardamos renderData original y lo envolvemos
+const _renderDataOriginal = window.renderData;
+window.renderData = function(obj){
+  if(typeof _renderDataOriginal === 'function') _renderDataOriginal(obj);
+  if(obj && obj.confirmado){
+    setTimeout(()=>{ mostrarSeccionPWA(); }, 800);
+  }
+};
+
+// Si ya confirmó antes (ya_confirmado), también mostrar
+const _observer = new MutationObserver(()=>{
+  const ac = document.getElementById('areaCongelada');
+  if(ac && ac.style.display==='block'){
+    const sec = document.getElementById('seccionPWA');
+    if(sec && sec.style.display==='none'){
+      mostrarSeccionPWA();
+    }
+  }
+});
+_observer.observe(document.body, {attributes:true, subtree:true, attributeFilter:['style']});
+
+// Si ya está en PWA instalada, mostrar botón flotante de túnel
+if(isStandalone){
+  setTimeout(verificarHorarioTunel, 1000);
+  localStorage.setItem('pwaInstalado','1');
 }
 </script>
 

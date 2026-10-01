@@ -1,0 +1,23 @@
+{
+  "name": "Gina & Edy - 02.01.27",
+  "short_name": "G&E",
+  "description": "Invitación boda Gina & Edy - Acceso rápido y túnel de fotos",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fdfaf6",
+  "theme_color": "#2f4a44",
+  "icons": [
+    {
+      "src": "./1.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./1.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
