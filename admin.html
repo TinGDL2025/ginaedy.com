@@ -593,7 +593,7 @@ function abrirMesa(mesaNum){
   const principal=getTitularPrincipal(mesaNum);
   stage.innerHTML='';
   const centro=document.createElement('div'); centro.className='mesa-center';
-  centro.innerHTML=`<b>${mesaNum}</b><span class="tit" title="${principal.titular}">${principal.titular}</span><span class="sub">${principal.total>0?principal.total+' pers.':''}</span>`;
+  centro.innerHTML=`<b>${mesaNum}</b>`;
   stage.appendChild(centro);
   const cx=210,cy=210,radius=158;
   for(let i=0;i<10;i++){
@@ -608,13 +608,7 @@ function abrirMesa(mesaNum){
   }
   document.getElementById('mesaModalTitle').textContent=`Mesa ${mesaNum} — ${personas.length}/10 ocupadas`;
   document.getElementById('mesaResumen').textContent=`${personas.filter(p=>p.tipo==='adulto').length} adultos, ${personas.filter(p=>p.tipo==='menor').length} menores, ${10-personas.length} libres`;
-  // Lista detallada abajo
-  const listaDiv=document.getElementById('mesaLista');
-  if(personas.length===0){
-    listaDiv.innerHTML='<div style="font-size:11px;color:#999;text-align:center">Mesa vacía</div>';
-  } else {
-    listaDiv.innerHTML = personas.map((p,idx)=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f6f1e7;font-size:11px"><span><b>${idx+1}.</b> ${p.nombre} <span style="font-size:9px;color:#888">(${p.titular})</span></span><span style="font-size:9px;font-weight:800;text-transform:uppercase;color:${p.tipo==='menor'?'#a16207':'#1e40af'}">${p.tipo}${p.esConf?' ✓':''}</span></div>`).join('');
-  }
+  // Solo visual - sin lista detallada
   document.getElementById('mesaModal').classList.add('show');
 }
 function cerrarMesa(){ document.getElementById('mesaModal').classList.remove('show'); }
@@ -637,7 +631,6 @@ window.onload=cargar;
 <span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:4px;background:#22c55e;display:inline-block;border:1px solid #16a34a"></span>Vacía</span>
 </div>
 <div id="mesaResumen" style="text-align:center;font-size:10px;color:#777;margin-top:8px"></div>
-<div id="mesaLista" style="margin-top:12px;max-height:160px;overflow:auto;border-top:1px solid #f0e8db;padding-top:8px"></div>
 </div>
 </div>
 
