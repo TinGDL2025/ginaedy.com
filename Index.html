@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gina & Edy - 02.01.27</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
+.serif{font-family:'Cormorant Garamond',serif}
+.hero{width:100%;background:#fdfaf6;display:flex;align-items:center;justify-content:center;padding:20px 0;position:relative}
+.hero video{width:100%;max-width:520px;height:auto;max-height:68vh;object-fit:contain;display:block;margin:0 auto;background:#fdfaf6;border-radius:20px}
+.container{max-width:520px;margin:0 auto;padding:0 20px 40px 20px}
+.card{background:white;border-radius:28px;padding:28px 24px;box-shadow:0 10px 40px rgba(47,74,68,0.08);border:1px solid rgba(201,168,138,0.15);margin-top:24px}
+.badge{display:inline-block;background:#fdfaf6;border:1px solid #c9a88a33;border-radius:30px;padding:6px 14px;font-size:10px;letter-spacing:2px;margin-bottom:14px}
+.input{width:100%;border:1px solid #e8e0d6;background:#fdfaf6;border-radius:30px;padding:14px 18px;font-size:14px;margin-top:12px;outline:none}
+.btn{width:100%;background:#2f4a44;color:white;border:none;padding:16px;border-radius:30px;margin-top:16px;cursor:pointer;font-size:13px;letter-spacing:2px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-outline{width:100%;background:white;border:1px solid #2f4a44;color:#2f4a44;padding:14px;border-radius:30px;margin-top:12px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-gift{flex:1;padding:18px;border-radius:20px;border:2px solid #c9a88a33;background:#fdfaf6;cursor:pointer;text-align:center;transition:all 0.2s}
+.btn-gift.active{border-color:#2f4a44;background:white;box-shadow:0 8px 20px rgba(47,74,68,0.1)}
+.ok{display:none;margin-top:16px;background:#2f4a44;color:white;padding:16px;border-radius:16px;text-align:center;font-size:13px}
+.detail-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #eee;font-size:12px}
+.gift-detail{display:none;margin-top:20px;padding:20px;background:#fdfaf6;border-radius:20px;border:1px dashed #c9a88a55}
+.music-btn{position:fixed;bottom:20px;right:20px;z-index:99;background:#2f4a44;color:white;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(0,0,0,0.2);cursor:pointer;font-size:20px;animation:pulse 2s infinite}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+.countdown{display:flex;gap:8px;justify-content:center;margin-top:16px}
+.countdown div{background:white;border:1px solid #e8e0d6;border-radius:16px;padding:12px 14px;min-width:62px;text-align:center}
+.countdown b{display:block;font-size:20px}
+.countdown span{font-size:9px;letter-spacing:1px;color:#8a9a96}
+.foto-portada{width:100%;max-width:420px;height:auto;border-radius:20px;display:block;margin:20px auto 0 auto;box-shadow:0 12px 30px rgba(47,74,68,0.12);object-fit:cover}
+.texto-seccion1{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;line-height:1.6;color:#3d5a54;font-weight:400;padding:0 10px;margin-top:10px}
+ .label-mini{font-size:10px;letter-spacing:1.5px;color:#8a9a96;margin-top:18px;display:block;font-weight:500}
+.btn-small{padding:12px 24px;border-radius:30px;border:1.5px solid #2f4a44;background:#2f4a44;color:white;cursor:pointer;font-size:12px;font-weight:600;letter-spacing:0.8px;transition:all 0.25s;min-width:140px;text-align:center}
+.btn-small.active{background:white;color:#2f4a44;border-color:#2f4a44;box-shadow:0 6px 18px rgba(47,74,68,0.15);transform:translateY(-1px)}
+.frozen{background:#2f4a44;color:white;border-radius:20px;padding:18px;margin-top:20px;text-align:center} 
+</style>
+
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#2f4a44">
+<link rel="apple-touch-icon" href="./1.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Gina & Edy">
+<style>
+/* === PWA GINA & EDY - AGREGADO SIN TOCAR FORMATO EXISTENTE - Usa mismos colores y fuentes === */
+.pwa-card{ background:white; border-radius:28px; padding:28px 24px; box-shadow:0 10px 40px rgba(47,74,68,0.08); border:1px solid rgba(201,168,138,0.15); margin-top:24px; text-align:center; }
+.pwa-overlay{ position:fixed; inset:0; display:none; z-index:99999; align-items:center; justify-content:center; background:rgba(47,74,68,0.55); backdrop-filter:blur(6px); padding:20px; }
+.pwa-overlay.show{ display:flex; animation:pwaFade .22s ease; }
+@keyframes pwaFade{ from{opacity:0} to{opacity:1} }
+.pwa-box{ background:#fdfaf6; border-radius:28px; padding:28px 22px; max-width:420px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.25); border:1px solid #e8e0d6; text-align:center; animation:pwaPop .24s ease; }
+@keyframes pwaPop{ from{transform:scale(.94);opacity:0} to{transform:scale(1);opacity:1} }
+.pwa-logo{ width:68px; height:68px; border-radius:50%; background:white; display:flex; align-items:center; justify-content:center; margin:0 auto 12px auto; box-shadow:0 6px 18px rgba(47,74,68,0.12); border:1px solid #e8e0d6; overflow:hidden; }
+.pwa-logo img{ width:100%; height:100%; object-fit:cover; }
+.pwa-badge{ display:inline-block; background:#fdfaf6; border:1px solid #c9a88a33; border-radius:30px; padding:6px 14px; font-size:10px; letter-spacing:2px; margin-bottom:10px; color:#8a9a96; }
+.pwa-step{ display:flex; gap:12px; align-items:flex-start; text-align:left; background:white; border-radius:16px; padding:14px; margin-top:10px; border:1px solid #e8e0d6; }
+.pwa-step b.num{ background:#2f4a44; color:white; width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0; }
+</style>
+
+</head>
+
+<body>
+<audio id="audio" loop preload="auto"><source src="./a_thousand_years_loop.mp3" type="audio/mpeg"><source src="a_thousand_years_loop.mp3" type="audio/mpeg"></audio>
+<div id="musicBtn" class="music-btn" onclick="toggleMusic()">🎵</div>
+<div class="hero"><video id="heroVideo" autoplay muted loop playsinline><source src="./logo_animado_completo_light.mp4" type="video/mp4"><source src="./logo_animado_completo.mp4" type="video/mp4"></video></div>
+<div class="container">
+<div class="card" id="seccion1" style="text-align:center"><h1 class="serif" style="font-size:42px;font-weight:700;letter-spacing:1px">Gina & Edy</h1><p style="font-size:11px;letter-spacing:5px;color:#8a9a96;margin-top:4px;font-weight:500">02. 01. 27</p><p class="texto-seccion1">Con el corazón lleno de ilusión, queremos invitarte a ser parte del día más importante de nuestras vidas.</p><p class="texto-seccion1">Después de compartir risas, sueños y un camino lleno de amor, hemos decidido dar el siguiente paso.</p><p class="texto-seccion1">Con la gracia de Dios y tu presencia, hará que este momento sea aún más inolvidable</p><div style="width:100%;max-width:420px;margin:20px auto 0 auto;border-radius:20px;overflow:hidden;box-shadow:0 12px 30px rgba(47,74,68,0.12);background:#fdfaf6;line-height:0"><video autoplay muted loop playsinline preload="auto" class="foto-portada" style="margin:0;border-radius:20px;box-shadow:none;width:100%;height:auto;display:block"><source src="./Foto Portada Video.mp4" type="video/mp4"><source src="Foto Portada Video.mp4" type="video/mp4"></video></div><button onclick="toggleMusic()" class="btn-outline" style="margin-top:18px"><span style="font-size:16px">▶</span> Escuchar A Thousand Years</button></div>
+<div class="card" id="seccion2"><h2 class="serif" style="font-size:26px;text-align:center">Nuestra historia</h2><p style="font-size:13px;text-align:center;color:#555;margin-top:8px"><p align="center">
+    Dicen que las mejores historias de amor no se planean… simplemente suceden.
+    <br><br>
+    Así comenzó nuestra historia.
+    <br><br>
+    Dos caminos que se encontraron y, sin saberlo, estaban destinados a caminar juntos.
+    <br><br>
+    Con el paso del tiempo llegaron las risas, los sueños compartidos, los momentos difíciles y también esos pequeños instantes que hicieron que nuestro amor creciera cada día. Aprendimos que amar no es encontrar a alguien perfecto, sino encontrar a esa persona con quien queremos compartirlo todo: los días buenos, los retos, los sueños y la vida.
+    <br><br>
+    Hoy, después de tantas experiencias y tantos recuerdos que llevamos en el corazón, sabemos que queremos seguir escribiendo nuestra historia juntos.
+    <br><br>
+    <strong>Eduardo & Georgina</strong>
+</p>
+</p></p><div style="width:100%;margin-top:12px;border-radius:20px;overflow:hidden;background:#000"><video autoplay muted loop playsinline style="width:100%;height:auto;display:block"><source src="video_historia.mp4" type="video/mp4"></video></div></div>
+<div class="card" id="seccion3"><h2 class="serif" style="font-size:20px;text-align:center">Con la bendición de Dios, nuestros padres y padrinos</h2><div style="display:grid;grid-template-columns:1fr auto 1fr;gap:12px;margin-top:16px;text-align:center"><div><p style="font-size:10px;color:#8a9a96">PADRES NOVIA</p><p style="font-size:12px;margin-top:6px;font-weight:500;line-height:1.3"><span style="font-weight:400">Gabriela Rosales Mondragón</span><br><span style="font-weight:400">Rogelio Gpe. Pérez Gómez</span></p></div><div class="serif" style="font-size:24px">&</div><div><p style="font-size:10px;color:#8a9a96">PADRES NOVIO</p><p style="font-size:12px;margin-top:6px;font-weight:500;line-height:1.3"><span style="font-weight:400">María Rosa Espíritu Lozano</span><br><span style="font-weight:400">Alfredo Magallón Martínez</span></p></div></div><div style="margin-top:22px;text-align:center"><p style="font-size:10px;color:#8a9a96">NUESTROS PADRINOS</p><p style="font-size:12px;margin-top:6px;font-weight:500;line-height:1.4"><span style="font-weight:400">Sandra Rosales Mondragón</span><br><span style="font-weight:400">Martín Alejandro Guerrero Domínguez</span></p></div></div>
+<div class="card" id="seccion4" style="text-align:center"><h2 style="font-size:10px;letter-spacing:4px;color:#8a9a96">SÁBADO</h2><p class="serif" style="font-size:56px;font-weight:700;line-height:1">02</p><p style="font-size:10px;letter-spacing:4px;color:#8a9a96">ENERO 2027 - 5:00 PM</p><div class="countdown" id="countdown"><div><b id="d">--</b><span>DÍAS</span></div><div><b id="h">--</b><span>HRS</span></div><div><b id="m">--</b><span>MIN</span></div><div><b id="s">--</b><span>SEG</span></div></div></div>
+<div class="card" id="seccion5" style="text-align:center"><img src="templo_padre_galvan_interior.jpg" alt="Templo Padre Galván" style="width:100%;height:auto;border-radius:20px;display:block;box-shadow:0 12px 30px rgba(47,74,68,0.12)"><h2 class="serif" style="font-size:22px;text-align:center;margin-top:16px">Templo Padre Galván</h2><p style="font-size:11px;text-align:center;color:#8a9a96;margin-top:6px">Hospital 28, El Retiro, Guadalajara, Jal.</p></div>
+<div class="card" id="seccion5b" style="text-align:center"><video autoplay muted loop playsinline style="width:100%;height:auto;border-radius:20px;display:block;box-shadow:0 12px 30px rgba(47,74,68,0.12)"><source src="loop_salon.mp4" type="video/mp4"></video><h2 class="serif" style="font-size:22px;text-align:center;margin-top:16px">Grupo de salones de fiesta Bella Irene</h2><p style="font-size:11px;text-align:center;color:#8a9a96;margin-top:6px">Prolongación Medrano 438, Puerta del Rosario, Tonalá, Jal.</p></div>
+<div class="card" id="seccion6"><h2 class="serif" style="font-size:22px;text-align:center">Ubicaciones</h2><div style="background:#fdfaf6;border-radius:16px;padding:18px;margin-top:16px;text-align:center"><img src="icono_iglesia.png" alt="Iglesia" style="width:42px;height:42px;margin:0 auto 8px auto;display:block"><p class="serif" style="font-weight:600;font-size:15px">Templo Padre Galván</p><p style="font-size:11px;color:#888;margin-top:2px">Hospital 28, El Retiro, Guadalajara, Jal.<br>5:00 PM</p><a href="https://www.google.com/maps/search/?api=1&query=Templo+Padre+Galvan+Hospital+28+El+Retiro+Guadalajara+Jal" target="_blank" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;background:#2f4a44;color:white;padding:8px 18px;border-radius:20px;font-size:11px;text-decoration:none;letter-spacing:1px"><img src="icono_pin_rojo.png" alt="" style="width:14px;height:14px;display:inline-block"> CÓMO LLEGAR</a></div><div style="background:#fdfaf6;border-radius:16px;padding:18px;margin-top:14px;text-align:center"><img src="icono_copas.jpg" alt="Salón" style="width:42px;height:42px;margin:0 auto 8px auto;display:block"><p class="serif" style="font-weight:600;font-size:15px">Salón Bella Irene</p><p style="font-size:11px;color:#888;margin-top:2px">Prolongación Medrano 438, Puerta del Rosario, Tonalá, Jal.<br>7:00 PM</p><a href="https://maps.app.goo.gl/6T7aNmRsyeCxVGtS7" target="_blank" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;background:#2f4a44;color:white;padding:8px 18px;border-radius:20px;font-size:11px;text-decoration:none;letter-spacing:1px"><img src="icono_pin_rojo.png" alt="" style="width:14px;height:14px;display:inline-block"> CÓMO LLEGAR</a></div></div>
+<div class="card" id="seccionVestimenta" style="border:2px solid #2f4a44;text-align:center">
+<span class="badge" style="background:#2f4a44;color:white;border-color:#2f4a44">CÓDIGO DE VESTIMENTA</span>
+<h2 class="serif" style="font-size:26px;margin-top:8px">Etiqueta Rigurosa</h2><p style="font-size:11px;letter-spacing:3px;color:#c9a88a;margin-top:6px;font-weight:600">FORMAL</p>
+<div style="margin:20px auto 0 auto;background:#fdfaf6;border-radius:24px;padding:20px;border:1px solid #c9a88a22;max-width:320px"><img src="vestimenta_formal.png" alt="Código Vestimenta Formal" style="width:100%;max-width:260px;height:auto;display:block;margin:0 auto"></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px;text-align:left">
+<div style="background:white;border:1px solid #e8e0d6;border-radius:16px;padding:14px"><p style="font-size:10px;color:#8a9a96;letter-spacing:2px">PARA ELLA</p><p style="font-size:12px;margin-top:6px;line-height:1.4">Vestido largo o midi, elegante. Tonos formales. </p></div>
+<div style="background:white;border:1px solid #e8e0d6;border-radius:16px;padding:14px"><p style="font-size:10px;color:#8a9a96;letter-spacing:2px">PARA ÉL</p><p style="font-size:12px;margin-top:6px;line-height:1.4">Traje oscuro, camisa blanca, corbata o moño. Zapatos formales. Evita tenis y mezclilla.</p></div>
+</div>
+<div style="margin-top:14px;background:#2f4a44;color:white;border-radius:12px;padding:10px 14px;font-size:10px;letter-spacing:1px"><span style="color:#c9a88a">●</span> COLORES RESERVADOS NOVIA: Blanco, Marfil , Beige Claro, Champagne, DAMAS: Verde Olivo</div>
+</div>
+<div class="card" id="seccionItinerario">
+
+<h2 class="serif" style="font-size:24px;text-align:center">Itinerario</h2>
+<p style="font-size:11px;text-align:center;color:#8a9a96;margin-top:4px">Acompáñanos en cada momento</p>
+<div style="margin-top:18px;position:relative">
+<div style="position:absolute;left:20px;top:0;bottom:0;width:1px;background:#e8e0d6"></div>
+<div style="display:flex;gap:12px;margin-bottom:16px;position:relative">
+<div style="width:40px;height:40px;background:white;border:2px solid #c9a88a;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:1;overflow:hidden;padding:6px"><img src="iglesia.png" style="width:100%;height:100%;object-fit:contain"></div>
+<div style="flex:1;background:#fdfaf6;border-radius:14px;padding:12px 14px"><p style="font-size:11px;color:#8a9a96">17:00 - 18:00</p><p style="font-size:13px;font-weight:600;margin-top:2px">Ceremonia Religiosa</p><p style="font-size:11px;color:#666;margin-top:2px">Templo Padre Galván</p></div></div>
+<div style="display:flex;gap:12px;margin-bottom:16px;position:relative">
+<div style="width:40px;height:40px;background:white;border:2px solid #c9a88a;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:1;overflow:hidden;padding:6px"><img src="copas.jpg" style="width:100%;height:100%;object-fit:contain"></div>
+<div style="flex:1;background:#fdfaf6;border-radius:14px;padding:12px 14px"><p style="font-size:11px;color:#8a9a96">18:30 - 19:30</p><p style="font-size:13px;font-weight:600;margin-top:2px">Cóctel de Bienvenida</p><p style="font-size:11px;color:#666;margin-top:2px">Salón Bella & Irene - Terraza</p></div></div>
+<div style="display:flex;gap:12px;margin-bottom:16px;position:relative">
+<div style="width:40px;height:40px;background:white;border:2px solid #c9a88a;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:1;overflow:hidden;padding:5px"><img src="novios.png" style="width:100%;height:100%;object-fit:contain"></div>
+<div style="flex:1;background:#fdfaf6;border-radius:14px;padding:12px 14px"><p style="font-size:11px;color:#8a9a96">19:30 - 20:30</p><p style="font-size:13px;font-weight:600;margin-top:2px">Recepción & Fotos</p><p style="font-size:11px;color:#666;margin-top:2px">Ingreso de novios</p></div></div>
+<div style="display:flex;gap:12px;margin-bottom:16px;position:relative">
+<div style="width:40px;height:40px;background:white;border:2px solid #c9a88a;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:1;overflow:hidden;padding:5px"><img src="cena_y_brindis.png" style="width:100%;height:100%;object-fit:contain"></div>
+<div style="flex:1;background:#fdfaf6;border-radius:14px;padding:12px 14px"><p style="font-size:11px;color:#8a9a96">20:30 - 22:00</p><p style="font-size:13px;font-weight:600;margin-top:2px">Cena & Brindis</p><p style="font-size:11px;color:#666;margin-top:2px">Cena formal y palabras</p></div></div>
+<div style="display:flex;gap:12px;margin-bottom:16px;position:relative">
+<div style="width:40px;height:40px;background:white;border:2px solid #c9a88a;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:1;overflow:hidden;padding:5px"><img src="baile.png" style="width:100%;height:100%;object-fit:contain"></div>
+<div style="flex:1;background:#fdfaf6;border-radius:14px;padding:12px 14px"><p style="font-size:11px;color:#8a9a96">22:00 - 01:00</p><p style="font-size:13px;font-weight:600;margin-top:2px">Fiesta & Baile</p><p style="font-size:11px;color:#666;margin-top:2px">¡A celebrar!</p></div></div>
+<div style="display:flex;gap:12px;position:relative">
+<div style="width:40px;height:40px;background:white;border:2px solid #2f4a44;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:1;overflow:hidden;padding:5px"><img src="pastel.png" style="width:100%;height:100%;object-fit:contain"></div>
+<div style="flex:1;background:#2f4a44;color:white;border-radius:14px;padding:12px 14px"><p style="font-size:11px;color:#c9a88a">00:00</p><p style="font-size:13px;font-weight:600;margin-top:2px">Pastel & Cierre</p><p style="font-size:11px;color:#c9a88a;margin-top:2px">Gracias por acompañarnos</p></div></div>
+</div>
+</div>
+<div class="card" id="seccion7" style="border:2px solid #c9a88a55">
+<div style="text-align:center"><h2 class="serif" style="font-size:24px">Mesa de Regalos</h2><p style="font-size:12px;color:#8a9a96;margin-top:6px">Tu presencia es nuestro mejor regalo</p></div>
+<div style="display:flex;gap:12px;margin-top:18px">
+<div class="btn-gift" id="btnMesa" onclick="document.getElementById('detalleMesa').style.display='block'">
+    <img src="mesa_de_regalo.png" alt="Mesa" style="width:32px;height:32px;margin:0 auto;display:block">
+    <p style="font-weight:600;margin-top:8px;font-size:12px">Mesa Regalos</p>
+</div>
+</div>
+<div id="detalleMesa" class="gift-detail"><h3 class="serif" style="font-size:16px;display:flex;align-items:center;gap:8px">Mesa de Regalos</h3><a id="linkMesa1" href="#" target="_blank" style="display:block;background:white;border:1px solid #e8e0d6;padding:12px;border-radius:12px;text-decoration:none;color:#2f4a44;font-size:13px;text-align:center;margin-top:10px"><img src="liverpool.png" style="width:70px;height:auto;margin:0 auto 4px;display:block"> Liverpool</a><a id="linkMesa2" href="#" target="_blank" style="display:block;background:white;border:1px solid #e8e0d6;padding:12px;border-radius:12px;text-decoration:none;color:#2f4a44;font-size:13px;text-align:center;margin-top:8px"><img src="amazon.png" style="width:70px;height:auto;margin:0 auto 4px;display:block"> Amazon</a><a id="linkMesa3" href="https://www.ikea.com/us/es/customer-service/knowledge/articles/50c85400-82e3-4254-8086-eegb52b2c16e.html" target="_blank" style="display:block;background:white;border:1px solid #e8e0d6;padding:12px;border-radius:12px;text-decoration:none;color:#2f4a44;font-size:13px;text-align:center;margin-top:8px"><img src="ikea.png" style="width:70px;height:auto;margin:0 auto 4px;display:block"> Ikea</a></div>
+</div>
+<div class="card" id="seccion8">
+<div style="text-align:center">
+<h2 class="serif" style="font-size:22px">Confirma tu asistencia</h2>
+<b id="titularTxt" style="font-size:22px;font-weight:600;display:block;margin-top:10px;text-align:center;font-family:'Inter',sans-serif">Cargando...</b>
+</div>
+<div id="areaNormal">
+<div style="background:#fdfaf6;border-radius:20px;padding:16px;margin-top:14px">
+<div class="detail-row"><span style="color:#8a9a96;font-size:11px">CANTIDAD DE LUGARES ASIGNADOS</span><b style="font-size:13px"><span id="lugaresTxt" style="color:#c9a88a">0</span> lugares</b></div>
+<div class="detail-row"><span style="color:#8a9a96;font-size:11px">ADULTOS</span><b id="kTxt">0</b></div>
+<div class="detail-row"><span style="color:#8a9a96;font-size:11px">MENORES</span><b id="lTxt">0</b></div>
+<div class="detail-row" style="border:none"><span style="color:#8a9a96;font-size:11px">NÚMERO DE MESA</span><b style="background:#2f4a44;color:white;padding:4px 12px;border-radius:20px;font-size:12px">Mesa <span id="mesaTxt">-</span></b></div>
+</div>
+<div id="bloqueConfirmacion" style="display:none;margin-top:20px">
+<label class="label-mini">CONFIRMACIÓN DE LUGARES ASIGNADOS</label>
+<p id="txtCuentasCon" style="font-size:13px;margin-top:8px;line-height:1.4"></p>
+<div id="preguntaTodos" style="margin-top:16px;text-align:center"><p style="font-size:13px;text-align:center;font-weight:500">¿Vendrán todos a la fiesta?</p>
+<div style="margin-top:12px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap"><button id="btnSi" class="btn-small active" onclick="confirmarTodos(true)">SÍ, TODOS</button><button id="btnNo" class="btn-small" onclick="confirmarTodos(false)">NO, VAN MENOS</button></div></div>
+<div id="cajaNumero" style="display:none;margin-top:12px"><label class="label-mini">AJUSTA LA CANTIDAD</label>
+<div style="display:flex;gap:8px"><div style="flex:1"><label style="font-size:10px;color:#8a9a96">ADULTOS CONFIRMADOS</label><input id="adultosConf" type="number" class="input" min="0" value="0"></div><div style="flex:1"><label style="font-size:10px;color:#8a9a96">MENORES CONFIRMADOS</label><input id="ninosConf" type="number" class="input" min="0" value="0"></div></div>
+</div></div>
+<div id="bloqueNombres" style="display:none;margin-top:20px"><label class="label-mini">CONFIRMA LOS NOMBRES</label><textarea id="quienes" rows="3" class="input" placeholder="Ej: Gabriela, Kenia, Sebastian"></textarea></div>
+<button id="btnConfirmar" onclick="confirmarFinal()" class="btn">CONFIRMAR ASISTENCIA</button>
+ <div style="margin-top:8px; text-align:center; font-family:inherit; width:100%;">
+  Antes del 20.12.2026
+  </div>
+</div>
+<div id="areaCongelada" style="display:none">
+<div class="frozen">
+<p class="serif" style="font-size:20px">¡Gracias por confirmar!</p>
+<p style="font-size:13px;margin-top:8px">Ya confirmaste el <b id="fechaConfTxt">-</b></p>
+<p style="font-size:13px;margin-top:8px">Confirmaste <b id="sConfTxt">0</b> lugares</p>
+<p style="font-size:12px;margin-top:10px"><small id="nombresConfTxt">-</small></p>
+<div style="margin-top:16px"><button onclick="verInvitacion()" class="btn-small active" style="background:white;color:#2f4a44">VER INVITACIÓN COMPLETA</button> <button onclick="this.closest('.card').parentElement.style.display='none'; document.body.style.overflow='auto';" class="btn-small" style="border-color:white;color:white;background:transparent">CERRAR</button></div>
+<button id="btnSubirFotos" onclick="abrirFotos()" style="margin-top:16px;width:100%;background:white;color:#2f4a44;border:1.5px solid #2f4a44;padding:14px;border-radius:30px;font-size:12px;letter-spacing:1px;font-weight:600;cursor:pointer">📸 SUBIR FOTOS DE LA BODA</button><p style="font-size:10px;margin-top:10px;color:#d9c2a8">Disponible solo el 02 Ene 2027 de 18:00 a 02:00 - También tendrás QR en tu mesa</p><p style="font-size:10px;margin-top:12px;color:#c9a88a">Si necesitas cambiar algo contacta a Gina & Edy</p>
+</div>
+</div>
+<div id="okBox" class="ok"></div>
+</div></div>
+<div class="card" id="seccionGracias" style="text-align:center;background:#2f4a44;color:white;border:none;max-width:440px;margin:20px auto 0 auto;border-radius:20px;padding:32px 24px"><h2 class="serif" style="font-size:32px;margin-top:12px;color:white">¡Gracias!</h2><p style="font-size:13px;margin-top:12px;line-height:1.6;color:#c9cbc8">De corazón, gracias por ser parte de este día tan especial. Su presencia, cariño y buenos deseos hacen que nuestro amor sea aún más grande.</p><p class="serif" style="font-size:22px;margin-top:18px;color:#c9a88a;font-style:italic">Con amor,</p><p class="serif" style="font-size:28px;font-weight:700;margin-top:4px;color:white">Gina & Edy</p><p style="font-size:10px;letter-spacing:4px;color:#8a9a96;margin-top:12px">02. 01. 27</p></div>
+</div>
+</div>
+
+<script>
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwegwvZIg46B4xRdfBL4AoyIs_-4RLX4vmgPifp0pbBHhVjYhgLJqlPfVRYAQNkobFsHg/exec";
+const mesaRegalosURL1 = "https://mesaderegalos.liverpool.com.mx/milistaderegalos/60051643";
+const mesaRegalosURL2 = "https://www.amazon.com.mx/hz/wishlist/ls/ABC123";
+const bancoNombre = "BBVA Bancomer";
+const titularCuenta = "Gina Hernandez / Edy Lopez";
+const clabeCuenta = "012 320 01234567890 1";
+const el1=document.getElementById('linkMesa1'); if(el1) el1.href=mesaRegalosURL1;
+const el2=document.getElementById('linkMesa2'); if(el2) el2.href=mesaRegalosURL2;
+const bn=document.getElementById('bancoNombre'); if(bn) bn.textContent=bancoNombre;
+const tc=document.getElementById('titularCuenta'); if(tc) tc.textContent=titularCuenta;
+const cc=document.getElementById('clabeCuenta'); if(cc) cc.textContent=clabeCuenta;
+
+function copiarClabe(){try{navigator.clipboard.writeText(clabeCuenta.replace(/ /g,'')); let cm=document.getElementById('copyMsg'); if(cm){cm.style.display='block'; setTimeout(()=>cm.style.display='none',2000);}}catch(e){}}
+let isPlaying=false; const audio=document.getElementById('audio');
+function toggleMusic(){if(!audio) return; if(!isPlaying){audio.volume=0.7; audio.play().catch(()=>{}); isPlaying=true; let mb=document.getElementById('musicBtn'); if(mb) mb.textContent='🔊';} else {audio.pause(); isPlaying=false; let mb=document.getElementById('musicBtn'); if(mb) mb.textContent='🎵';}}
+const v=document.getElementById('heroVideo'); if(v){ v.addEventListener('error',()=>{v.style.display='none';}); }
+
+// CONTADOR - NO TOCAR
+const fechaBoda=new Date('2027-01-02T17:00:00').getTime();
+setInterval(()=>{const now=new Date().getTime(); const dist=fechaBoda-now; if(dist<0) return; let d=document.getElementById('d'); if(d){d.textContent=Math.floor(dist/(1000*60*60*24)); document.getElementById('h').textContent=Math.floor((dist%(1000*60*60*24))/(1000*60*60)); document.getElementById('m').textContent=Math.floor((dist%(1000*60*60))/(1000*60)); document.getElementById('s').textContent=Math.floor((dist%(1000*60))/1000);}},1000);
+
+// SECCION 8 - SHEET BUENO CON BLOQUEO
+let K_asignados=0,L_asignados=0,M_asignados=0,AB_confirmados=0,AC_confirmados=0,S_confirmados=0,vendranTodos=true,esFamiliaActual=false,DATA_ACTUAL=null;
+function renderData(obj){
+  if(!obj) return;
+  if(obj.status==="no encontrado"){ let tt=document.getElementById('titularTxt'); if(tt) tt.textContent="ID no encontrado: "+(obj.id||""); return; }
+  if(obj.status==="ya_confirmado"){ obj.confirmado=true; obj.fechaConfirmacion=obj.fecha; obj.tConfirmado=obj.t; obj.sConfirmado=obj.s; }
+  let sec7=document.getElementById('seccion7');
+  if(sec7){
+    let tipo=(obj.tipo||obj.j||'').toString().toLowerCase();
+    if(tipo.includes('sin')) sec7.style.display='none'; else sec7.style.display='block';
+  }
+  if(obj.confirmado){
+    DATA_ACTUAL=obj;
+    let an=document.getElementById('areaNormal'); if(an) an.style.display='none';
+    let ac=document.getElementById('areaCongelada'); if(ac) ac.style.display='block';
+    let fc=document.getElementById('fechaConfTxt'); if(fc) fc.textContent=obj.fechaConfirmacion||'';
+    let sc=document.getElementById('sConfTxt'); if(sc) sc.textContent=obj.sConfirmado||obj.m||0;
+    let mc=document.getElementById('mConfTxt'); if(mc) mc.textContent=obj.m||0;
+    let nc=document.getElementById('nombresConfTxt'); if(nc) nc.textContent=obj.tConfirmado||obj.g||'';
+    let tt=document.getElementById('titularTxt'); if(tt) tt.textContent=obj.t||obj.tConfirmado||'';
+    return;
+  }
+  DATA_ACTUAL=obj; K_asignados=parseInt(obj.k)||0; L_asignados=parseInt(obj.l)||0; M_asignados=parseInt(obj.m)||0; esFamiliaActual=!!obj.esFamilia;
+  AB_confirmados=K_asignados; AC_confirmados=L_asignados; S_confirmados=M_asignados;
+  let tt=document.getElementById('titularTxt'); if(tt) tt.textContent=obj.t||'';
+  let lt=document.getElementById('lugaresTxt'); if(lt) lt.textContent=M_asignados;
+  let kt=document.getElementById('kTxt'); if(kt) kt.textContent=K_asignados;
+  let ltt=document.getElementById('lTxt'); if(ltt) ltt.textContent=L_asignados;
+  let mt=document.getElementById('mesaTxt'); if(mt) mt.textContent=obj.mesa||'-';
+let bc=document.getElementById('bloqueConfirmacion'); if(bc) bc.style.display='block';
+  let txt=document.getElementById('txtCuentasCon'); if(txt){ let nombres=obj.g||'sin acompañantes'; txt.innerHTML='Invitados confirmados:<br><b style="font-size:14px">'+nombres+'</b><br><span style="color:#8a9a96;font-size:11px;margin-top:6px;display:block">Total: '+M_asignados+' lugares</span>'; }
+  let ac=document.getElementById('adultosConf'); if(ac){ ac.max=K_asignados; ac.value=K_asignados; }
+  let nc2=document.getElementById('ninosConf'); if(nc2){ nc2.max=L_asignados; nc2.value=L_asignados; }
+  vendranTodos=true;
+  let bs=document.getElementById('btnSi'); let bn2=document.getElementById('btnNo');
+  if(bs){ bs.classList.add('active'); bs.textContent='CONFIRMA'; } if(bn2){ bn2.classList.remove('active'); bn2.textContent='NO, VAN MENOS'; }
+  let cn=document.getElementById('cajaNumero'); if(cn) cn.style.display='none';
+  let bn3=document.getElementById('bloqueNombres'); if(bn3) bn3.style.display='none';
+  let q=document.getElementById('quienes'); if(q) q.value=obj.g||'';
+}
+function confirmarTodos(si){ vendranTodos=si; let btnSi=document.getElementById('btnSi'),btnNo=document.getElementById('btnNo'),cajaNumero=document.getElementById('cajaNumero'),bloqueNombres=document.getElementById('bloqueNombres');
+  if(si){ if(btnSi && btnSi.textContent==='CONFIRMA' && btnSi.classList.contains('active')){ confirmarFinal(); return; } if(btnSi){ btnSi.classList.add('active'); btnSi.textContent='CONFIRMA'; } if(btnNo){ btnNo.classList.remove('active'); btnNo.textContent='NO, VAN MENOS'; } if(cajaNumero) cajaNumero.style.display='none'; AB_confirmados=K_asignados; AC_confirmados=L_asignados; S_confirmados=M_asignados; let a=document.getElementById('adultosConf'); if(a) a.value=K_asignados; let n=document.getElementById('ninosConf'); if(n) n.value=L_asignados; if(bloqueNombres) bloqueNombres.style.display='none'; }
+  else{ if(btnSi){ btnSi.classList.remove('active'); btnSi.textContent='SÍ, TODOS'; } if(btnNo){ btnNo.classList.add('active'); btnNo.textContent='NO, VAN MENOS'; } if(cajaNumero) cajaNumero.style.display='block'; if(bloqueNombres) bloqueNombres.style.display='block'; } }
+let ae=document.getElementById('adultosConf'); if(ae) ae.addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>K_asignados)v=K_asignados; if(v<0)v=0; this.value=v; AB_confirmados=v; });
+let ne=document.getElementById('ninosConf'); if(ne) ne.addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>L_asignados)v=L_asignados; if(v<0)v=0; this.value=v; AC_confirmados=v; });
+function verInvitacion(){ window.scrollTo(0,0); }
+const idParam=new URLSearchParams(window.location.search).get('id')||'001';
+let s=document.createElement('script'); s.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData"; document.body.appendChild(s);
+function confirmarFinal(){
+  if(esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=1+AB_confirmados+AC_confirmados; }
+  // VALIDACION NO SUBIR MAS
+  if(AB_confirmados > K_asignados || AC_confirmados > L_asignados){ alert('No puedes confirmar más lugares de los asignados. Asignados: Adultos '+K_asignados+', Niños '+L_asignados); return; }
+  if(S_confirmados > M_asignados){ alert('Total confirmado excede asignado. Total asignado: '+M_asignados); return; }
+  let q=document.getElementById('quienes').value||''; let Y=K_asignados-AB_confirmados,Z=L_asignados-AC_confirmados,AA=Y+Z,box=document.getElementById('okBox'),btn=document.getElementById('btnConfirmar');
+  if(!q&&!vendranTodos){ alert('Escribe los nombres'); return; }
+  let params=new URLSearchParams({id:idParam,s:S_confirmados,ab:AB_confirmados,ac:AC_confirmados,y:Y,z:Z,aa:AA,t:q||(DATA_ACTUAL?DATA_ACTUAL.g:'')});
+  if(box){box.style.display='block'; box.innerHTML='Enviando...';} if(btn)btn.textContent='ENVIANDO...';
+  let iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=APPS_SCRIPT_URL+'?'+params.toString(); document.body.appendChild(iframe);
+  iframe.onload=function(){ setTimeout(()=>{ let s2=document.createElement('script'); s2.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData&rand="+Date.now(); document.body.appendChild(s2); if(box) box.style.display='none'; if(btn) btn.textContent='CONFIRMAR ASISTENCIA'; },1500); };
+}
+</script>
+
+
+<!-- === PASO 1: FOTOS BODA - HOJA DE INSTRUCCIONES (solo tras confirmar) === -->
+<div id="seccionFotos" class="card" style="display:none; border:2px solid #c9a88a; background:white;">
+  <div style="text-align:center">
+    <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
+    <span class="badge" style="background:#c9a88a;color:white;border-color:#c9a88a">NUEVO</span>
+    <h2 class="serif" style="font-size:24px; margin-top:8px;">Tus fotos en la pantalla del salón</h2>
+    <p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">Queremos que tus fotos también sean parte de la fiesta.</p>
+  </div>
+  <div style="margin-top:18px; background:#fdfaf6; border-radius:16px; padding:16px; border:1px dashed #c9a88a55; text-align:left">
+    <p style="font-size:11px;letter-spacing:1.5px;color:#8a9a96;font-weight:600">¿CÓMO FUNCIONA?</p>
+    <div style="margin-top:12px">
+      <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px"><span style="background:#2f4a44;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">1</span><p style="font-size:12px;color:#444;line-height:1.4"><b>Durante la fiesta</b>, toma fotos con tu celular como siempre.</p></div>
+      <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px"><span style="background:#2f4a44;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">2</span><p style="font-size:12px;color:#444;line-height:1.4"><b>El mismo día 02 Ene</b>, desde las <b>18:00 a 02:00</b>, podrás subirlas en 1 toque.</p></div>
+      <div style="display:flex;gap:10px;align-items:flex-start"><span style="background:#2f4a44;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">3</span><p style="font-size:12px;color:#444;line-height:1.4"><b>Se mostrarán en vivo</b> en la pantalla del salón para todos.</p></div>
+    </div>
+    <div style="margin-top:14px;background:white;border-radius:12px;padding:10px;border:1px solid #e8e0d6">
+      <p style="font-size:10px;color:#8a9a96;line-height:1.4">📌 Queda pendiente para el día del evento. No necesitas instalar nada extra. En tu mesa también habrá un QR como respaldo. Solo estará activo en horario de la boda.</p>
+    </div>
+  </div>
+  <button id="btnEntendiFotos" class="btn" style="margin-top:18px">ENTENDIDO, CONTINUAR</button>
+  <button id="btnNoGraciasFotos" class="btn-outline" style="margin-top:10px; border-color:#e8e0d6; color:#8a9a96;">AHORA NO, GRACIAS</button>
+</div>
+
+<!-- === PASO 2: GUARDAR ACCESO RAPIDO (después de entender fotos) === -->
+<div id="seccionPWA" class="card" style="display:none; border:2px solid #2f4a44; background:white;">
+  <div style="text-align:center">
+    <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
+    <span class="badge" style="background:#2f4a44;color:white;border-color:#2f4a44">ACCESO RÁPIDO</span>
+    <h2 class="serif" style="font-size:24px; margin-top:8px;">Guarda tu acceso</h2>
+    <p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">Guarda el icono de Gina & Edy en tu pantalla. Abre tu invitación y tus fotos en 1 toque el día del evento.</p>
+  </div>
+  <div style="margin-top:18px; background:#fdfaf6; border-radius:16px; padding:16px; border:1px dashed #c9a88a55">
+    <p style="font-size:11px;letter-spacing:1.5px;color:#8a9a96;font-weight:600">TE SERVIRÁ PARA:</p>
+    <div style="display:flex; gap:10px; margin-top:10px; text-align:left">
+      <div style="flex:1;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6"><p style="font-size:18px">💌</p><p style="font-size:11px;font-weight:600;margin-top:4px">Invitación</p><p style="font-size:10px;color:#888;margin-top:2px">1 toque</p></div>
+      <div style="flex:1;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6"><p style="font-size:18px">📸</p><p style="font-size:11px;font-weight:600;margin-top:4px">Subir fotos</p><p style="font-size:10px;color:#888;margin-top:2px">18:00-02:00</p></div>
+    </div>
+  </div>
+  <button id="btnGuardarAcceso" class="btn" style="margin-top:18px">📲 GUARDAR EN MI CELULAR</button>
+  <button id="btnNoGuardar" class="btn-outline" style="margin-top:10px; border-color:#e8e0d6; color:#8a9a96;">AHORA NO, GRACIAS</button>
+  <p id="pwaStatus" style="font-size:11px;color:#8a9a96;margin-top:10px;display:none"></p>
+</div>
+
+<div id="pwaModal" class="pwa-overlay" onclick="if(event.target.id==='pwaModal') cerrarPwaModal()">
+  <div class="pwa-box">
+    <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
+    <h3 class="serif" style="font-size:22px;">Cómo guardar en iPhone</h3>
+    <p style="font-size:12px;color:#666;margin-top:8px;line-height:1.4">Safari no permite guardado automático. Sigue estos 3 pasos:</p>
+    <div class="pwa-step"><b class="num">1</b><div><p style="font-size:12px;font-weight:600">Toca Compartir</p><p style="font-size:11px;color:#666">El icono de cuadro con flecha arriba, abajo en Safari.</p><div style="margin-top:6px;background:#2f4a44;color:white;border-radius:8px;padding:6px 10px;display:inline-block;font-size:11px">⎙ Compartir</div></div></div>
+    <div class="pwa-step"><b class="num">2</b><div><p style="font-size:12px;font-weight:600">Agregar a pantalla de inicio</p><p style="font-size:11px;color:#666">Desliza hacia abajo y tócalo.</p></div></div>
+    <div class="pwa-step"><b class="num">3</b><div><p style="font-size:12px;font-weight:600">Toca Agregar</p><p style="font-size:11px;color:#666">Arriba a la derecha. Verás el logo de Gina & Edy en tu escritorio.</p></div></div>
+    <div style="margin-top:14px;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6;text-align:left">
+      <p style="font-size:11px;font-weight:600">📸 Fotos de la boda:</p>
+      <p style="font-size:11px;color:#555;margin-top:4px;line-height:1.4">Una vez guardado, ábrelo el día del evento. Desde las <b>18:00</b> verás el botón <b>Subir fotos de la boda</b> para compartir las fotos que tomes. Se mostrarán en la pantalla del salón. También funciona el QR de tu mesa.</p>
+      <p style="font-size:10px;color:#c9a88a;margin-top:6px">⏰ Solo activo en horario del evento.</p>
+    </div>
+    <button onclick="cerrarPwaModal()" class="btn" style="margin-top:14px">ENTENDIDO</button>
+  </div>
+</div>
+
+<div id="pwaModalAndroid" class="pwa-overlay" onclick="if(event.target.id==='pwaModalAndroid') cerrarPwaModalAndroid()">
+  <div class="pwa-box">
+    <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
+    <h3 class="serif" style="font-size:22px;">Acceso creado</h3>
+    <p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">¡Listo! Busca el icono <b>Gina & Edy</b> en tu pantalla principal.</p>
+    <div style="margin-top:14px;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6;text-align:left">
+      <p style="font-size:11px;font-weight:600">📸 ¿Cómo compartir fotos?</p>
+      <p style="font-size:11px;color:#555;margin-top:4px;line-height:1.4">1. El día del evento abre el acceso desde tu escritorio.<br>2. De 18:00 a 02:00 verás el botón <b>📸 SUBIR FOTOS</b><br>3. Elige las fotos de tu galería, se mostrarán en la pantalla del salón.</p>
+      <p style="font-size:10px;color:#888;margin-top:8px">Respaldo: QR en tu mesa del salón.</p>
+    </div>
+    <button onclick="cerrarPwaModalAndroid()" class="btn" style="margin-top:14px">PERFECTO</button>
+  </div>
+</div>
+
+
+
+
+<script>
+// === PWA + FOTOS BODA - FINAL - NO TOCA LÓGICA EXISTENTE ===
+const FOTOS_URL = "https://TU_NGROK_URL_AQUI.ngrok.io"; // <-- CAMBIA AQUÍ POR TU URL DE FOTOSFIESTA (PC del salón)
+const TUNEL_URL = FOTOS_URL; // compatibilidad
+const HORARIO_INICIO = new Date('2027-01-02T18:00:00').getTime(); // Iglesia 18:00
+const HORARIO_FIN = new Date('2027-01-03T02:00:00').getTime(); // Fin fiesta 02:00
+
+let deferredPrompt = null;
+const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isAndroid = /Android/.test(navigator.userAgent);
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault();
+  deferredPrompt = e;
+  const btn = document.getElementById('btnGuardarAcceso');
+  if(btn) btn.style.display='flex';
+});
+
+function mostrarSeccionFotos(){
+  if(localStorage.getItem('pwaRechazado')==='1') return;
+  const sec = document.getElementById('seccionFotos');
+  if(sec) { sec.style.display='block'; sec.scrollIntoView({behavior:'smooth', block:'center'}); }
+  // ocultar PWA por si estaba visible
+  const pwa = document.getElementById('seccionPWA');
+  if(pwa) pwa.style.display='none';
+}
+
+function mostrarSeccionPWA(){
+  if(localStorage.getItem('pwaRechazado')==='1') return;
+  const secF = document.getElementById('seccionFotos');
+  if(secF) secF.style.display='none';
+  const sec = document.getElementById('seccionPWA');
+  if(sec) { sec.style.display='block'; sec.scrollIntoView({behavior:'smooth', block:'center'}); }
+}
+
+function abrirFotos(){
+  const ahora = Date.now();
+  if(ahora < HORARIO_INICIO || ahora > HORARIO_FIN){
+    if(!confirm('La opción de compartir fotos solo estará activa de 18:00 a 02:00 el día del evento (02 Ene 2027). ¿Quieres abrirlo en modo prueba?')) return;
+  }
+  window.open(FOTOS_URL, '_blank');
+}
+function abrirTunel(){ abrirFotos(); }
+
+function cerrarPwaModal(){ document.getElementById('pwaModal').classList.remove('show'); document.getElementById('pwaModal').style.display='none'; }
+function cerrarPwaModalAndroid(){ document.getElementById('pwaModalAndroid').classList.remove('show'); document.getElementById('pwaModalAndroid').style.display='none'; }
+
+// Botones guardar acceso
+document.getElementById('btnGuardarAcceso')?.addEventListener('click', async ()=>{
+  const status = document.getElementById('pwaStatus');
+  if(isIos){
+    document.getElementById('pwaModal').style.display='flex';
+    document.getElementById('pwaModal').classList.add('show');
+    return;
+  }
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    const {outcome} = await deferredPrompt.userChoice;
+    if(outcome==='accepted'){
+      if(status){ status.style.display='block'; status.textContent='¡Acceso creado! Busca Gina & Edy en tu escritorio.'; }
+      localStorage.setItem('pwaInstalado','1');
+      document.getElementById('pwaModalAndroid').style.display='flex';
+      document.getElementById('pwaModalAndroid').classList.add('show');
+    } else {
+      if(status){ status.style.display='block'; status.textContent='No se agregó. Puedes intentarlo de nuevo.'; }
+    }
+    deferredPrompt=null;
+  } else {
+    if(status){ status.style.display='block'; status.innerHTML='En tu navegador busca: <b>⋮ Menú > Guardar y compartir > Crear acceso directo</b> o <b>Instalar app</b>. Usa el logo 1.png'; }
+    if(isAndroid){
+      alert('En Android: toca ⋮ (arriba derecha) > Agregar a pantalla principal > Agregar. Se creará con el logo de la boda.');
+    } else {
+      alert('En PC Chrome: en la barra de direcciones verás un icono de instalar ⊞ o en menú ⋮ > Guardar y compartir > Crear acceso directo.');
+    }
+  }
+});
+
+document.getElementById('btnEntendiFotos')?.addEventListener('click', ()=>{ mostrarSeccionPWA(); });
+
+document.getElementById('btnNoGraciasFotos')?.addEventListener('click', ()=>{ localStorage.setItem('pwaRechazado','1'); const sec=document.getElementById('seccionFotos'); if(sec) sec.style.display='none'; document.body.innerHTML = '<div style="min-height:100vh;background:#fdfaf6;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Inter,sans-serif"><div style="background:white;border-radius:28px;padding:32px 24px;max-width:380px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(47,74,68,0.08);border:1px solid rgba(201,168,138,0.15)"><div style="width:64px;height:64px;border-radius:50%;background:#fdfaf6;border:1px solid #e8e0d6;margin:0 auto 16px auto;display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="./1.png" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'"></div><h2 style="font-family:Cormorant Garamond,serif;font-size:28px;color:#2f4a44">¡Gracias!</h2><p style="font-size:13px;color:#666;margin-top:10px;line-height:1.5">Tu confirmación quedó guardada. Te esperamos el 02.01.27</p><p style="font-size:10px;letter-spacing:2px;color:#8a9a96;margin-top:16px">GINA & EDY</p><button onclick="location.reload()" style="margin-top:18px;width:100%;background:#2f4a44;color:white;border:none;padding:14px;border-radius:30px;font-size:12px;letter-spacing:1px;cursor:pointer">VOLVER A VER INVITACIÓN</button></div></div>'; });
+
+document.getElementById('btnNoGuardar')?.addEventListener('click', ()=>{
+  const sec = document.getElementById('seccionPWA');
+  if(sec) sec.style.display='none';
+  localStorage.setItem('pwaRechazado','1');
+  document.body.innerHTML = '<div style="min-height:100vh;background:#fdfaf6;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Inter,sans-serif"><div style="background:white;border-radius:28px;padding:32px 24px;max-width:380px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(47,74,68,0.08);border:1px solid rgba(201,168,138,0.15)"><div style="width:64px;height:64px;border-radius:50%;background:#fdfaf6;border:1px solid #e8e0d6;margin:0 auto 16px auto;display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="./1.png" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'"></div><h2 style="font-family:Cormorant Garamond,serif;font-size:28px;color:#2f4a44">¡Gracias!</h2><p style="font-size:13px;color:#666;margin-top:10px;line-height:1.5">Tu confirmación quedó guardada. Te esperamos el 02.01.27</p><p style="font-size:10px;letter-spacing:2px;color:#8a9a96;margin-top:16px">GINA & EDY</p><button onclick="location.reload()" style="margin-top:18px;width:100%;background:#2f4a44;color:white;border:none;padding:14px;border-radius:30px;font-size:12px;letter-spacing:1px;cursor:pointer">VOLVER A VER INVITACIÓN</button></div></div>';
+});
+
+// === HOOK A TU CONFIRMACIÓN EXISTENTE SIN TOCARLA ===
+const _renderDataOriginal = window.renderData;
+window.renderData = function(obj){
+  if(typeof _renderDataOriginal === 'function') _renderDataOriginal(obj);
+  if(obj && obj.confirmado){
+    setTimeout(()=>{ mostrarSeccionFotos(); }, 800);
+  }
+};
+
+const _observer = new MutationObserver(()=>{
+  const ac = document.getElementById('areaCongelada');
+  if(ac && ac.style.display==='block'){
+    const secF = document.getElementById('seccionFotos');
+    const sec = document.getElementById('seccionPWA');
+    const fotosHidden = secF && secF.style.display==='none';
+    const pwaHidden = sec && sec.style.display==='none';
+    if(fotosHidden && pwaHidden && localStorage.getItem('pwaRechazado')!=='1'){
+      mostrarSeccionFotos();
+    }
+  }
+});
+_observer.observe(document.body, {attributes:true, subtree:true, attributeFilter:['style']});
+
+if(isStandalone){
+  localStorage.setItem('pwaInstalado','1');
+}
+</script>
+
+</body>
+</html>
