@@ -1,7 +1,7 @@
 {
   "name": "Gina & Edy - 02.01.27",
-  "short_name": "Gina & Edy",
-  "description": "Invitación boda Gina & Edy - Guarda tu acceso y comparte fotos el día del evento",
+  "short_name": "G&E",
+  "description": "Invitaci\u00f3n boda Gina & Edy - Acceso r\u00e1pido y fotos de la boda",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#fdfaf6",
@@ -19,5 +19,10 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
+  ],
+  "scope": "./",
+  "display_override": [
+    "standalone",
+    "browser"
   ]
 }
