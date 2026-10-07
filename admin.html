@@ -56,11 +56,10 @@ td{padding:8px 6px;border-top:1px solid var(--line);font-size:11px;vertical-alig
 .mesa.fuera .m-label{color:#e74c3c !important;font-weight:800}
 .mesa.fuera .m-num{color:#e74c3c !important}
 .mesa.fuera .m-free{color:#c0392b !important;font-weight:700}
-.mesa.cancelada{opacity:0.5;border-style:dashed}
 tr.cancelada{background:#fdedec}
 tr.cancelada td{color:#922b21}
 .option-fuera{color:#e74c3c !important;font-weight:700;background:#fdedec}
-.btn-reset{background:#fff;border:2px solid #e74c3c;color:#e74c3c;border-radius:18px;padding:6px 12px;cursor:pointer;font-size:11px;font-weight:800;transition:all .25s}
+.btn-reset{background:#fff;border:2px solid #e74c3c;color:#e74c3c;border-radius:18px;padding:6px 12px;cursor:pointer;font-size:11px;font-weight:800}
 .btn-reset:hover{background:#e74c3c;color:#fff}
 
 /* V20 - Ventana emergente Mesa Visual */
@@ -98,7 +97,7 @@ tr.cancelada td{color:#922b21}
   </div>
   <div class="header-actions">
     <button class="btn2" id="btnActualizar" onclick="efectoActualizar()">↻ Actualizar</button>
-    <button class="btn-reset" onclick="resetSistema()">⚠ Reset Sistema</button>
+    <button class="btn-reset" onclick="resetSistema()">⚠ Reset</button>
     <button class="btn2" onclick="salir()" style="border-color:#e74c3c;color:#e74c3c">✕ Salida</button>
   </div>
 </div>
@@ -134,12 +133,8 @@ tr.cancelada td{color:#922b21}
 
 <div class="card">
 <div class="dash-top">
-<div class="dash-top-card"><b id="dInv">0</b><span>Invitaciones Activas</span></div>
+<div class="dash-top-card"><b id="dInv">0</b><span>Invitaciones</span></div>
 <div class="dash-top-card"><b id="dConf">0</b><span>Confirmadas</span></div>
-</div>
-<div class="dash-top" style="margin-top:8px">
-<div class="dash-top-card" style="border-color:#e74c3c;background:#fdedec"><b id="dCancel" style="color:#e74c3c">0</b><span style="color:#e74c3c">Canceladas (ID bloqueado)</span></div>
-<div class="dash-top-card"><b id="dMesasInfo">22 mesas x 12</b><span>Configuración - Mesas 21-22 fuera</span></div>
 </div>
 
 <div class="dash-mid">
@@ -189,7 +184,7 @@ tr.cancelada td{color:#922b21}
 <script>
 const GS_URL="https://script.google.com/macros/s/AKfycbwegwvZIg46B4xRdfBL4AoyIs_-4RLX4vmgPifp0pbBHhVjYhgLJqlPfVRYAQNkobFsHg/exec";
 const SOBRE_BASE=location.href.replace(/admin\.html.*$/,'sobre.html?id=');
-const CAP=12, TOTAL_MESAS=22, CAPACIDAD_TOTAL=264; // V22: 22 mesas x 12 personas, 21-22 fuera escenario
+const CAP=12, TOTAL_MESAS=22, CAPACIDAD_TOTAL=264; // V23: 22 mesas x 12, 21-22 fuera
 let DATA=[], mesasSiVan={};
 
 function getLS(){try{return JSON.parse(localStorage.getItem('envios_ginaedy_v2')||'{}')}catch(e){return{}}}
@@ -293,14 +288,11 @@ function poblarSelectMesas(){
   const sel=document.getElementById('mesa');const act=sel.value;sel.innerHTML='<option value="">-- Mesa --</option>';
   for(let i=1;i<=TOTAL_MESAS;i++){
     const ocup=mesasSiVan[i]||0; const libres=CAP-ocup;
-    const esFuera = (i===21 || i===22);
+    const esFuera=(i===21||i===22);
     const opt=document.createElement('option');opt.value=i;
     if(esFuera){
-      opt.textContent=`Mesa ${i} - FUERA DE ESCENARIO (Relleno) - Ocupados ${ocup} libres ${libres}`;
-      opt.className='option-fuera';
-      opt.style.color='#e74c3c';
-      opt.style.fontWeight='800';
-      opt.style.background='#fdedec';
+      opt.textContent=`Mesa ${i} - FUERA DE ESCENARIO (Relleno) - Ocup ${ocup} libres ${libres}`;
+      opt.style.color='#e74c3c'; opt.style.fontWeight='800';
     } else {
       opt.textContent=`Mesa ${i} - Ocupados ${ocup} libres ${libres}`;
     }
@@ -425,11 +417,17 @@ function getLinkCorrecto(it){const l=it.link||'';return l.includes('?id=')?l:SOB
 
 function render(list){
   const tb=document.getElementById('tbody');tb.innerHTML='';
-  let invitaciones=list.length, confirmadas=0;
+  let invitaciones=0, confirmadas=0, canceladasCount=0;
   let kTotal=0,lTotal=0,adTotal=0,mTotal=0,sTotal=0,abTotal=0,acTotal=0,adConf=0;
   let kPor=0,lPor=0,adPor=0,mPor=0;
   let mesasM={}, mesasS={}, mesasConf={};
   for(let i=1;i<=TOTAL_MESAS;i++){mesasM[i]=0; mesasS[i]=0; mesasConf[i]=false;}
+  // Contar canceladas primero para no romper
+  list.forEach(it=>{
+    if(String(it.estatus||'').toLowerCase().includes('cancelada') || it.cancelada) canceladasCount++;
+  });
+  invitaciones = list.length - canceladasCount;
+
 
   list.forEach(it=>{
     const k=parseInt(getVal(it, ['k','adultos','Adultos invitados'])||0)||0;
@@ -459,11 +457,9 @@ function render(list){
     }
   });
 
-  // V22: descontar canceladas del total real, mostrar canceladas
-  const invitacionesReales = list.filter(x=>!String(x.estatus||'').toLowerCase().includes('cancelada') && !x.cancelada).length;
-  document.getElementById('dInv').textContent=invitacionesReales;
+  document.getElementById('dInv').textContent=invitaciones;
   document.getElementById('dConf').textContent=confirmadas;
-  if(document.getElementById('dCancel')) document.getElementById('dCancel').textContent=canceladasCount;
+  const dCancelEl=document.getElementById('dCancel'); if(dCancelEl) dCancelEl.textContent=canceladasCount;
 
   document.getElementById('pInvT').textContent=mTotal;
   document.getElementById('pInvSub').textContent=`Adultos ${kTotal+adTotal} + Menores ${lTotal}`;
@@ -487,7 +483,7 @@ function render(list){
   const gridM=document.getElementById('gridM');gridM.innerHTML='';
   for(let i=1;i<=TOTAL_MESAS;i++){
     const s=mesasS[i]||0; const libres=CAP-s;
-    const esFuera = (i===21 || i===22);
+    const esFuera=(i===21||i===22);
     let cls='mesa ';
     if(esFuera) cls+='fuera ';
     if(s>=CAP) cls+='full';
@@ -496,8 +492,8 @@ function render(list){
     const d=document.createElement('div');d.className=cls;
     d.style.cursor='pointer'; d.setAttribute('onclick',`abrirMesa(${i})`);
     if(esFuera){
-      d.innerHTML=`<div class="m-label">Mesa ${i} ⚠</div><div class="m-num">${s}</div><div class="m-free" style="color:#e74c3c;font-weight:800">FUERA ESCENARIO - ${libres} libres</div>`;
-      d.title=`Mesa ${i}: FUERA DE ESCENARIO (relleno) - ocupados=${s} libres=${libres} - Sin vista a pista`;
+      d.innerHTML=`<div class="m-label">Mesa ${i} ⚠</div><div class="m-num">${s}</div><div class="m-free">FUERA - ${libres} libres</div>`;
+      d.title=`Mesa ${i}: FUERA DE ESCENARIO (relleno) - ocupados=${s} libres=${libres}`;
     } else {
       d.innerHTML=`<div class="m-label">Mesa ${i}</div><div class="m-num">${s}</div><div class="m-free">${libres} libres</div>`;
       d.title=`Mesa ${i}: ocupados=${s} asignados=${mesasM[i]} confirmado=${mesasConf[i]?'si':'no'}`;
@@ -505,11 +501,14 @@ function render(list){
     gridM.appendChild(d);
   }
 
-  let canceladasCount=0;
   list.forEach((it,idx)=>{
-    const esCancelada = String(it.estatus||'').toLowerCase().includes('cancelada') || it.cancelada;
-    if(esCancelada) canceladasCount++;
-    const esConf=String(it.estatus||'').toLowerCase().includes('confirm') && !esCancelada;
+    const esCancelada=String(it.estatus||'').toLowerCase().includes('cancelada') || it.cancelada;
+    if(esCancelada){
+      const tr=document.createElement('tr'); tr.className='cancelada';
+      tr.innerHTML=`<td>${idx+1}</td><td><b>${it.titular}</b> <span class="small">(${it.id})</span><br><span class="small" style="color:#c0392b">CANCELADA - ID bloqueado</span></td><td>Mesa ${getMesaNum(it)||''}</td><td style="color:#e74c3c;font-weight:800">Cancelada</td><td><span style="font-size:10px;color:#922b21">ID ${it.id} bloqueado</span></td>`;
+      tb.appendChild(tr); return;
+    }
+    const esConf=String(it.estatus||'').toLowerCase().includes('confirm');
     const envios=getEnvios(it.id,it);
     
     let waClass='btn-wa-green', waText='Whatsapp';
@@ -531,14 +530,10 @@ function render(list){
     // R = Grupo - Nombres Completos, T = Nombres Confirmados (quién viene), V = señal de confirmado
     const nombresR = getVal(it, ['Grupo - Nombres Completos','grupo','Grupo'])||it.grupo||'';
     const nombresT = getVal(it, ['Nombres Confirmados (quién viene)','Nombres Confirmados','nombresConfirmados','T'])||'';
+    // Si V dice Confirmado, usar T, si no, R
     const mostrar = (esConf && nombresT) ? nombresT : nombresR;
     const tr=document.createElement('tr');
-    if(esCancelada){
-      tr.className='cancelada';
-      tr.innerHTML=`<td>${idx+1}</td><td><b>${it.titular}</b> <span class="small">(${it.id})</span><br><span class="small" style="color:#c0392b">CANCELADA - ID no reutilizable</span></td><td>${mesaInfo}</td><td style="color:#e74c3c;font-weight:800">Cancelada</td><td><span style="font-size:10px;color:#922b21">ID ${it.id} bloqueado</span></td>`;
-    } else {
-      tr.innerHTML=`<td>${idx+1}</td><td><b>${it.titular}</b> <span class="small">(${it.id})</span><br><span class="small">${mostrar}</span></td><td>${mesaInfo}</td><td>${esConf?'Confirmado':it.estatus||'Pendiente'}</td><td>${btnHtml}</td>`;
-    }
+    tr.innerHTML=`<td>${idx+1}</td><td><b>${it.titular}</b> <span class="small">(${it.id})</span><br><span class="small">${mostrar}</span></td><td>${mesaInfo}</td><td>${esConf?'Confirmado':it.estatus||'Pendiente'}</td><td>${btnHtml}</td>`;
     tb.appendChild(tr);
   });
 }
@@ -553,37 +548,23 @@ function wa(id){
 }
 
 function cancelar(id){
-  if(!confirm(`¿Cancelar invitación ${id}?\n\nSe marcará como CANCELADA (no se borrará físicamente para no reutilizar el ID).\nEl link mostrará pantalla de cancelada.`)) return;
+  if(!confirm(`¿Cancelar invitación ${id}?\n\nSe marcará como CANCELADA (no se borrará físicamente para no reutilizar el ID).`)) return;
   jsonp(GS_URL+`?action=delete&id=${id}`,r=>{
-    if(r.ok){
-      alert(`Invitación ${id} CANCELADA.\nEl ID ${id} NO se volverá a usar.\nEl invitado verá pantalla de cancelada.`);
-    } else {
-      alert('Error '+JSON.stringify(r));
-    }
+    alert(r.ok?`Invitación ${id} CANCELADA. ID ${id} NO se volverá a usar.`:'Error '+JSON.stringify(r));
     const ls=getLS(); delete ls[id]; saveLS(ls);
     cargar();
   });
 }
-
 function resetSistema(){
-  const paso1 = confirm(`⚠️ RESETEO TOTAL DEL SISTEMA\n\n¿Seguro que quieres BORRAR TODAS las invitaciones?\n\nEsta acción eliminará TODAS las filas de la base de datos y reiniciará el contador de IDs a 001.\n\nPodrás comenzar de cero para cargar invitaciones.`);
+  const paso1=confirm(`⚠️ RESETEO TOTAL\n\n¿Borrar TODAS las invitaciones?\nSe borrarán ${DATA.length} filas y contador vuelve a 001.`);
   if(!paso1) return;
-  const paso2 = prompt(`CONFIRMACIÓN DE SEGURIDAD\n\nEscribe exactamente: BORRAR TODO\n\nPara confirmar el reseteo total:`);
-  if(paso2 !== 'BORRAR TODO'){
-    alert('Texto incorrecto. Reset cancelado.');
-    return;
-  }
-  const paso3 = confirm(`ÚLTIMA CONFIRMACIÓN\n\n¿Realmente quieres borrar TODO?\n\n- Se borrarán ${DATA.length} invitaciones\n- El contador volverá a 001\n- NO se puede deshacer`);
+  const paso2=prompt(`Escribe exactamente: BORRAR TODO`);
+  if(paso2!=='BORRAR TODO'){alert('Texto incorrecto'); return;}
+  const paso3=confirm(`Última confirmación: ¿Borrar TODO? NO se puede deshacer`);
   if(!paso3) return;
-  
   jsonp(GS_URL+`?action=reset&confirm=SI`,r=>{
-    if(r.ok){
-      alert(`✅ SISTEMA RESETEADO\n\nBase limpiada. Contador en 001.\nListo para cargar invitaciones desde cero.`);
-      localStorage.removeItem('envios_ginaedy_v2');
-      cargar();
-    } else {
-      alert('Error en reset: '+JSON.stringify(r)+'\n\nDebes enviar confirm=SI');
-    }
+    if(r.ok){alert(`✅ Reset ok. Base limpiada.`); localStorage.removeItem('envios_ginaedy_v2'); cargar();}
+    else alert('Error reset: '+JSON.stringify(r));
   });
 }
 
@@ -661,7 +642,7 @@ function abrirMesa(mesaNum){
   const principal=getTitularPrincipal(mesaNum);
   stage.innerHTML='';
   const centro=document.createElement('div'); centro.className='mesa-center';
-  centro.innerHTML=`<b>${mesaNum}</b>`;
+  centro.innerHTML=`<b>${mesaNum}</b><span class="tit" title="${principal.titular}">${principal.titular}</span><span class="sub">${principal.total>0?principal.total+' pers.':''}</span>`;
   stage.appendChild(centro);
   const cx=210,cy=210,radius=158;
   for(let i=0;i<12;i++){
@@ -674,11 +655,15 @@ function abrirMesa(mesaNum){
     silla.innerHTML=`<div class="silla-num">${i+1}</div><div class="silla-respaldo"></div><div class="silla-asiento"><b>${nombre}</b><i>${label}</i></div>`;
     stage.appendChild(silla);
   }
-  const esFueraModal = (parseInt(mesaNum)===21 || parseInt(mesaNum)===22);
-  const tituloFuera = esFueraModal ? ' ⚠ FUERA DE ESCENARIO (Relleno - Sin vista pista)' : '';
-  document.getElementById('mesaModalTitle').textContent=`Mesa ${mesaNum}${tituloFuera} — ${personas.length}/12 ocupadas`;
-  document.getElementById('mesaResumen').textContent=`${personas.filter(p=>p.tipo==='adulto').length} adultos, ${personas.filter(p=>p.tipo==='menor').length} menores, ${12-personas.length} libres${esFueraModal?' - MESA FUERA DE ESCENARIO':''}`;
-  // Solo visual - sin lista detallada
+  const esFueraModal=(parseInt(mesaNum)===21||parseInt(mesaNum)===22); const fueraTxt=esFueraModal?' ⚠ FUERA DE ESCENARIO':''; document.getElementById('mesaModalTitle').textContent=`Mesa ${mesaNum}${fueraTxt} — ${personas.length}/12 ocupadas`;
+  document.getElementById('mesaResumen').textContent=`${personas.filter(p=>p.tipo==='adulto').length} adultos, ${personas.filter(p=>p.tipo==='menor').length} menores, ${12-personas.length} libres${esFueraModal?' - FUERA ESCENARIO':''}`;
+  // Lista detallada abajo
+  const listaDiv=document.getElementById('mesaLista');
+  if(personas.length===0){
+    listaDiv.innerHTML='<div style="font-size:11px;color:#999;text-align:center">Mesa vacía</div>';
+  } else {
+    listaDiv.innerHTML = personas.map((p,idx)=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f6f1e7;font-size:11px"><span><b>${idx+1}.</b> ${p.nombre} <span style="font-size:9px;color:#888">(${p.titular})</span></span><span style="font-size:9px;font-weight:800;text-transform:uppercase;color:${p.tipo==='menor'?'#a16207':'#1e40af'}">${p.tipo}${p.esConf?' ✓':''}</span></div>`).join('');
+  }
   document.getElementById('mesaModal').classList.add('show');
 }
 function cerrarMesa(){ document.getElementById('mesaModal').classList.remove('show'); }
@@ -701,6 +686,7 @@ window.onload=cargar;
 <span style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:12px;border-radius:4px;background:#22c55e;display:inline-block;border:1px solid #16a34a"></span>Vacía</span>
 </div>
 <div id="mesaResumen" style="text-align:center;font-size:10px;color:#777;margin-top:8px"></div>
+<div id="mesaLista" style="margin-top:12px;max-height:160px;overflow:auto;border-top:1px solid #f0e8db;padding-top:8px"></div>
 </div>
 </div>
 
