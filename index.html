@@ -196,9 +196,41 @@ setInterval(()=>{const now=new Date().getTime(); const dist=fechaBoda-now; if(di
 
 // SECCION 8 - SHEET BUENO CON BLOQUEO
 let K_asignados=0,L_asignados=0,M_asignados=0,AB_confirmados=0,AC_confirmados=0,S_confirmados=0,vendranTodos=true,esFamiliaActual=false,DATA_ACTUAL=null;
+function mostrarInvitacionCancelada(idMostrado){
+  localStorage.removeItem('invitacionId');
+  const WA_GINA = "5213311111111"; // <-- CAMBIA por número real de Gina
+  const WA_EDY = "5213322222222"; // <-- CAMBIA por número real de Edy
+  const mensaje = encodeURIComponent(`Hola Gina y Edy, mi invitación ${idMostrado||''} aparece como cancelada. ¿Me pueden ayudar?`);
+  document.body.innerHTML = `
+    <div style="min-height:100vh;background:#fdfaf6;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Inter,sans-serif">
+      <div style="background:white;border-radius:28px;padding:36px 24px;max-width:400px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(47,74,68,0.08);border:1px solid rgba(201,168,138,0.15)">
+        <div style="width:80px;height:80px;border-radius:50%;background:#fdfaf6;border:1px solid #e8e0d6;margin:0 auto 18px auto;display:flex;align-items:center;justify-content:center;overflow:hidden">
+          <img src="./1.png" alt="Gina & Edy" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='G&E'">
+        </div>
+        <div style="width:48px;height:48px;border-radius:50%;background:#fdedec;border:1px solid #f5b7b1;margin:0 auto 12px auto;display:flex;align-items:center;justify-content:center;font-size:22px">✕</div>
+        <h2 class="serif" style="font-family:Cormorant Garamond,serif;font-size:28px;color:#2f4a44;margin-top:4px">Invitación cancelada</h2>
+        <p style="font-size:13px;color:#666;margin-top:12px;line-height:1.6">Esta invitación <b style="color:#2f4a44">${idMostrado||''}</b> fue cancelada.</p>
+        <p style="font-size:13px;color:#666;margin-top:8px;line-height:1.6">Favor de comunicarse con <b>Gina y Edy</b>.</p>
+        <div style="margin-top:18px;display:flex;gap:10px">
+          <a href="https://wa.me/${WA_GINA}?text=${mensaje}" target="_blank" style="flex:1;background:#25D366;color:white;padding:12px;border-radius:30px;font-size:12px;text-decoration:none;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px">💬 Gina</a>
+          <a href="https://wa.me/${WA_EDY}?text=${mensaje}" target="_blank" style="flex:1;background:#2f4a44;color:white;padding:12px;border-radius:30px;font-size:12px;text-decoration:none;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px">💬 Edy</a>
+        </div>
+        <div style="margin-top:18px;background:#fdfaf6;border-radius:14px;padding:12px;border:1px solid #e8e0d6">
+          <p style="font-size:11px;color:#8a9a96">Si crees que es un error, contacta directamente a los novios.</p>
+          <p style="font-size:10px;letter-spacing:2px;color:#8a9a96;margin-top:8px">GINA & EDY - 02.01.27</p>
+        </div>
+        <p style="font-size:10px;color:#aaa;margin-top:14px">ID: ${idMostrado||'no encontrado'}</p>
+        <button onclick="window.close(); location.href='about:blank'" style="margin-top:14px;width:100%;background:white;color:#8a9a96;border:1px solid #e8e0d6;padding:10px;border-radius:30px;font-size:11px;cursor:pointer">CERRAR</button>
+      </div>
+    </div>`;
+}
+
 function renderData(obj){
   if(!obj) return;
-  if(obj.status==="no encontrado"){ let tt=document.getElementById('titularTxt'); if(tt) tt.textContent="ID no encontrado: "+(obj.id||""); return; }
+  if(obj.status==="no encontrado" || obj.status==="cancelada" || obj.cancelada){
+    mostrarInvitacionCancelada(obj.id || idParam);
+    return;
+  }
   if(obj.status==="ya_confirmado"){ obj.confirmado=true; obj.fechaConfirmacion=obj.fecha; obj.tConfirmado=obj.t; obj.sConfirmado=obj.s; }
   let sec7=document.getElementById('seccion7');
   if(sec7){
@@ -240,7 +272,11 @@ function confirmarTodos(si){ vendranTodos=si; let btnSi=document.getElementById(
 let ae=document.getElementById('adultosConf'); if(ae) ae.addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>K_asignados)v=K_asignados; if(v<0)v=0; this.value=v; AB_confirmados=v; });
 let ne=document.getElementById('ninosConf'); if(ne) ne.addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>L_asignados)v=L_asignados; if(v<0)v=0; this.value=v; AC_confirmados=v; });
 function verInvitacion(){ window.scrollTo(0,0); }
-const idParam=new URLSearchParams(window.location.search).get('id')||'001';
+let _idParamRaw=new URLSearchParams(window.location.search).get('id');
+let _savedId=localStorage.getItem('invitacionId');
+let idParam=_idParamRaw || _savedId || '001';
+if(idParam && idParam!=='001'){ localStorage.setItem('invitacionId', idParam); }
+
 let s=document.createElement('script'); s.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData"; document.body.appendChild(s);
 function confirmarFinal(){
   if(esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=1+AB_confirmados+AC_confirmados; }
@@ -257,21 +293,68 @@ function confirmarFinal(){
 </script>
 
 
-<!-- === PWA + TUNEL FOTOS - AGREGADO - NO TOCA FORMATO EXISTENTE === -->
+<!-- === PASO 1: INSTRUCCIONES FOTOS (aparece al confirmar) === -->
+<div id="seccionFotos" class="card" style="display:none; border:2px solid #c9a88a; background:white;">
+  <div style="text-align:center">
+    <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
+    <span class="badge" style="background:#c9a88a;color:white;border-color:#c9a88a">NUEVO</span>
+    <h2 class="serif" style="font-size:24px; margin-top:8px;">Tus fotos en la pantalla del salón</h2>
+    <p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">Queremos que tus fotos también sean parte de la fiesta.</p>
+  </div>
+  <div style="margin-top:18px; background:#fdfaf6; border-radius:16px; padding:16px; border:1px dashed #c9a88a55; text-align:left">
+    <p style="font-size:11px;letter-spacing:1.5px;color:#8a9a96;font-weight:600">¿CÓMO FUNCIONA?</p>
+    <div style="margin-top:12px">
+      <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px"><span style="background:#2f4a44;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">1</span><p style="font-size:12px;color:#444;line-height:1.4"><b>Durante la fiesta</b>, toma fotos con tu celular como siempre.</p></div>
+      <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px"><span style="background:#2f4a44;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">2</span><p style="font-size:12px;color:#444;line-height:1.4"><b>El mismo día 02 Ene 2027</b>, de <b>18:00 a 02:00</b>, podrás subirlas en 1 toque.</p></div>
+      <div style="display:flex;gap:10px;align-items:flex-start"><span style="background:#2f4a44;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">3</span><p style="font-size:12px;color:#444;line-height:1.4"><b>Se mostrarán en vivo</b> en la pantalla del salón para todos los invitados.</p></div>
+    </div>
+    <div style="margin-top:14px;background:white;border-radius:12px;padding:10px;border:1px solid #e8e0d6">
+      <p style="font-size:10px;color:#8a9a96;line-height:1.4">📌 Esta opción queda pendiente y solo se activará el día del evento. No necesitas instalar nada extra. En tu mesa también habrá un QR como respaldo.</p>
+    </div>
+  </div>
+  <button id="btnEntendiFotos" class="btn" style="margin-top:18px">ENTENDIDO, CONTINUAR</button>
+  <button id="btnNoGraciasFotos" class="btn-outline" style="margin-top:10px; border-color:#e8e0d6; color:#8a9a96;">AHORA NO, GRACIAS</button>
+</div>
+
+<!-- === PASO 2: ACCESO DIRECTO (después de instrucciones) === -->
+
+<!-- === PASO 1: INSTRUCCIONES FOTOS - Aparece al confirmar === -->
+<div id="seccionFotos" class="card" style="display:none; border:2px solid #c9a88a; background:white;">
+  <div style="text-align:center">
+    <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
+    <span class="badge" style="background:#c9a88a;color:white;border-color:#c9a88a">NUEVO</span>
+    <h2 class="serif" style="font-size:24px; margin-top:8px;">Tus fotos en la pantalla del salón</h2>
+    <p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">Queremos que tus fotos también sean parte de la fiesta.</p>
+  </div>
+  <div style="margin-top:18px; background:#fdfaf6; border-radius:16px; padding:16px; border:1px dashed #c9a88a55; text-align:left">
+    <p style="font-size:11px;letter-spacing:1.5px;color:#8a9a96;font-weight:600">¿CÓMO FUNCIONA?</p>
+    <div style="margin-top:12px">
+      <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px"><span style="background:#2f4a44;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">1</span><p style="font-size:12px;color:#444;line-height:1.4"><b>Durante la fiesta</b>, toma fotos con tu celular como siempre.</p></div>
+      <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px"><span style="background:#2f4a44;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">2</span><p style="font-size:12px;color:#444;line-height:1.4"><b>El mismo día 02 Ene 2027</b>, de <b>18:00 a 02:00</b>, podrás subirlas en 1 toque.</p></div>
+      <div style="display:flex;gap:10px;align-items:flex-start"><span style="background:#2f4a44;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">3</span><p style="font-size:12px;color:#444;line-height:1.4"><b>Se mostrarán en vivo</b> en la pantalla del salón.</p></div>
+    </div>
+    <div style="margin-top:14px;background:white;border-radius:12px;padding:10px;border:1px solid #e8e0d6">
+      <p style="font-size:10px;color:#8a9a96;line-height:1.4">📌 Queda pendiente y solo se activará el día del evento. No necesitas instalar nada extra. En tu mesa también habrá un QR como respaldo.</p>
+    </div>
+  </div>
+  <button id="btnEntendiFotos" class="btn" style="margin-top:18px">ENTENDIDO, CONTINUAR</button>
+  <button id="btnNoGraciasFotos" class="btn-outline" style="margin-top:10px; border-color:#e8e0d6; color:#8a9a96;">AHORA NO, GRACIAS</button>
+</div>
+
+<!-- === PASO 2: ACCESO DIRECTO === -->
 <div id="seccionPWA" class="card" style="display:none; border:2px solid #2f4a44; background:white;">
   <div style="text-align:center">
     <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
     <span class="badge" style="background:#2f4a44;color:white;border-color:#2f4a44">ACCESO RÁPIDO</span>
     <h2 class="serif" style="font-size:24px; margin-top:8px;">Guarda tu acceso</h2>
-    <p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">Con el icono de la boda en tu pantalla podrás abrir tu invitación en 1 toque y subir fotos al túnel el día del evento.</p>
+    <p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">Guarda el icono de Gina & Edy en tu pantalla. Abre tu invitación y tus fotos en 1 toque el día del evento.</p>
   </div>
   <div style="margin-top:18px; background:#fdfaf6; border-radius:16px; padding:16px; border:1px dashed #c9a88a55">
-    <p style="font-size:11px;letter-spacing:1.5px;color:#8a9a96;font-weight:600">INCLUYE:</p>
+    <p style="font-size:11px;letter-spacing:1.5px;color:#8a9a96;font-weight:600">TE SERVIRÁ PARA:</p>
     <div style="display:flex; gap:10px; margin-top:10px; text-align:left">
-      <div style="flex:1;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6"><p style="font-size:18px">💌</p><p style="font-size:11px;font-weight:600;margin-top:4px">Invitación</p><p style="font-size:10px;color:#888;margin-top:2px">Acceso rápido</p></div>
-      <div style="flex:1;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6"><p style="font-size:18px">📸</p><p style="font-size:11px;font-weight:600;margin-top:4px">Túnel fotos</p><p style="font-size:10px;color:#888;margin-top:2px">Activo 18:00-02:00</p></div>
+      <div style="flex:1;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6"><p style="font-size:18px">💌</p><p style="font-size:11px;font-weight:600;margin-top:4px">Invitación</p><p style="font-size:10px;color:#888;margin-top:2px">1 toque</p></div>
+      <div style="flex:1;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6"><p style="font-size:18px">📸</p><p style="font-size:11px;font-weight:600;margin-top:4px">Subir fotos</p><p style="font-size:10px;color:#888;margin-top:2px">18:00-02:00</p></div>
     </div>
-    <p style="font-size:10px;color:#8a9a96;margin-top:12px;line-height:1.4">Podrás usarlo desde la iglesia, no necesitas escanear el QR. En la mesa del salón también habrá QR como respaldo. Solo funciona en horario del evento.</p>
   </div>
   <button id="btnGuardarAcceso" class="btn" style="margin-top:18px">📲 GUARDAR EN MI CELULAR</button>
   <button id="btnNoGuardar" class="btn-outline" style="margin-top:10px; border-color:#e8e0d6; color:#8a9a96;">AHORA NO, GRACIAS</button>
@@ -287,8 +370,8 @@ function confirmarFinal(){
     <div class="pwa-step"><b class="num">2</b><div><p style="font-size:12px;font-weight:600">Agregar a pantalla de inicio</p><p style="font-size:11px;color:#666">Desliza hacia abajo y tócalo.</p></div></div>
     <div class="pwa-step"><b class="num">3</b><div><p style="font-size:12px;font-weight:600">Toca Agregar</p><p style="font-size:11px;color:#666">Arriba a la derecha. Verás el logo de Gina & Edy en tu escritorio.</p></div></div>
     <div style="margin-top:14px;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6;text-align:left">
-      <p style="font-size:11px;font-weight:600">📸 Túnel de fotos:</p>
-      <p style="font-size:11px;color:#555;margin-top:4px;line-height:1.4">Una vez guardado, ábrelo el día del evento. Desde las <b>18:00</b> verás el botón <b>Subir al túnel</b> que te lleva directo a fotosfiesta (ngrok) en tu PC del salón. También funciona el QR de tu mesa.</p>
+      <p style="font-size:11px;font-weight:600">📸 Fotos de la boda:</p>
+      <p style="font-size:11px;color:#555;margin-top:4px;line-height:1.4">Una vez guardado, ábrelo el día del evento. Desde las <b>18:00</b> verás el botón <b>Subir fotos de la boda</b> para compartir las fotos que tomes. Se mostrarán en la pantalla del salón. También funciona el QR de tu mesa.</p>
       <p style="font-size:10px;color:#c9a88a;margin-top:6px">⏰ Solo activo en horario del evento.</p>
     </div>
     <button onclick="cerrarPwaModal()" class="btn" style="margin-top:14px">ENTENDIDO</button>
@@ -301,22 +384,17 @@ function confirmarFinal(){
     <h3 class="serif" style="font-size:22px;">Acceso creado</h3>
     <p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">¡Listo! Busca el icono <b>Gina & Edy</b> en tu pantalla principal.</p>
     <div style="margin-top:14px;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6;text-align:left">
-      <p style="font-size:11px;font-weight:600">📸 ¿Cómo usar el túnel?</p>
-      <p style="font-size:11px;color:#555;margin-top:4px;line-height:1.4">1. El día del evento abre el acceso desde tu escritorio (o desde la iglesia).<br>2. De 18:00 a 02:00 verás el botón <b>📸 SUBIR AL TÚNEL</b><br>3. Sube fotos, llegan directo a la PC del salón (fotosfiesta).</p>
+      <p style="font-size:11px;font-weight:600">📸 ¿Cómo compartir fotos?</p>
+      <p style="font-size:11px;color:#555;margin-top:4px;line-height:1.4">1. El día del evento abre el acceso desde tu escritorio.<br>2. De 18:00 a 02:00 verás el botón <b>📸 SUBIR FOTOS</b><br>3. Elige las fotos de tu galería, se mostrarán en la pantalla del salón.</p>
       <p style="font-size:10px;color:#888;margin-top:8px">Respaldo: QR en tu mesa del salón.</p>
     </div>
-    <button onclick="cerrarPwaModalAndroid()" class="btn" style="margin-top:14px">PERFECTO</button>
+    <button onclick="cerrarPwaModalAndroid()" class="btn" style="margin-top:14px">PERFECTO, CERRAR</button>
   </div>
 </div>
 
-<div id="btnFlotanteTunel" style="display:none; position:fixed; bottom:90px; right:20px; z-index:999; background:#2f4a44; color:white; padding:14px 18px; border-radius:30px; box-shadow:0 10px 30px rgba(0,0,0,0.25); cursor:pointer; font-size:12px; letter-spacing:1px; font-weight:600; align-items:center; gap:8px;" onclick="abrirTunel()">
-  📸 SUBIR AL TÚNEL
-</div>
-
-
 <script>
-// === PWA + TUNEL - AGREGADO - NO TOCA LÓGICA EXISTENTE ===
-const TUNEL_URL = "https://TU_NGROK_URL_AQUI.ngrok.io"; // <-- CAMBIA AQUÍ POR TU URL DE FOTOSFIESTA
+// === PWA + FOTOS BODA - FINAL V3 - SIN CINTILLA, SIN PALABRA ANTERIOR, FIX ID INVITADO ===
+const FOTOS_URL = "https://TU_NGROK_URL_AQUI.ngrok.io"; // <-- CAMBIA AQUÍ POR TU URL DE FOTOSFIESTA (PC del salón)
 const HORARIO_INICIO = new Date('2027-01-02T18:00:00').getTime();
 const HORARIO_FIN = new Date('2027-01-03T02:00:00').getTime();
 
@@ -336,41 +414,58 @@ window.addEventListener('beforeinstallprompt', (e)=>{
   if(btn) btn.style.display='flex';
 });
 
+function cerrarInvitacionTotal(){
+  localStorage.setItem('pwaRechazado','1');
+  const secF = document.getElementById('seccionFotos');
+  const secP = document.getElementById('seccionPWA');
+  if(secF) secF.style.display='none';
+  if(secP) secP.style.display='none';
+  document.body.innerHTML = '<div style="min-height:100vh;background:#fdfaf6;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Inter,sans-serif"><div style="background:white;border-radius:28px;padding:32px 24px;max-width:380px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(47,74,68,0.08);border:1px solid rgba(201,168,138,0.15)"><div style="width:64px;height:64px;border-radius:50%;background:#fdfaf6;border:1px solid #e8e0d6;margin:0 auto 16px auto;display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="./1.png" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'"></div><h2 style="font-family:Cormorant Garamond,serif;font-size:28px;color:#2f4a44">¡Gracias!</h2><p style="font-size:13px;color:#666;margin-top:10px;line-height:1.5">Tu confirmación quedó guardada. Te esperamos el 02.01.27</p><p style="font-size:10px;letter-spacing:2px;color:#8a9a96;margin-top:16px">GINA & EDY</p><button onclick="location.reload()" style="margin-top:18px;width:100%;background:#2f4a44;color:white;border:none;padding:14px;border-radius:30px;font-size:12px;letter-spacing:1px;cursor:pointer">VOLVER A VER INVITACIÓN</button><button onclick="window.close(); location.href=\'about:blank\'" style="margin-top:10px;width:100%;background:white;color:#8a9a96;border:1px solid #e8e0d6;padding:12px;border-radius:30px;font-size:11px;cursor:pointer">CERRAR</button></div></div>';
+}
+
+function mostrarSeccionFotos(){
+  if(localStorage.getItem('pwaRechazado')==='1') return;
+  const sec = document.getElementById('seccionFotos');
+  if(sec) { sec.style.display='block'; sec.scrollIntoView({behavior:'smooth', block:'center'}); }
+  const pwa = document.getElementById('seccionPWA');
+  if(pwa) pwa.style.display='none';
+}
+
 function mostrarSeccionPWA(){
+  if(localStorage.getItem('pwaRechazado')==='1') return;
+  const secF = document.getElementById('seccionFotos');
+  if(secF) secF.style.display='none';
   const sec = document.getElementById('seccionPWA');
   if(sec) { sec.style.display='block'; sec.scrollIntoView({behavior:'smooth', block:'center'}); }
-  // Mostrar botón flotante si está en horario (para pruebas, siempre muestra si ya confirmaron y quieren probar)
-  verificarHorarioTunel();
 }
 
-function verificarHorarioTunel(){
-  const ahora = Date.now();
-  const btn = document.getElementById('btnFlotanteTunel');
-  if(!btn) return;
-  // Para producción: solo en horario. Para pruebas ahora, si quieres verlo, comenta la condición
-  if(ahora >= HORARIO_INICIO && ahora <= HORARIO_FIN){
-    btn.style.display='flex';
-  } else {
-    // Durante pruebas, si ya confirmaron, mostrar igual pero con aviso de horario
-    if(isStandalone || localStorage.getItem('pwaInstalado')){
-      btn.style.display='flex';
-      btn.innerHTML='📸 TÚNEL (PRUEBA - Solo activo 18:00-02:00)';
-    }
-  }
-}
-
-function abrirTunel(){
+function abrirFotos(){
   const ahora = Date.now();
   if(ahora < HORARIO_INICIO || ahora > HORARIO_FIN){
-    if(!confirm('El túnel solo estará activo de 18:00 a 02:00 el día del evento. ¿Quieres abrirlo en modo prueba?')) return;
+    if(!confirm('La opción de compartir fotos solo estará activa de 18:00 a 02:00 el día del evento (02 Ene 2027). ¿Quieres abrirlo en modo prueba?')) return;
   }
-  window.open(TUNEL_URL, '_blank');
+  window.open(FOTOS_URL, '_blank');
 }
 
-function cerrarPwaModal(){ document.getElementById('pwaModal').classList.remove('show'); document.getElementById('pwaModal').style.display='none'; }
-function cerrarPwaModalAndroid(){ document.getElementById('pwaModalAndroid').classList.remove('show'); document.getElementById('pwaModalAndroid').style.display='none'; }
+function cerrarPwaModal(){ 
+  document.getElementById('pwaModal').classList.remove('show'); 
+  document.getElementById('pwaModal').style.display='none';
+  mostrarGraciasFinal();
+}
+function cerrarPwaModalAndroid(){ 
+  document.getElementById('pwaModalAndroid').classList.remove('show'); 
+  document.getElementById('pwaModalAndroid').style.display='none';
+  mostrarGraciasFinal();
+}
 
-// Botones
+function mostrarGraciasFinal(){
+  const sec = document.getElementById('seccionPWA');
+  if(sec) sec.innerHTML = '<div style="text-align:center"><div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.style.display=\'none\'"></div><h2 class="serif" style="font-size:24px;">¡Acceso guardado!</h2><p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">Ya puedes cerrar esta ventana. Usa el icono Gina & Edy de tu pantalla el día del evento para subir fotos.</p><button onclick="cerrarInvitacionTotal()" class="btn" style="margin-top:18px">GRACIAS, CERRAR</button></div>';
+}
+
+// Listeners
+document.getElementById('btnEntendiFotos')?.addEventListener('click', ()=>{ mostrarSeccionPWA(); });
+document.getElementById('btnNoGraciasFotos')?.addEventListener('click', ()=>{ cerrarInvitacionTotal(); });
 document.getElementById('btnGuardarAcceso')?.addEventListener('click', async ()=>{
   const status = document.getElementById('pwaStatus');
   if(isIos){
@@ -391,45 +486,40 @@ document.getElementById('btnGuardarAcceso')?.addEventListener('click', async ()=
     }
     deferredPrompt=null;
   } else {
-    // PC o Android sin prompt capturado (ya instalado o navegador no compatible)
     if(status){ status.style.display='block'; status.innerHTML='En tu navegador busca: <b>⋮ Menú > Guardar y compartir > Crear acceso directo</b> o <b>Instalar app</b>. Usa el logo 1.png'; }
     if(isAndroid){
-      alert('En Android: toca ⋮ (arriba derecha) > Agregar a pantalla principal > Agregar. Se creará con el logo de la boda.');
+      alert('En Android: toca ⋮ (arriba derecha) > Agregar a pantalla principal > Agregar.');
     } else {
-      alert('En PC Chrome: en la barra de direcciones verás un icono de instalar ⊞ o en menú ⋮ > Guardar y compartir > Crear acceso directo.');
+      alert('En PC Chrome: en la barra de direcciones verás icono instalar ⊞ o en menú ⋮ > Guardar y compartir > Crear acceso directo.');
     }
   }
 });
+document.getElementById('btnNoGuardar')?.addEventListener('click', ()=>{ cerrarInvitacionTotal(); });
 
-document.getElementById('btnNoGuardar')?.addEventListener('click', ()=>{
-  document.getElementById('seccionPWA').style.display='none';
-});
-
-// === HOOK A TU CONFIRMACIÓN EXISTENTE SIN TOCARLA ===
-// Guardamos renderData original y lo envolvemos
+// === HOOK CONFIRMACIÓN + FIX ID PERSISTENCIA YA ESTÁ ARRIBA EN renderData, este solo muestra fotos ===
 const _renderDataOriginal = window.renderData;
 window.renderData = function(obj){
   if(typeof _renderDataOriginal === 'function') _renderDataOriginal(obj);
   if(obj && obj.confirmado){
-    setTimeout(()=>{ mostrarSeccionPWA(); }, 800);
+    setTimeout(()=>{ mostrarSeccionFotos(); }, 800);
   }
 };
 
-// Si ya confirmó antes (ya_confirmado), también mostrar
 const _observer = new MutationObserver(()=>{
   const ac = document.getElementById('areaCongelada');
   if(ac && ac.style.display==='block'){
-    const sec = document.getElementById('seccionPWA');
-    if(sec && sec.style.display==='none'){
-      mostrarSeccionPWA();
+    const secF = document.getElementById('seccionFotos');
+    const secP = document.getElementById('seccionPWA');
+    const hiddenF = !secF || secF.style.display==='none';
+    const hiddenP = !secP || secP.style.display==='none';
+    if(hiddenF && hiddenP && localStorage.getItem('pwaRechazado')!=='1'){
+      mostrarSeccionFotos();
     }
   }
 });
 _observer.observe(document.body, {attributes:true, subtree:true, attributeFilter:['style']});
 
-// Si ya está en PWA instalada, mostrar botón flotante de túnel
 if(isStandalone){
-  setTimeout(verificarHorarioTunel, 1000);
   localStorage.setItem('pwaInstalado','1');
 }
 </script>
