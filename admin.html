@@ -37,9 +37,8 @@ input,select{width:100%;padding:12px;border:1px solid #e8ddd0;border-radius:10px
 .mesa .m-label{font-size:11px;color:#333;font-weight:600}.mesa .m-num{font-size:18px;font-weight:800;color:var(--green)}.mesa .m-free{font-size:10px;color:#888}
 .mesa.full{background:#fdedec;border-color:#e74c3c}.mesa.full .m-num{color:#e74c3c}
 .mesa.warn-yellow{background:#fef9e7;border-color:#f1c40f}.mesa.warn-yellow .m-num{color:#b7950b}
-.mesa.confirmed{background:#eafaf1;border-color:#2ecc71;border-width:3px;box-shadow:0 0 0 2px #2ecc71 inset}
-.mesa.confirmed .m-label:after{content:' ✓ CONFIRMADA';font-size:8px;color:#27ae60;font-weight:800;letter-spacing:0.5px}
-.mesa.confirmed .m-num{color:#1e8449}
+/* FIX: confirmacion ya no va en grid de 22 mesas, va en sillas */
+.mesa.confirmed-old{display:none}
 table{width:100%;border-collapse:collapse;margin-top:8px}
 th{font-size:9px;color:#999;text-transform:uppercase;padding:6px;text-align:left}
 td{padding:8px 6px;border-top:1px solid var(--line);font-size:11px;vertical-align:top}
@@ -441,6 +440,8 @@ function render(list){
 
 
   list.forEach(it=>{
+    const esCanceladaCheck=String(it.estatus||'').toLowerCase().includes('cancelada') || it.cancelada;
+    if(esCanceladaCheck) return; // FIX: canceladas no ocupan mesa ni cuentan
     const k=parseInt(getVal(it, ['k','adultos','Adultos invitados'])||0)||0;
     const l=parseInt(getVal(it, ['l','ninos','Ninos invitados'])||0)||0;
     let m=parseInt(getVal(it, ['lugaresM','lugares','Lugares Asignados','m'])||0)||0;
@@ -495,24 +496,19 @@ function render(list){
   for(let i=1;i<=TOTAL_MESAS;i++){
     const s=mesasS[i]||0; const libres=CAP-s;
     const esFuera=(i===21||i===22);
-    const esConf = !!mesasConf[i];
     let cls='mesa ';
     if(esFuera) cls+='fuera ';
     if(s>=CAP) cls+='full';
     else if(s>=10) cls+='warn-yellow';
-    else if(esConf) cls+='confirmed';
+    // FIX: quitar confirmacion del grid de 22 mesas, confirmacion va en sillas
     const d=document.createElement('div');d.className=cls;
     d.style.cursor='pointer'; d.setAttribute('onclick',`abrirMesa(${i})`);
     if(esFuera){
       d.innerHTML=`<div class="m-label">Mesa ${i} ⚠</div><div class="m-num">${s}</div><div class="m-free">FUERA - ${libres} libres</div>`;
-      d.title=`Mesa ${i}: FUERA DE ESCENARIO (relleno) - ocupados=${s} libres=${libres} - ${esConf?'CONFIRMADA':'pendiente'}`;
+      d.title=`Mesa ${i}: FUERA DE ESCENARIO (relleno) - ocupados=${s} libres=${libres}`;
     } else {
-      if(esConf){
-        d.innerHTML=`<div class="m-label">Mesa ${i}</div><div class="m-num">${s}</div><div class="m-free" style="color:#1e8449;font-weight:800">✓ CONFIRMADA - ${libres} libres</div>`;
-      } else {
-        d.innerHTML=`<div class="m-label">Mesa ${i}</div><div class="m-num">${s}</div><div class="m-free">${libres} libres - Por confirmar</div>`;
-      }
-      d.title=`Mesa ${i}: ocupados=${s} asignados=${mesasM[i]} ${esConf?'CONFIRMADA':'pendiente por confirmar'}`;
+      d.innerHTML=`<div class="m-label">Mesa ${i}</div><div class="m-num">${s}</div><div class="m-free">${libres} libres</div>`;
+      d.title=`Mesa ${i}: ocupados=${s} asignados=${mesasM[i]} libres=${libres}`;
     }
     gridM.appendChild(d);
   }
@@ -620,6 +616,8 @@ function guardar(){
 function getPersonasDeMesa(mesaNum){
   const personas=[];
   (DATA||[]).forEach(it=>{
+    const esCancelada = String(it.estatus||'').toLowerCase().includes('cancelada') || it.cancelada;
+    if(esCancelada) return; // FIX: canceladas no aparecen en sillas
     if(getMesaNum(it)!==parseInt(mesaNum)) return;
     const esConf = String(getVal(it, ['estatus','Estado','V'])||it.estatus||'').toLowerCase().includes('confirm');
     const nombresR = getVal(it, ['Grupo - Nombres Completos','grupo','Grupo'])||it.grupo||'';
@@ -629,13 +627,12 @@ function getPersonasDeMesa(mesaNum){
     const k = parseInt(getVal(it, ['k','adultos'])||it.k||0);
     const ad = parseInt(getVal(it, ['ad'])||0);
     const l = parseInt(getVal(it, ['l','ninos'])||it.l||0);
-    // Si no hay lista, usar titular como fallback
     if(lista.length===0){
-      if(it.titular) personas.push({nombre:it.titular,tipo:'adulto',titular:it.titular, esConf});
+      if(it.titular) personas.push({nombre:it.titular,tipo:'adulto',titular:it.titular, esConf, id:it.id});
     } else {
       lista.forEach((nom, idx)=>{
         const esMenor = idx >= (k + ad);
-        personas.push({nombre:nom, tipo: esMenor?'menor':'adulto', titular:it.titular, esConf});
+        personas.push({nombre:nom, tipo: esMenor?'menor':'adulto', titular:it.titular, esConf, id:it.id});
       });
     }
   });
@@ -644,6 +641,8 @@ function getPersonasDeMesa(mesaNum){
 function getTitularPrincipal(mesaNum){
   const conteo={};
   (DATA||[]).forEach(it=>{
+    const esCancelada = String(it.estatus||'').toLowerCase().includes('cancelada') || it.cancelada;
+    if(esCancelada) return;
     if(getMesaNum(it)!==parseInt(mesaNum)) return;
     const tot = (parseInt(getVal(it, ['lugaresM','m'])||it.lugaresM||0)||0) || 1;
     conteo[it.titular]=(conteo[it.titular]||0)+tot;
@@ -655,26 +654,38 @@ function getTitularPrincipal(mesaNum){
 function abrirMesa(mesaNum){
   const stage=document.getElementById('mesaStage');
   const personas=getPersonasDeMesa(mesaNum);
-  const principal=getTitularPrincipal(mesaNum);
+  // const principal=getTitularPrincipal(mesaNum); // ya no se muestra titular en centro
   stage.innerHTML='';
   const centro=document.createElement('div'); centro.className='mesa-center';
-  // FIX 4b: solo numero en centro, no titular
   centro.innerHTML=`<b>${mesaNum}</b>`;
   stage.appendChild(centro);
-  const cx=210,cy=210,radius=172; // FIX 4c: radio mas grande para que no se tape 11 y 12
+  const cx=210,cy=210,radius=172;
   for(let i=0;i<12;i++){
     const angleDeg=-90+(i*30); const rad=angleDeg*Math.PI/180;
     const x=cx+radius*Math.cos(rad); const y=cy+radius*Math.sin(rad);
     const pers=personas[i];
-    let tipo='vacia', nombre='Vacía', label='Vacía';
-    if(pers){ tipo=pers.tipo; nombre=pers.nombre; label=pers.tipo==='menor'?'Menor':'Adulto'; }
+    let tipo='vacia', nombre='Vacía', label='Vacía', confMark='', sillaExtra='';
+    if(pers){
+      tipo=pers.tipo;
+      nombre=pers.nombre;
+      if(pers.esConf){
+        label=(pers.tipo==='menor'?'Menor ✓':'Adulto ✓');
+        confMark='<span style="position:absolute;top:-6px;right:-6px;background:#27ae60;color:white;width:16px;height:16px;border-radius:50%;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:800">✓</span>';
+        sillaExtra=' style="border-color:#27ae60 !important;border-width:2px;box-shadow:0 0 0 2px #27ae60 inset"';
+      } else {
+        label=(pers.tipo==='menor'?'Menor · Por conf.':'Adulto · Por conf.');
+      }
+    }
     const silla=document.createElement('div'); silla.className=`silla ${tipo}`; silla.style.left=x+'px'; silla.style.top=y+'px';
-    silla.innerHTML=`<div class="silla-num">${i+1}</div><div class="silla-respaldo"></div><div class="silla-asiento"><b>${nombre}</b><i>${label}</i></div>`;
+    silla.innerHTML=`<div class="silla-num">${i+1}</div><div class="silla-respaldo"${pers&&pers.esConf?' style="background:#27ae60;border-color:#1e8449"':''}></div><div class="silla-asiento"${sillaExtra}><b>${nombre}</b><i>${label}</i>${confMark}</div>`;
     stage.appendChild(silla);
   }
-  const esFueraModal=(parseInt(mesaNum)===21||parseInt(mesaNum)===22); const fueraTxt=esFueraModal?' ⚠ FUERA DE ESCENARIO':''; document.getElementById('mesaModalTitle').textContent=`Mesa ${mesaNum}${fueraTxt} — ${personas.length}/12 ocupadas`;
-  document.getElementById('mesaResumen').textContent=`${personas.filter(p=>p.tipo==='adulto').length} adultos, ${personas.filter(p=>p.tipo==='menor').length} menores, ${12-personas.length} libres${esFueraModal?' - FUERA ESCENARIO':''}`;
-  // FIX 4a: sin lista abajo, solo sillas
+  const esFueraModal=(parseInt(mesaNum)===21||parseInt(mesaNum)===22);
+  const fueraTxt=esFueraModal?' ⚠ FUERA DE ESCENARIO':'';
+  const confCount = personas.filter(p=>p.esConf).length;
+  const pendCount = personas.filter(p=>!p.esConf).length;
+  document.getElementById('mesaModalTitle').textContent=`Mesa ${mesaNum}${fueraTxt} — ${personas.length}/12 ocupadas`;
+  document.getElementById('mesaResumen').textContent=`${personas.filter(p=>p.tipo==='adulto').length} adultos, ${personas.filter(p=>p.tipo==='menor').length} menores, ${12-personas.length} libres | ${confCount} confirmados ✓, ${pendCount} por confirmar${esFueraModal?' - FUERA ESCENARIO':''}`;
   document.getElementById('mesaModal').classList.add('show');
 }
 function cerrarMesa(){ document.getElementById('mesaModal').classList.remove('show'); }

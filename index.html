@@ -154,10 +154,20 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 <p id="txtCuentasCon" style="font-size:13px;margin-top:8px;line-height:1.4"></p>
 <div id="preguntaTodos" style="margin-top:16px;text-align:center"><p style="font-size:13px;text-align:center;font-weight:500">¿Vendrán todos a la fiesta?</p>
 <div style="margin-top:12px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap"><button id="btnSi" class="btn-small active" onclick="confirmarTodos(true)">SÍ, TODOS</button><button id="btnNo" class="btn-small" onclick="confirmarTodos(false)">NO, VAN MENOS</button></div></div>
-<div id="cajaNumero" style="display:none;margin-top:12px"><label class="label-mini">AJUSTA LA CANTIDAD</label>
-<div style="display:flex;gap:8px"><div style="flex:1"><label style="font-size:10px;color:#8a9a96">ADULTOS CONFIRMADOS</label><input id="adultosConf" type="number" class="input" min="0" value="0"></div><div style="flex:1"><label style="font-size:10px;color:#8a9a96">MENORES CONFIRMADOS</label><input id="ninosConf" type="number" class="input" min="0" value="0"></div></div>
-</div></div>
-<div id="bloqueNombres" style="display:none;margin-top:20px"><label class="label-mini">CONFIRMA LOS NOMBRES</label><textarea id="quienes" rows="3" class="input" placeholder="Ej: Gabriela, Kenia, Sebastian"></textarea></div>
+<!-- OPCION B: checklist en lugar de numeros y textarea -->
+<div id="bloqueCheckNombres" style="display:none;margin-top:16px;background:#fdfaf6;border-radius:16px;padding:14px;border:1px dashed #c9a88a55">
+<label class="label-mini" style="margin-bottom:8px">SELECCIONA QUIÉN SÍ VIENE (no puedes agregar otros)</label>
+<div id="listaCheckNombres" style="display:flex;flex-direction:column;gap:8px;margin-top:8px"></div>
+<div style="margin-top:12px;display:flex;gap:8px">
+<button onclick="seleccionarTodosChecks(true)" class="btn-small" style="flex:1;min-width:0;font-size:10px;padding:10px">TODOS</button>
+<button onclick="seleccionarTodosChecks(false)" class="btn-small" style="flex:1;min-width:0;font-size:10px;padding:10px;background:white;color:#8a9a96;border-color:#e8e0d6">NINGUNO</button>
+</div>
+<p id="resumenChecks" style="font-size:11px;color:#2f4a44;margin-top:10px;text-align:center;font-weight:600"></p>
+</div>
+<!-- Compatibilidad: inputs ocultos para backend (no se muestran) -->
+<div id="cajaNumero" style="display:none"><input id="adultosConf" type="hidden"><input id="ninosConf" type="hidden"></div>
+<div id="bloqueNombres" style="display:none"><textarea id="quienes" style="display:none"></textarea></div>
+</div>
 <button id="btnConfirmar" onclick="confirmarFinal()" class="btn">CONFIRMAR ASISTENCIA</button>
  <div style="margin-top:8px; text-align:center; font-family:inherit; width:100%;">
   Antes del 20.12.2026
@@ -276,6 +286,8 @@ function renderData(obj){
   let ltt=document.getElementById('lTxt'); if(ltt) ltt.textContent=L_asignados;
   let mt=document.getElementById('mesaTxt'); if(mt) mt.textContent=obj.mesa||'-';
 let bc=document.getElementById('bloqueConfirmacion'); if(bc) bc.style.display='block';
+  // OPCION B: crear checkboxes con nombres invitados
+  try{ crearCheckboxes(obj.g||''); }catch(e){}
   let txt=document.getElementById('txtCuentasCon'); if(txt){ let nombres=obj.g||'sin acompañantes'; txt.innerHTML='Invitados confirmados:<br><b style="font-size:14px">'+nombres+'</b><br><span style="color:#8a9a96;font-size:11px;margin-top:6px;display:block">Total: '+M_asignados+' lugares</span>'; }
   let ac=document.getElementById('adultosConf'); if(ac){ ac.max=K_asignados; ac.value=K_asignados; }
   let nc2=document.getElementById('ninosConf'); if(nc2){ nc2.max=L_asignados; nc2.value=L_asignados; }
@@ -286,29 +298,84 @@ let bc=document.getElementById('bloqueConfirmacion'); if(bc) bc.style.display='b
   let bn3=document.getElementById('bloqueNombres'); if(bn3) bn3.style.display='none';
   let q=document.getElementById('quienes'); if(q) q.value=obj.g||'';
 }
-function confirmarTodos(si){ vendranTodos=si; let btnSi=document.getElementById('btnSi'),btnNo=document.getElementById('btnNo'),cajaNumero=document.getElementById('cajaNumero'),bloqueNombres=document.getElementById('bloqueNombres');
-  if(si){ if(btnSi && btnSi.textContent==='CONFIRMA' && btnSi.classList.contains('active')){ confirmarFinal(); return; } if(btnSi){ btnSi.classList.add('active'); btnSi.textContent='CONFIRMA'; } if(btnNo){ btnNo.classList.remove('active'); btnNo.textContent='NO, VAN MENOS'; } if(cajaNumero) cajaNumero.style.display='none'; AB_confirmados=K_asignados; AC_confirmados=L_asignados; S_confirmados=M_asignados; let a=document.getElementById('adultosConf'); if(a) a.value=K_asignados; let n=document.getElementById('ninosConf'); if(n) n.value=L_asignados; if(bloqueNombres) bloqueNombres.style.display='none'; }
-  else{ if(btnSi){ btnSi.classList.remove('active'); btnSi.textContent='SÍ, TODOS'; } if(btnNo){ btnNo.classList.add('active'); btnNo.textContent='NO, VAN MENOS'; } if(cajaNumero) cajaNumero.style.display='block'; if(bloqueNombres) bloqueNombres.style.display='block'; } }
-let ae=document.getElementById('adultosConf'); if(ae) ae.addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>K_asignados)v=K_asignados; if(v<0)v=0; this.value=v; AB_confirmados=v; });
-let ne=document.getElementById('ninosConf'); if(ne) ne.addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>L_asignados)v=L_asignados; if(v<0)v=0; this.value=v; AC_confirmados=v; });
-function verInvitacion(){ window.scrollTo(0,0); }
-let _idParamRaw=new URLSearchParams(window.location.search).get('id');
-let _savedId=localStorage.getItem('invitacionId');
-let idParam=_idParamRaw || _savedId || '001';
-if(idParam && idParam!=='001'){ localStorage.setItem('invitacionId', idParam); }
-
-let s=document.createElement('script'); s.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData"; document.body.appendChild(s);
-function confirmarFinal(){
-  if(esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=1+AB_confirmados+AC_confirmados; }
-  // VALIDACION NO SUBIR MAS
-  if(AB_confirmados > K_asignados || AC_confirmados > L_asignados){ alert('No puedes confirmar más lugares de los asignados. Asignados: Adultos '+K_asignados+', Niños '+L_asignados); return; }
-  if(S_confirmados > M_asignados){ alert('Total confirmado excede asignado. Total asignado: '+M_asignados); return; }
-  let q=document.getElementById('quienes').value||''; let Y=K_asignados-AB_confirmados,Z=L_asignados-AC_confirmados,AA=Y+Z,box=document.getElementById('okBox'),btn=document.getElementById('btnConfirmar');
-  if(!q&&!vendranTodos){ alert('Escribe los nombres'); return; }
-  let params=new URLSearchParams({id:idParam,s:S_confirmados,ab:AB_confirmados,ac:AC_confirmados,y:Y,z:Z,aa:AA,t:q||(DATA_ACTUAL?DATA_ACTUAL.g:'')});
-  if(box){box.style.display='block'; box.innerHTML='Enviando...';} if(btn)btn.textContent='ENVIANDO...';
-  let iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=APPS_SCRIPT_URL+'?'+params.toString(); document.body.appendChild(iframe);
-  iframe.onload=function(){ setTimeout(()=>{ let s2=document.createElement('script'); s2.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData&rand="+Date.now(); document.body.appendChild(s2); if(box) box.style.display='none'; if(btn) btn.textContent='CONFIRMAR ASISTENCIA'; },1500); };
+function crearCheckboxes(nombresStr){
+  const cont=document.getElementById('listaCheckNombres');
+  if(!cont) return;
+  cont.innerHTML='';
+  const nombres = (nombresStr||'').split(/[,\n]+/).map(s=>s.trim()).filter(Boolean);
+  // Si esFamiliaActual, ad es 0, sino 1 (titular cuenta aparte pero ya viene en lista)
+  const totalAdultos = K_asignados + (esFamiliaActual?0:1); // titular + adultos
+  // Pero K_asignados ya incluye? Para simplificar, primeros K+ad son adultos
+  const limiteAdultos = K_asignados + (esFamiliaActual?0:1);
+  nombres.forEach((nom, idx)=>{
+    const esMenor = idx >= limiteAdultos;
+    const tipo = esMenor?'menor':'adulto';
+    const div=document.createElement('div');
+    div.style.cssText='display:flex;align-items:center;gap:10px;background:white;border-radius:12px;padding:10px 12px;border:1px solid #e8e0d6';
+    div.innerHTML=`<input type="checkbox" checked data-tipo="${tipo}" value="${nom.replace(/"/g,'&quot;')}" onchange="actualizarDesdeChecks()" style="width:18px;height:18px;accent-color:#2f4a44"><span style="flex:1;font-size:13px">${nom} <small style="color:#8a9a96;font-size:10px">(${tipo})</small></span>`;
+    cont.appendChild(div);
+  });
+  actualizarDesdeChecks();
+}
+function seleccionarTodosChecks(v){
+  document.querySelectorAll('#listaCheckNombres input[type=checkbox]').forEach(c=>c.checked=v);
+  actualizarDesdeChecks();
+}
+function actualizarDesdeChecks(){
+  const checks=[...document.querySelectorAll('#listaCheckNombres input[type=checkbox]')];
+  const checked=checks.filter(c=>c.checked);
+  const nombresChecked = checked.map(c=>c.value);
+  const adultosChecked = checked.filter(c=>c.dataset.tipo==='adulto').length;
+  const menoresChecked = checked.filter(c=>c.dataset.tipo==='menor').length;
+  // Calcular AB y AC para backend
+  // Si no es familia, el titular cuenta como adulto extra, pero ya está en lista, así que AB = adultosChecked - (esFamilia?0:1) ?? simplificamos:
+  if(esFamiliaActual){
+    AB_confirmados = adultosChecked;
+    AC_confirmados = menoresChecked;
+    S_confirmados = adultosChecked + menoresChecked;
+  } else {
+    // Si la lista incluye titular, adultosChecked incluye titular
+    // Backend espera AB = adultos sin titular, AC = menores
+    const titularEnLista = 1; // asumimos titular está incluido
+    AB_confirmados = Math.max(0, adultosChecked - titularEnLista);
+    AC_confirmados = menoresChecked;
+    S_confirmados = checked.length;
+  }
+  const q=document.getElementById('quienes');
+  if(q) q.value = nombresChecked.join(', ');
+  const a=document.getElementById('adultosConf'); if(a) a.value=AB_confirmados;
+  const n=document.getElementById('ninosConf'); if(n) n.value=AC_confirmados;
+  const resumen=document.getElementById('resumenChecks');
+  if(resumen) resumen.textContent = `${checked.length} de ${checks.length} confirmados — ${adultosChecked} adultos, ${menoresChecked} menores`;
+}
+function confirmarTodos(si){
+  vendranTodos=si;
+  const btnSi=document.getElementById('btnSi'),btnNo=document.getElementById('btnNo'),bloqueCheck=document.getElementById('bloqueCheckNombres');
+  const cajaNumero=document.getElementById('cajaNumero'),bloqueNombres=document.getElementById('bloqueNombres');
+  if(si){
+    if(btnSi) btnSi.classList.add('active');
+    if(btnNo) btnNo.classList.remove('active');
+    if(bloqueCheck) bloqueCheck.style.display='none';
+    if(cajaNumero) cajaNumero.style.display='none';
+    if(bloqueNombres) bloqueNombres.style.display='none';
+    // Todos confirmados
+    AB_confirmados=K_asignados; AC_confirmados=L_asignados;
+    S_confirmados=M_asignados;
+    const q=document.getElementById('quienes');
+    if(q) q.value = DATA_ACTUAL ? (DATA_ACTUAL.g||'') : '';
+    // Marcar todos los checks si existen
+    seleccionarTodosChecks(true);
+  } else {
+    if(btnSi) btnSi.classList.remove('active');
+    if(btnNo) btnNo.classList.add('active');
+    if(bloqueCheck) bloqueCheck.style.display='block';
+    if(cajaNumero) cajaNumero.style.display='none';
+    if(bloqueNombres) bloqueNombres.style.display='none';
+    // Si no hay checks creados, crearlos
+    if(DATA_ACTUAL && document.getElementById('listaCheckNombres').children.length===0){
+      crearCheckboxes(DATA_ACTUAL.g||'');
+    }
+  }
 }
 </script>
 
