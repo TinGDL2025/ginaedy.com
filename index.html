@@ -206,7 +206,11 @@ setInterval(()=>{const now=new Date().getTime(); const dist=fechaBoda-now; if(di
 let K_asignados=0,L_asignados=0,M_asignados=0,AB_confirmados=0,AC_confirmados=0,S_confirmados=0,vendranTodos=true,esFamiliaActual=false,DATA_ACTUAL=null;
 function renderData(obj){
   if(!obj) return;
-  if(obj.status==="no encontrado" || obj.status==="cancelada" || obj.cancelada){ mostrarInvitacionCancelada(obj.id || idParam); return; }
+  if(obj.status==="no encontrado" || obj.status==="cancelada" || obj.cancelada){
+    mostrarInvitacionCancelada(obj.id||idParam);
+    return;
+  }
+  if(obj.status==="no encontrado"){ let tt=document.getElementById('titularTxt'); if(tt) tt.textContent="ID no encontrado: "+(obj.id||""); return; }
   if(obj.status==="ya_confirmado"){ obj.confirmado=true; obj.fechaConfirmacion=obj.fecha; obj.tConfirmado=obj.t; obj.sConfirmado=obj.s; }
   let sec7=document.getElementById('seccion7');
   if(sec7){
@@ -240,19 +244,18 @@ let bc=document.getElementById('bloqueConfirmacion'); if(bc) bc.style.display='b
   
 }
 
-let ae=document.getElementById('adultosConf'); if(ae) ae.addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>K_asignados)v=K_asignados; if(v<0)v=0; this.value=v; AB_confirmados=v; });
-let ne=document.getElementById('ninosConf'); if(ne) ne.addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>L_asignados)v=L_asignados; if(v<0)v=0; this.value=v; AC_confirmados=v; });
+
 
 function crearCheckboxes(nombresStr){
   const cont=document.getElementById('listaCheckNombres');
   if(!cont) return;
   cont.innerHTML='';
-  const nombres = (nombresStr||'').split(/[,
-]+/).map(s=>s.trim()).filter(Boolean);
-  const limiteAdultos = K_asignados + (esFamiliaActual?0:1);
-  nombres.forEach((nom, idx)=>{
-    const esMenor = idx >= limiteAdultos;
-    const tipo = esMenor?'menor':'adulto';
+  const nombres=(nombresStr||'').split(/[,
+\n]+/).map(s=>s.trim()).filter(Boolean);
+  const limiteAdultos=K_asignados + (esFamiliaActual?0:1);
+  nombres.forEach((nom,idx)=>{
+    const esMenor=idx>=limiteAdultos;
+    const tipo=esMenor?'menor':'adulto';
     const div=document.createElement('div');
     div.style.cssText='display:flex;align-items:center;gap:10px;background:white;border-radius:12px;padding:10px 12px;border:1px solid #e8e0d6';
     div.innerHTML=`<input type="checkbox" checked data-tipo="${tipo}" value="${nom.replace(/"/g,'&quot;')}" onchange="actualizarDesdeChecks()" style="width:18px;height:18px;accent-color:#2f4a44"><span style="flex:1;font-size:13px">${nom} <small style="color:#8a9a96;font-size:10px">(${tipo})</small></span>`;
@@ -266,26 +269,25 @@ function seleccionarTodosChecks(v){
 }
 function actualizarDesdeChecks(){
   const checks=[...document.querySelectorAll('#listaCheckNombres input[type=checkbox]')];
+  if(checks.length===0) return;
   const checked=checks.filter(c=>c.checked);
-  const nombresChecked = checked.map(c=>c.value);
-  const adultosChecked = checked.filter(c=>c.dataset.tipo==='adulto').length;
-  const menoresChecked = checked.filter(c=>c.dataset.tipo==='menor').length;
+  const nombresChecked=checked.map(c=>c.value);
+  const adultosChecked=checked.filter(c=>c.dataset.tipo==='adulto').length;
+  const menoresChecked=checked.filter(c=>c.dataset.tipo==='menor').length;
   if(esFamiliaActual){
-    AB_confirmados = adultosChecked;
-    AC_confirmados = menoresChecked;
-    S_confirmados = adultosChecked + menoresChecked;
-  } else {
-    const titularEnLista = 1;
-    AB_confirmados = Math.max(0, adultosChecked - titularEnLista);
-    AC_confirmados = menoresChecked;
-    S_confirmados = checked.length;
+    AB_confirmados=adultosChecked;
+    AC_confirmados=menoresChecked;
+    S_confirmados=adultosChecked+menoresChecked;
+  }else{
+    AB_confirmados=Math.max(0,adultosChecked-1);
+    AC_confirmados=menoresChecked;
+    S_confirmados=checked.length;
   }
-  const q=document.getElementById('quienes');
-  if(q) q.value = nombresChecked.join(', ');
+  const q=document.getElementById('quienes'); if(q) q.value=nombresChecked.join(', ');
   const a=document.getElementById('adultosConf'); if(a) a.value=AB_confirmados;
   const n=document.getElementById('ninosConf'); if(n) n.value=AC_confirmados;
   const resumen=document.getElementById('resumenChecks');
-  if(resumen) resumen.textContent = `${checked.length} de ${checks.length} confirmados — ${adultosChecked} adultos, ${menoresChecked} menores`;
+  if(resumen) resumen.textContent=`${checked.length} de ${checks.length} confirmados — ${adultosChecked} adultos, ${menoresChecked} menores`;
 }
 function confirmarTodos(si){
   vendranTodos=si;
@@ -295,10 +297,9 @@ function confirmarTodos(si){
     if(btnNo) btnNo.classList.remove('active');
     if(bloqueCheck) bloqueCheck.style.display='none';
     AB_confirmados=K_asignados; AC_confirmados=L_asignados; S_confirmados=M_asignados;
-    const q=document.getElementById('quienes');
-    if(q) q.value = DATA_ACTUAL ? (DATA_ACTUAL.g||'') : '';
-    try{ seleccionarTodosChecks(true); }catch(e){}
-  } else {
+    const q=document.getElementById('quienes'); if(q) q.value=DATA_ACTUAL?(DATA_ACTUAL.g||''):'';
+    try{ document.querySelectorAll('#listaCheckNombres input[type=checkbox]').forEach(c=>c.checked=true); actualizarDesdeChecks(); }catch(e){}
+  }else{
     if(btnSi) btnSi.classList.remove('active');
     if(btnNo) btnNo.classList.add('active');
     if(bloqueCheck) bloqueCheck.style.display='block';
@@ -307,10 +308,8 @@ function confirmarTodos(si){
     }
   }
 }
-function verInvitacion(){ window.scrollTo(0,0); }
 
 function verInvitacion(){ window.scrollTo(0,0); }
-function verInvitacion_OLD(){ window.scrollTo(0,0); }
 let _idParamRaw=new URLSearchParams(window.location.search).get('id');
 let _savedId=localStorage.getItem('invitacionId');
 let idParam=_idParamRaw || _savedId || '001';
@@ -318,17 +317,46 @@ if(idParam && idParam!=='001'){ localStorage.setItem('invitacionId', idParam); }
 
 let s=document.createElement('script'); s.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData"; document.body.appendChild(s);
 function confirmarFinal(){
-  if(esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=1+AB_confirmados+AC_confirmados; }
-  // VALIDACION NO SUBIR MAS
+  // Usar valores de checks si existen, si no usar asignados
+  try{ actualizarDesdeChecks(); }catch(e){}
+  // No recalcular S con +1, ya viene de checks
+  if(!S_confirmados || S_confirmados===0){
+    if(esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=AB_confirmados+AC_confirmados+1; }
+  }
   if(AB_confirmados > K_asignados || AC_confirmados > L_asignados){ alert('No puedes confirmar más lugares de los asignados. Asignados: Adultos '+K_asignados+', Niños '+L_asignados); return; }
   if(S_confirmados > M_asignados){ alert('Total confirmado excede asignado. Total asignado: '+M_asignados); return; }
-  let q=document.getElementById('quienes').value||''; let Y=K_asignados-AB_confirmados,Z=L_asignados-AC_confirmados,AA=Y+Z,box=document.getElementById('okBox'),btn=document.getElementById('btnConfirmar');
-  if(!q&&!vendranTodos){ alert('Escribe los nombres'); return; }
+  let q=document.getElementById('quienes').value||''; 
+  if(!q){ const checks=[...document.querySelectorAll('#listaCheckNombres input[type=checkbox]:checked')].map(c=>c.value); q=checks.join(', '); }
+  let Y=K_asignados-AB_confirmados,Z=L_asignados-AC_confirmados,AA=Y+Z,box=document.getElementById('okBox'),btn=document.getElementById('btnConfirmar');
+  if(!q && !vendranTodos){ alert('Selecciona al menos un nombre'); return; }
   let params=new URLSearchParams({id:idParam,s:S_confirmados,ab:AB_confirmados,ac:AC_confirmados,y:Y,z:Z,aa:AA,t:q||(DATA_ACTUAL?DATA_ACTUAL.g:'')});
-  if(box){box.style.display='block'; box.innerHTML='Enviando...';} if(btn)btn.textContent='ENVIANDO...';
-  let iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=APPS_SCRIPT_URL+'?'+params.toString(); document.body.appendChild(iframe);
-  iframe.onload=function(){ setTimeout(()=>{ let s2=document.createElement('script'); s2.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData&rand="+Date.now(); document.body.appendChild(s2); if(box) box.style.display='none'; if(btn) btn.textContent='CONFIRMAR ASISTENCIA'; },1500); };
+  if(box){box.style.display='block'; box.innerHTML='Enviando confirmación...';} if(btn){btn.textContent='ENVIANDO...'; btn.disabled=true;}
+  // Usar script JSONP en lugar de iframe (iframe lo bloquea Google)
+  let sConf=document.createElement('script');
+  sConf.src=APPS_SCRIPT_URL+'?'+params.toString()+'&callback=confirmCallback&_='+Date.now();
+  document.body.appendChild(sConf);
+  // Fallback: aunque no responda, recargar datos en 2.5s
+  setTimeout(()=>{
+    let s2=document.createElement('script');
+    s2.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData&rand="+Date.now();
+    document.body.appendChild(s2);
+    if(box) box.style.display='none';
+    if(btn){ btn.textContent='CONFIRMAR ASISTENCIA'; btn.disabled=false; }
+  },2500);
 }
+function confirmCallback(r){
+  // Callback opcional de confirmación
+  let box=document.getElementById('okBox'),btn=document.getElementById('btnConfirmar');
+  if(box) box.innerHTML='¡Confirmado!';
+  setTimeout(()=>{
+    let s2=document.createElement('script');
+    s2.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData&rand="+Date.now();
+    document.body.appendChild(s2);
+    if(box) box.style.display='none';
+    if(btn){ btn.textContent='CONFIRMAR ASISTENCIA'; btn.disabled=false; }
+  },800);
+}
+
 </script>
 
 
@@ -454,36 +482,36 @@ window.addEventListener('beforeinstallprompt', (e)=>{
 });
 
 function getCurrentIdKey(){
-  try{
-    return (typeof idParam !== 'undefined' && idParam && idParam !== '001') ? idParam : (localStorage.getItem('invitacionId')||'global');
-  }catch(e){ return 'global'; }
+  try{ return (typeof idParam !== 'undefined' && idParam && idParam !== '001') ? idParam : (localStorage.getItem('invitacionId')||'global'); }catch(e){ return 'global'; }
+}
+function mostrarInvitacionCancelada(id){
+  const c=document.querySelector('.container');
+  if(c) c.innerHTML='<div class="card" style="text-align:center;border:2px solid #e74c3c"><h2 class="serif" style="font-size:24px;color:#e74c3c">Invitación Cancelada</h2><p style="font-size:13px;margin-top:8px">La invitación '+ (id||'') +' está cancelada o bloqueada.<br>Contacta a Gina & Edy.</p></div>';
 }
 function cerrarInvitacionTotal(){
-  const key = getCurrentIdKey();
+  const key=getCurrentIdKey();
   try{ localStorage.setItem('pwaRechazado_'+key,'1'); }catch(e){}
-  const secF = document.getElementById('seccionFotos');
-  const secP = document.getElementById('seccionPWA');
+  const secF=document.getElementById('seccionFotos');
+  const secP=document.getElementById('seccionPWA');
   if(secF) secF.style.display='none';
   if(secP) secP.style.display='none';
-  document.body.innerHTML = '<div style="min-height:100vh;background:#fdfaf6;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Inter,sans-serif"><div style="background:white;border-radius:28px;padding:32px 24px;max-width:380px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(47,74,68,0.08);border:1px solid rgba(201,168,138,0.15)"><div style="width:64px;height:64px;border-radius:50%;background:#fdfaf6;border:1px solid #e8e0d6;margin:0 auto 16px auto;display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="./1.png" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'"></div><h2 style="font-family:Cormorant Garamond,serif;font-size:28px;color:#2f4a44">¡Gracias!</h2><p style="font-size:13px;color:#666;margin-top:10px;line-height:1.5">Tu confirmación quedó guardada. Te esperamos el 02.01.27</p><p style="font-size:10px;letter-spacing:2px;color:#8a9a96;margin-top:16px">GINA & EDY</p><button onclick="location.reload()" style="margin-top:18px;width:100%;background:#2f4a44;color:white;border:none;padding:14px;border-radius:30px;font-size:12px;letter-spacing:1px;cursor:pointer">VOLVER A VER INVITACIÓN</button><button onclick="window.close(); location.href=\'about:blank\'" style="margin-top:10px;width:100%;background:white;color:#8a9a96;border:1px solid #e8e0d6;padding:12px;border-radius:30px;font-size:11px;cursor:pointer">CERRAR</button></div></div>';
+  document.body.innerHTML='<div style="min-height:100vh;background:#fdfaf6;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Inter,sans-serif"><div style="background:white;border-radius:28px;padding:32px 24px;max-width:380px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(47,74,68,0.08);border:1px solid rgba(201,168,138,0.15)"><div style="width:64px;height:64px;border-radius:50%;background:#fdfaf6;border:1px solid #e8e0d6;margin:0 auto 16px auto;display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="./1.png" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'"></div><h2 style="font-family:Cormorant Garamond,serif;font-size:28px;color:#2f4a44">¡Gracias!</h2><p style="font-size:13px;color:#666;margin-top:10px;line-height:1.5">Tu confirmación quedó guardada. Te esperamos el 02.01.27</p><p style="font-size:10px;letter-spacing:2px;color:#8a9a96;margin-top:16px">GINA & EDY</p><button onclick="location.reload()" style="margin-top:18px;width:100%;background:#2f4a44;color:white;border:none;padding:14px;border-radius:30px;font-size:12px;letter-spacing:1px;cursor:pointer">VOLVER A VER INVITACIÓN</button><button onclick="window.close(); location.href=\'about:blank\'" style="margin-top:10px;width:100%;background:white;color:#8a9a96;border:1px solid #e8e0d6;padding:12px;border-radius:30px;font-size:11px;cursor:pointer">CERRAR</button></div></div>';
 }
-
 function mostrarSeccionFotos(){
-  const key = getCurrentIdKey();
+  const key=getCurrentIdKey();
   if(localStorage.getItem('pwaRechazado_'+key)==='1') return;
-  const sec = document.getElementById('seccionFotos');
-  if(sec) { sec.style.display='block'; sec.scrollIntoView({behavior:'smooth', block:'center'}); }
-  const pwa = document.getElementById('seccionPWA');
+  const sec=document.getElementById('seccionFotos');
+  if(sec){ sec.style.display='block'; sec.scrollIntoView({behavior:'smooth', block:'center'}); }
+  const pwa=document.getElementById('seccionPWA');
   if(pwa) pwa.style.display='none';
 }
-
 function mostrarSeccionPWA(){
-  const key = getCurrentIdKey();
+  const key=getCurrentIdKey();
   if(localStorage.getItem('pwaRechazado_'+key)==='1') return;
-  const secF = document.getElementById('seccionFotos');
+  const secF=document.getElementById('seccionFotos');
   if(secF) secF.style.display='none';
-  const sec = document.getElementById('seccionPWA');
-  if(sec) { sec.style.display='block'; sec.scrollIntoView({behavior:'smooth', block:'center'}); }
+  const sec=document.getElementById('seccionPWA');
+  if(sec){ sec.style.display='block'; sec.scrollIntoView({behavior:'smooth', block:'center'}); }
 }
 
 function abrirFotos(){
