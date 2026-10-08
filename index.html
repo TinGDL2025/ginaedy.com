@@ -43,11 +43,6 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Gina & Edy">
 <style>
-
-#loadingOverlay{position:fixed;inset:0;background:#fdfaf6;z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column}
-#loadingOverlay .spinner{width:48px;height:48px;border:4px solid #e8e0d6;border-top-color:#2f4a44;border-radius:50%;animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-
 /* === PWA GINA & EDY - AGREGADO SIN TOCAR FORMATO EXISTENTE - Usa mismos colores y fuentes === */
 .pwa-card{ background:white; border-radius:28px; padding:28px 24px; box-shadow:0 10px 40px rgba(47,74,68,0.08); border:1px solid rgba(201,168,138,0.15); margin-top:24px; text-align:center; }
 .pwa-overlay{ position:fixed; inset:0; display:none; z-index:99999; align-items:center; justify-content:center; background:rgba(47,74,68,0.55); backdrop-filter:blur(6px); padding:20px; }
@@ -65,12 +60,10 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 </head>
 
 <body>
-<div id="loadingOverlay"><div style="width:80px;height:80px;border-radius:50%;background:white;border:1px solid #e8e0d6;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:18px"><img src="./1.png" style="width:100%;height:100%;object-fit:cover"></div><div class="spinner"></div><p style="margin-top:16px;font-size:12px;color:#8a9a96;letter-spacing:2px">CARGANDO INVITACIÓN...</p><p id="loadingId" style="margin-top:6px;font-size:10px;color:#aaa"></p></div>
-<script>try{document.getElementById('loadingId').textContent='ID: '+(new URLSearchParams(location.search).get('id')||localStorage.getItem('invitacionId')||'...')}catch(e){}</script>
 <audio id="audio" loop preload="auto"><source src="./a_thousand_years_loop.mp3" type="audio/mpeg"><source src="a_thousand_years_loop.mp3" type="audio/mpeg"></audio>
 <div id="musicBtn" class="music-btn" onclick="toggleMusic()">🎵</div>
 <div class="hero"><video id="heroVideo" autoplay muted loop playsinline><source src="./logo_animado_completo_light.mp4" type="video/mp4"><source src="./logo_animado_completo.mp4" type="video/mp4"></video></div>
-<div class="container" style="display:none">
+<div class="container">
 <div class="card" id="seccion1" style="text-align:center"><h1 class="serif" style="font-size:42px;font-weight:700;letter-spacing:1px">Gina & Edy</h1><p style="font-size:11px;letter-spacing:5px;color:#8a9a96;margin-top:4px;font-weight:500">02. 01. 27</p><p class="texto-seccion1">Con el corazón lleno de ilusión, queremos invitarte a ser parte del día más importante de nuestras vidas.</p><p class="texto-seccion1">Después de compartir risas, sueños y un camino lleno de amor, hemos decidido dar el siguiente paso.</p><p class="texto-seccion1">Con la gracia de Dios y tu presencia, hará que este momento sea aún más inolvidable</p><div style="width:100%;max-width:420px;margin:20px auto 0 auto;border-radius:20px;overflow:hidden;box-shadow:0 12px 30px rgba(47,74,68,0.12);background:#fdfaf6;line-height:0"><video autoplay muted loop playsinline preload="auto" class="foto-portada" style="margin:0;border-radius:20px;box-shadow:none;width:100%;height:auto;display:block"><source src="./Foto Portada Video.mp4" type="video/mp4"><source src="Foto Portada Video.mp4" type="video/mp4"></video></div><button onclick="toggleMusic()" class="btn-outline" style="margin-top:18px"><span style="font-size:16px">▶</span> Escuchar A Thousand Years</button></div>
 <div class="card" id="seccion2"><h2 class="serif" style="font-size:26px;text-align:center">Nuestra historia</h2><p style="font-size:13px;text-align:center;color:#555;margin-top:8px"><p align="center">
     Dicen que las mejores historias de amor no se planean… simplemente suceden.
@@ -85,11 +78,11 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
     <br><br>
     <strong>Eduardo & Georgina</strong>
 </p>
-</p></p><div style="width:100%;margin-top:12px;border-radius:20px;overflow:hidden;background:#000"><video autoplay muted loop playsinline style="width:100%;height:auto;display:block"><source data-src="video_historia.mp4" preload="none" type="video/mp4"></video></div></div>
+</p></p><div style="width:100%;margin-top:12px;border-radius:20px;overflow:hidden;background:#000"><video autoplay muted loop playsinline style="width:100%;height:auto;display:block"><source src="video_historia.mp4" type="video/mp4"></video></div></div>
 <div class="card" id="seccion3"><h2 class="serif" style="font-size:20px;text-align:center">Con la bendición de Dios, nuestros padres y padrinos</h2><div style="display:grid;grid-template-columns:1fr auto 1fr;gap:12px;margin-top:16px;text-align:center"><div><p style="font-size:10px;color:#8a9a96">PADRES NOVIA</p><p style="font-size:12px;margin-top:6px;font-weight:500;line-height:1.3"><span style="font-weight:400">Gabriela Rosales Mondragón</span><br><span style="font-weight:400">Rogelio Gpe. Pérez Gómez</span></p></div><div class="serif" style="font-size:24px">&</div><div><p style="font-size:10px;color:#8a9a96">PADRES NOVIO</p><p style="font-size:12px;margin-top:6px;font-weight:500;line-height:1.3"><span style="font-weight:400">María Rosa Espíritu Lozano</span><br><span style="font-weight:400">Alfredo Magallón Martínez</span></p></div></div><div style="margin-top:22px;text-align:center"><p style="font-size:10px;color:#8a9a96">NUESTROS PADRINOS</p><p style="font-size:12px;margin-top:6px;font-weight:500;line-height:1.4"><span style="font-weight:400">Sandra Rosales Mondragón</span><br><span style="font-weight:400">Martín Alejandro Guerrero Domínguez</span></p></div></div>
 <div class="card" id="seccion4" style="text-align:center"><h2 style="font-size:10px;letter-spacing:4px;color:#8a9a96">SÁBADO</h2><p class="serif" style="font-size:56px;font-weight:700;line-height:1">02</p><p style="font-size:10px;letter-spacing:4px;color:#8a9a96">ENERO 2027 - 5:00 PM</p><div class="countdown" id="countdown"><div><b id="d">--</b><span>DÍAS</span></div><div><b id="h">--</b><span>HRS</span></div><div><b id="m">--</b><span>MIN</span></div><div><b id="s">--</b><span>SEG</span></div></div></div>
 <div class="card" id="seccion5" style="text-align:center"><img src="templo_padre_galvan_interior.jpg" alt="Templo Padre Galván" style="width:100%;height:auto;border-radius:20px;display:block;box-shadow:0 12px 30px rgba(47,74,68,0.12)"><h2 class="serif" style="font-size:22px;text-align:center;margin-top:16px">Templo Padre Galván</h2><p style="font-size:11px;text-align:center;color:#8a9a96;margin-top:6px">Hospital 28, El Retiro, Guadalajara, Jal.</p></div>
-<div class="card" id="seccion5b" style="text-align:center"><video autoplay muted loop playsinline style="width:100%;height:auto;border-radius:20px;display:block;box-shadow:0 12px 30px rgba(47,74,68,0.12)"><source data-src="loop_salon.mp4" preload="none" type="video/mp4"></video><h2 class="serif" style="font-size:22px;text-align:center;margin-top:16px">Grupo de salones de fiesta Bella Irene</h2><p style="font-size:11px;text-align:center;color:#8a9a96;margin-top:6px">Prolongación Medrano 438, Puerta del Rosario, Tonalá, Jal.</p></div>
+<div class="card" id="seccion5b" style="text-align:center"><video autoplay muted loop playsinline style="width:100%;height:auto;border-radius:20px;display:block;box-shadow:0 12px 30px rgba(47,74,68,0.12)"><source src="loop_salon.mp4" type="video/mp4"></video><h2 class="serif" style="font-size:22px;text-align:center;margin-top:16px">Grupo de salones de fiesta Bella Irene</h2><p style="font-size:11px;text-align:center;color:#8a9a96;margin-top:6px">Prolongación Medrano 438, Puerta del Rosario, Tonalá, Jal.</p></div>
 <div class="card" id="seccion6"><h2 class="serif" style="font-size:22px;text-align:center">Ubicaciones</h2><div style="background:#fdfaf6;border-radius:16px;padding:18px;margin-top:16px;text-align:center"><img src="icono_iglesia.png" alt="Iglesia" style="width:42px;height:42px;margin:0 auto 8px auto;display:block"><p class="serif" style="font-weight:600;font-size:15px">Templo Padre Galván</p><p style="font-size:11px;color:#888;margin-top:2px">Hospital 28, El Retiro, Guadalajara, Jal.<br>5:00 PM</p><a href="https://www.google.com/maps/search/?api=1&query=Templo+Padre+Galvan+Hospital+28+El+Retiro+Guadalajara+Jal" target="_blank" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;background:#2f4a44;color:white;padding:8px 18px;border-radius:20px;font-size:11px;text-decoration:none;letter-spacing:1px"><img src="icono_pin_rojo.png" alt="" style="width:14px;height:14px;display:inline-block"> CÓMO LLEGAR</a></div><div style="background:#fdfaf6;border-radius:16px;padding:18px;margin-top:14px;text-align:center"><img src="icono_copas.jpg" alt="Salón" style="width:42px;height:42px;margin:0 auto 8px auto;display:block"><p class="serif" style="font-weight:600;font-size:15px">Salón Bella Irene</p><p style="font-size:11px;color:#888;margin-top:2px">Prolongación Medrano 438, Puerta del Rosario, Tonalá, Jal.<br>7:00 PM</p><a href="https://maps.app.goo.gl/6T7aNmRsyeCxVGtS7" target="_blank" style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;background:#2f4a44;color:white;padding:8px 18px;border-radius:20px;font-size:11px;text-decoration:none;letter-spacing:1px"><img src="icono_pin_rojo.png" alt="" style="width:14px;height:14px;display:inline-block"> CÓMO LLEGAR</a></div></div>
 <div class="card" id="seccionVestimenta" style="border:2px solid #2f4a44;text-align:center">
 <span class="badge" style="background:#2f4a44;color:white;border-color:#2f4a44">CÓDIGO DE VESTIMENTA</span>
@@ -154,7 +147,6 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 <p id="txtCuentasCon" style="font-size:13px;margin-top:8px;line-height:1.4"></p>
 <div id="preguntaTodos" style="margin-top:16px;text-align:center"><p style="font-size:13px;text-align:center;font-weight:500">¿Vendrán todos a la fiesta?</p>
 <div style="margin-top:12px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap"><button id="btnSi" class="btn-small active" onclick="confirmarTodos(true)">SÍ, TODOS</button><button id="btnNo" class="btn-small" onclick="confirmarTodos(false)">NO, VAN MENOS</button></div></div>
-<!-- OPCION B: checklist en lugar de numeros y textarea -->
 <div id="bloqueCheckNombres" style="display:none;margin-top:16px;background:#fdfaf6;border-radius:16px;padding:14px;border:1px dashed #c9a88a55">
 <label class="label-mini" style="margin-bottom:8px">SELECCIONA QUIÉN SÍ VIENE (no puedes agregar otros)</label>
 <div id="listaCheckNombres" style="display:flex;flex-direction:column;gap:8px;margin-top:8px"></div>
@@ -164,7 +156,6 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 </div>
 <p id="resumenChecks" style="font-size:11px;color:#2f4a44;margin-top:10px;text-align:center;font-weight:600"></p>
 </div>
-<!-- Compatibilidad: inputs ocultos para backend (no se muestran) -->
 <div id="cajaNumero" style="display:none"><input id="adultosConf" type="hidden"><input id="ninosConf" type="hidden"></div>
 <div id="bloqueNombres" style="display:none"><textarea id="quienes" style="display:none"></textarea></div>
 </div>
@@ -213,54 +204,9 @@ setInterval(()=>{const now=new Date().getTime(); const dist=fechaBoda-now; if(di
 
 // SECCION 8 - SHEET BUENO CON BLOQUEO
 let K_asignados=0,L_asignados=0,M_asignados=0,AB_confirmados=0,AC_confirmados=0,S_confirmados=0,vendranTodos=true,esFamiliaActual=false,DATA_ACTUAL=null;
-function mostrarInvitacionCancelada(idMostrado){
-  localStorage.removeItem('invitacionId');
-  const WA_GINA = "5213311111111"; // <-- CAMBIA por número real de Gina
-  const WA_EDY = "5213322222222"; // <-- CAMBIA por número real de Edy
-  const mensaje = encodeURIComponent(`Hola Gina y Edy, mi invitación ${idMostrado||''} aparece como cancelada. ¿Me pueden ayudar?`);
-  document.body.innerHTML = `
-    <div style="min-height:100vh;background:#fdfaf6;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Inter,sans-serif">
-      <div style="background:white;border-radius:28px;padding:36px 24px;max-width:400px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(47,74,68,0.08);border:1px solid rgba(201,168,138,0.15)">
-        <div style="width:80px;height:80px;border-radius:50%;background:#fdfaf6;border:1px solid #e8e0d6;margin:0 auto 18px auto;display:flex;align-items:center;justify-content:center;overflow:hidden">
-          <img src="./1.png" alt="Gina & Edy" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='G&E'">
-        </div>
-        <div style="width:48px;height:48px;border-radius:50%;background:#fdedec;border:1px solid #f5b7b1;margin:0 auto 12px auto;display:flex;align-items:center;justify-content:center;font-size:22px">✕</div>
-        <h2 class="serif" style="font-family:Cormorant Garamond,serif;font-size:28px;color:#2f4a44;margin-top:4px">Invitación cancelada</h2>
-        <p style="font-size:13px;color:#666;margin-top:12px;line-height:1.6">Esta invitación <b style="color:#2f4a44">${idMostrado||''}</b> fue cancelada.</p>
-        <p style="font-size:13px;color:#666;margin-top:8px;line-height:1.6">Favor de comunicarse con <b>Gina y Edy</b>.</p>
-        <div style="margin-top:18px;display:flex;gap:10px">
-          <a href="https://wa.me/${WA_GINA}?text=${mensaje}" target="_blank" style="flex:1;background:#25D366;color:white;padding:12px;border-radius:30px;font-size:12px;text-decoration:none;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px">💬 Gina</a>
-          <a href="https://wa.me/${WA_EDY}?text=${mensaje}" target="_blank" style="flex:1;background:#2f4a44;color:white;padding:12px;border-radius:30px;font-size:12px;text-decoration:none;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px">💬 Edy</a>
-        </div>
-        <div style="margin-top:18px;background:#fdfaf6;border-radius:14px;padding:12px;border:1px solid #e8e0d6">
-          <p style="font-size:11px;color:#8a9a96">Si crees que es un error, contacta directamente a los novios.</p>
-          <p style="font-size:10px;letter-spacing:2px;color:#8a9a96;margin-top:8px">GINA & EDY - 02.01.27</p>
-        </div>
-        <p style="font-size:10px;color:#aaa;margin-top:14px">ID: ${idMostrado||'no encontrado'}</p>
-        <button onclick="window.close(); location.href='about:blank'" style="margin-top:14px;width:100%;background:white;color:#8a9a96;border:1px solid #e8e0d6;padding:10px;border-radius:30px;font-size:11px;cursor:pointer">CERRAR</button>
-      </div>
-    </div>`;
-}
-
 function renderData(obj){
-  if(!obj){
-    const ov=document.getElementById('loadingOverlay');
-    if(ov) ov.innerHTML='<div style="text-align:center;padding:20px"><p style="color:#e74c3c;font-size:13px">Error cargando invitación, reintentando...</p><button onclick="location.reload()" style="margin-top:12px;padding:10px 18px;border-radius:20px;border:1px solid #e8e0d6;background:white">Reintentar</button></div>';
-    return;
-  }
-  // FIX ERROR 3: si es cancelada, mostrar cancelada INMEDIATO sin mostrar invitacion antes
-  if(obj.status==="no encontrado" || obj.status==="cancelada" || obj.cancelada){
-    const ov=document.getElementById('loadingOverlay');
-    if(ov) ov.style.display='none';
-    mostrarInvitacionCancelada(obj.id || idParam);
-    return;
-  }
-  // Si llego aqui, es invitacion valida, ocultar loading y mostrar contenido
-  const ov=document.getElementById('loadingOverlay');
-  if(ov) ov.style.display='none';
-  const cont=document.querySelector('.container');
-  if(cont) cont.style.display='block';
-
+  if(!obj) return;
+  if(obj.status==="no encontrado" || obj.status==="cancelada" || obj.cancelada){ mostrarInvitacionCancelada(obj.id || idParam); return; }
   if(obj.status==="ya_confirmado"){ obj.confirmado=true; obj.fechaConfirmacion=obj.fecha; obj.tConfirmado=obj.t; obj.sConfirmado=obj.s; }
   let sec7=document.getElementById('seccion7');
   if(sec7){
@@ -286,26 +232,23 @@ function renderData(obj){
   let ltt=document.getElementById('lTxt'); if(ltt) ltt.textContent=L_asignados;
   let mt=document.getElementById('mesaTxt'); if(mt) mt.textContent=obj.mesa||'-';
 let bc=document.getElementById('bloqueConfirmacion'); if(bc) bc.style.display='block';
-  // OPCION B: crear checkboxes con nombres invitados
   try{ crearCheckboxes(obj.g||''); }catch(e){}
   let txt=document.getElementById('txtCuentasCon'); if(txt){ let nombres=obj.g||'sin acompañantes'; txt.innerHTML='Invitados confirmados:<br><b style="font-size:14px">'+nombres+'</b><br><span style="color:#8a9a96;font-size:11px;margin-top:6px;display:block">Total: '+M_asignados+' lugares</span>'; }
   let ac=document.getElementById('adultosConf'); if(ac){ ac.max=K_asignados; ac.value=K_asignados; }
   let nc2=document.getElementById('ninosConf'); if(nc2){ nc2.max=L_asignados; nc2.value=L_asignados; }
   vendranTodos=true;
-  let bs=document.getElementById('btnSi'); let bn2=document.getElementById('btnNo');
-  if(bs){ bs.classList.add('active'); bs.textContent='CONFIRMA'; } if(bn2){ bn2.classList.remove('active'); bn2.textContent='NO, VAN MENOS'; }
-  let cn=document.getElementById('cajaNumero'); if(cn) cn.style.display='none';
-  let bn3=document.getElementById('bloqueNombres'); if(bn3) bn3.style.display='none';
-  let q=document.getElementById('quienes'); if(q) q.value=obj.g||'';
+  
 }
+
+let ae=document.getElementById('adultosConf'); if(ae) ae.addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>K_asignados)v=K_asignados; if(v<0)v=0; this.value=v; AB_confirmados=v; });
+let ne=document.getElementById('ninosConf'); if(ne) ne.addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>L_asignados)v=L_asignados; if(v<0)v=0; this.value=v; AC_confirmados=v; });
+
 function crearCheckboxes(nombresStr){
   const cont=document.getElementById('listaCheckNombres');
   if(!cont) return;
   cont.innerHTML='';
-  const nombres = (nombresStr||'').split(/[,\n]+/).map(s=>s.trim()).filter(Boolean);
-  // Si esFamiliaActual, ad es 0, sino 1 (titular cuenta aparte pero ya viene en lista)
-  const totalAdultos = K_asignados + (esFamiliaActual?0:1); // titular + adultos
-  // Pero K_asignados ya incluye? Para simplificar, primeros K+ad son adultos
+  const nombres = (nombresStr||'').split(/[,
+]+/).map(s=>s.trim()).filter(Boolean);
   const limiteAdultos = K_asignados + (esFamiliaActual?0:1);
   nombres.forEach((nom, idx)=>{
     const esMenor = idx >= limiteAdultos;
@@ -327,16 +270,12 @@ function actualizarDesdeChecks(){
   const nombresChecked = checked.map(c=>c.value);
   const adultosChecked = checked.filter(c=>c.dataset.tipo==='adulto').length;
   const menoresChecked = checked.filter(c=>c.dataset.tipo==='menor').length;
-  // Calcular AB y AC para backend
-  // Si no es familia, el titular cuenta como adulto extra, pero ya está en lista, así que AB = adultosChecked - (esFamilia?0:1) ?? simplificamos:
   if(esFamiliaActual){
     AB_confirmados = adultosChecked;
     AC_confirmados = menoresChecked;
     S_confirmados = adultosChecked + menoresChecked;
   } else {
-    // Si la lista incluye titular, adultosChecked incluye titular
-    // Backend espera AB = adultos sin titular, AC = menores
-    const titularEnLista = 1; // asumimos titular está incluido
+    const titularEnLista = 1;
     AB_confirmados = Math.max(0, adultosChecked - titularEnLista);
     AC_confirmados = menoresChecked;
     S_confirmados = checked.length;
@@ -351,31 +290,44 @@ function actualizarDesdeChecks(){
 function confirmarTodos(si){
   vendranTodos=si;
   const btnSi=document.getElementById('btnSi'),btnNo=document.getElementById('btnNo'),bloqueCheck=document.getElementById('bloqueCheckNombres');
-  const cajaNumero=document.getElementById('cajaNumero'),bloqueNombres=document.getElementById('bloqueNombres');
   if(si){
     if(btnSi) btnSi.classList.add('active');
     if(btnNo) btnNo.classList.remove('active');
     if(bloqueCheck) bloqueCheck.style.display='none';
-    if(cajaNumero) cajaNumero.style.display='none';
-    if(bloqueNombres) bloqueNombres.style.display='none';
-    // Todos confirmados
-    AB_confirmados=K_asignados; AC_confirmados=L_asignados;
-    S_confirmados=M_asignados;
+    AB_confirmados=K_asignados; AC_confirmados=L_asignados; S_confirmados=M_asignados;
     const q=document.getElementById('quienes');
     if(q) q.value = DATA_ACTUAL ? (DATA_ACTUAL.g||'') : '';
-    // Marcar todos los checks si existen
-    seleccionarTodosChecks(true);
+    try{ seleccionarTodosChecks(true); }catch(e){}
   } else {
     if(btnSi) btnSi.classList.remove('active');
     if(btnNo) btnNo.classList.add('active');
     if(bloqueCheck) bloqueCheck.style.display='block';
-    if(cajaNumero) cajaNumero.style.display='none';
-    if(bloqueNombres) bloqueNombres.style.display='none';
-    // Si no hay checks creados, crearlos
     if(DATA_ACTUAL && document.getElementById('listaCheckNombres').children.length===0){
       crearCheckboxes(DATA_ACTUAL.g||'');
     }
   }
+}
+function verInvitacion(){ window.scrollTo(0,0); }
+
+function verInvitacion(){ window.scrollTo(0,0); }
+function verInvitacion_OLD(){ window.scrollTo(0,0); }
+let _idParamRaw=new URLSearchParams(window.location.search).get('id');
+let _savedId=localStorage.getItem('invitacionId');
+let idParam=_idParamRaw || _savedId || '001';
+if(idParam && idParam!=='001'){ localStorage.setItem('invitacionId', idParam); }
+
+let s=document.createElement('script'); s.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData"; document.body.appendChild(s);
+function confirmarFinal(){
+  if(esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=1+AB_confirmados+AC_confirmados; }
+  // VALIDACION NO SUBIR MAS
+  if(AB_confirmados > K_asignados || AC_confirmados > L_asignados){ alert('No puedes confirmar más lugares de los asignados. Asignados: Adultos '+K_asignados+', Niños '+L_asignados); return; }
+  if(S_confirmados > M_asignados){ alert('Total confirmado excede asignado. Total asignado: '+M_asignados); return; }
+  let q=document.getElementById('quienes').value||''; let Y=K_asignados-AB_confirmados,Z=L_asignados-AC_confirmados,AA=Y+Z,box=document.getElementById('okBox'),btn=document.getElementById('btnConfirmar');
+  if(!q&&!vendranTodos){ alert('Escribe los nombres'); return; }
+  let params=new URLSearchParams({id:idParam,s:S_confirmados,ab:AB_confirmados,ac:AC_confirmados,y:Y,z:Z,aa:AA,t:q||(DATA_ACTUAL?DATA_ACTUAL.g:'')});
+  if(box){box.style.display='block'; box.innerHTML='Enviando...';} if(btn)btn.textContent='ENVIANDO...';
+  let iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=APPS_SCRIPT_URL+'?'+params.toString(); document.body.appendChild(iframe);
+  iframe.onload=function(){ setTimeout(()=>{ let s2=document.createElement('script'); s2.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData&rand="+Date.now(); document.body.appendChild(s2); if(box) box.style.display='none'; if(btn) btn.textContent='CONFIRMAR ASISTENCIA'; },1500); };
 }
 </script>
 
@@ -507,11 +459,8 @@ function getCurrentIdKey(){
   }catch(e){ return 'global'; }
 }
 function cerrarInvitacionTotal(){
-  // FIX ERROR 2: rechazo por ID, no global, para que otra invitacion si muestre opcion
   const key = getCurrentIdKey();
   try{ localStorage.setItem('pwaRechazado_'+key,'1'); }catch(e){}
-  // Compatibilidad: tambien marcar global viejo para limpiar despues
-  // localStorage.setItem('pwaRechazado','1');
   const secF = document.getElementById('seccionFotos');
   const secP = document.getElementById('seccionPWA');
   if(secF) secF.style.display='none';
@@ -522,7 +471,6 @@ function cerrarInvitacionTotal(){
 function mostrarSeccionFotos(){
   const key = getCurrentIdKey();
   if(localStorage.getItem('pwaRechazado_'+key)==='1') return;
-  // Si ya instalo, no mostrar fotos? No, si mostrar
   const sec = document.getElementById('seccionFotos');
   if(sec) { sec.style.display='block'; sec.scrollIntoView({behavior:'smooth', block:'center'}); }
   const pwa = document.getElementById('seccionPWA');
@@ -597,10 +545,7 @@ document.getElementById('btnNoGuardar')?.addEventListener('click', ()=>{ cerrarI
 
 // === HOOK CONFIRMACIÓN + FIX ID PERSISTENCIA YA ESTÁ ARRIBA EN renderData, este solo muestra fotos ===
 const _renderDataOriginal = window.renderData;
-// FIX asegurar que loading se oculte aunque wrapper falle
-window._hideLoading = function(){ const ov=document.getElementById('loadingOverlay'); if(ov) ov.style.display='none'; const cont=document.querySelector('.container'); if(cont) cont.style.display='block'; };
 window.renderData = function(obj){
-  try{ window._hideLoading(); }catch(e){}
   if(typeof _renderDataOriginal === 'function') _renderDataOriginal(obj);
   if(obj && obj.confirmado){
     setTimeout(()=>{ mostrarSeccionFotos(); }, 800);
@@ -624,49 +569,6 @@ _observer.observe(document.body, {attributes:true, subtree:true, attributeFilter
 if(isStandalone){
   localStorage.setItem('pwaInstalado','1');
 }
-</script>
-
-
-<script>
-// FIX ERROR 1: lazy load videos pesados
-document.addEventListener('DOMContentLoaded', ()=>{
-  const vids=document.querySelectorAll('video[data-src]');
-  const io=new IntersectionObserver((entries)=>{
-    entries.forEach(en=>{
-      if(en.isIntersecting){
-        const v=en.target;
-        const src=v.getAttribute('data-src');
-        if(src){ v.querySelector('source').src=src; v.load(); v.play().catch(()=>{}); }
-        io.unobserve(v);
-      }
-    });
-  },{rootMargin:'200px'});
-  vids.forEach(v=>io.observe(v));
-  // Audio no precargar
-  const aud=document.getElementById('audio');
-  if(aud) aud.preload='none';
-});
-</script>
-
-
-<script>
-// FAILSAFE ERROR  - se queda cargando
-setTimeout(()=>{
-  const ov=document.getElementById('loadingOverlay');
-  const cont=document.querySelector('.container');
-  if(ov && ov.style.display!=='none'){
-    console.warn('Timeout renderData, forzando mostrar');
-    ov.style.display='none';
-    if(cont) cont.style.display='block';
-    // Si no hay DATA_ACTUAL, mostrar mensaje
-    const tt=document.getElementById('titularTxt');
-    if(tt && tt.textContent.includes('Cargando')){
-      tt.textContent='Invitación de prueba - Sin ID';
-      const lt=document.getElementById('lugaresTxt'); if(lt) lt.textContent='0';
-      const bc=document.getElementById('bloqueConfirmacion'); if(bc) bc.style.display='none';
-    }
-  }
-}, 6000);
 </script>
 
 </body>
