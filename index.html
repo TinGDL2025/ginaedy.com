@@ -198,9 +198,24 @@ let isPlaying=false; const audio=document.getElementById('audio');
 function toggleMusic(){if(!audio) return; if(!isPlaying){audio.volume=0.7; audio.play().catch(()=>{}); isPlaying=true; let mb=document.getElementById('musicBtn'); if(mb) mb.textContent='🔊';} else {audio.pause(); isPlaying=false; let mb=document.getElementById('musicBtn'); if(mb) mb.textContent='🎵';}}
 const v=document.getElementById('heroVideo'); if(v){ v.addEventListener('error',()=>{v.style.display='none';}); }
 
-// CONTADOR - NO TOCAR
-const fechaBoda=new Date('2027-01-02T17:00:00').getTime();
-setInterval(()=>{const now=new Date().getTime(); const dist=fechaBoda-now; if(dist<0) return; let d=document.getElementById('d'); if(d){d.textContent=Math.floor(dist/(1000*60*60*24)); document.getElementById('h').textContent=Math.floor((dist%(1000*60*60*24))/(1000*60*60)); document.getElementById('m').textContent=Math.floor((dist%(1000*60*60))/(1000*60)); document.getElementById('s').textContent=Math.floor((dist%(1000*60))/1000);}},1000);
+
+// CONTADOR ROBUSTO - independiente
+try{
+  const fechaBoda=new Date('2027-01-02T17:00:00').getTime();
+  setInterval(()=>{
+    try{
+      const now=new Date().getTime();
+      const dist=fechaBoda-now;
+      if(dist<0) return;
+      const dEl=document.getElementById('d'), hEl=document.getElementById('h'), mEl=document.getElementById('m'), sEl=document.getElementById('s');
+      if(dEl) dEl.textContent=Math.floor(dist/(1000*60*60*24));
+      if(hEl) hEl.textContent=Math.floor((dist%(1000*60*60*24))/(1000*60*60));
+      if(mEl) mEl.textContent=Math.floor((dist%(1000*60*60))/(1000*60));
+      if(sEl) sEl.textContent=Math.floor((dist%(1000*60))/1000);
+    }catch(e){}
+  },1000);
+}catch(e){}
+
 
 // SECCION 8 - SHEET BUENO CON BLOQUEO
 let K_asignados=0,L_asignados=0,M_asignados=0,AB_confirmados=0,AC_confirmados=0,S_confirmados=0,vendranTodos=true,esFamiliaActual=false,DATA_ACTUAL=null;
@@ -315,7 +330,31 @@ let _savedId=localStorage.getItem('invitacionId');
 let idParam=_idParamRaw || _savedId || '001';
 if(idParam && idParam!=='001'){ localStorage.setItem('invitacionId', idParam); }
 
-let s=document.createElement('script'); s.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData"; document.body.appendChild(s);
+let s=document.createElement('script'); s.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData"; s.onerror=function(){ console.error("Error cargando Apps Script"); const tt=document.getElementById("titularTxt"); if(tt) tt.textContent="Error de conexión, recarga"; }; document.body.appendChild(s);
+
+// Fallback si Google no responde en 4s
+setTimeout(()=>{
+  try{
+    const tt=document.getElementById('titularTxt');
+    if(tt && tt.textContent && tt.textContent.includes('Cargando')){
+      console.warn('renderData no llego, reintentando');
+      // reintentar con id guardado o 001
+      let sRetry=document.createElement('script');
+      sRetry.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData&retry="+Date.now();
+      document.body.appendChild(sRetry);
+      // Si sigue sin id, mostrar mensaje para que no quede en Cargando
+      setTimeout(()=>{
+        const tt2=document.getElementById('titularTxt');
+        if(tt2 && tt2.textContent.includes('Cargando')){
+          tt2.textContent='Invitación - Agrega ?id= tu ID';
+          const lt=document.getElementById('lugaresTxt'); if(lt) lt.textContent='-';
+          const ok=document.getElementById('okBox'); if(ok){ ok.style.display='block'; ok.textContent='Abre el link con tu ID, ej: .../index.html?id=008'; }
+        }
+      },2000);
+    }
+  }catch(e){}
+},4000);
+
 function confirmarFinal(){
   // Usar valores de checks si existen, si no usar asignados
   try{ actualizarDesdeChecks(); }catch(e){}
