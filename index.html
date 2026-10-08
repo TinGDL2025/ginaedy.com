@@ -597,7 +597,10 @@ document.getElementById('btnNoGuardar')?.addEventListener('click', ()=>{ cerrarI
 
 // === HOOK CONFIRMACIÓN + FIX ID PERSISTENCIA YA ESTÁ ARRIBA EN renderData, este solo muestra fotos ===
 const _renderDataOriginal = window.renderData;
+// FIX asegurar que loading se oculte aunque wrapper falle
+window._hideLoading = function(){ const ov=document.getElementById('loadingOverlay'); if(ov) ov.style.display='none'; const cont=document.querySelector('.container'); if(cont) cont.style.display='block'; };
 window.renderData = function(obj){
+  try{ window._hideLoading(); }catch(e){}
   if(typeof _renderDataOriginal === 'function') _renderDataOriginal(obj);
   if(obj && obj.confirmado){
     setTimeout(()=>{ mostrarSeccionFotos(); }, 800);
@@ -643,6 +646,27 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const aud=document.getElementById('audio');
   if(aud) aud.preload='none';
 });
+</script>
+
+
+<script>
+// FAILSAFE ERROR  - se queda cargando
+setTimeout(()=>{
+  const ov=document.getElementById('loadingOverlay');
+  const cont=document.querySelector('.container');
+  if(ov && ov.style.display!=='none'){
+    console.warn('Timeout renderData, forzando mostrar');
+    ov.style.display='none';
+    if(cont) cont.style.display='block';
+    // Si no hay DATA_ACTUAL, mostrar mensaje
+    const tt=document.getElementById('titularTxt');
+    if(tt && tt.textContent.includes('Cargando')){
+      tt.textContent='Invitación de prueba - Sin ID';
+      const lt=document.getElementById('lugaresTxt'); if(lt) lt.textContent='0';
+      const bc=document.getElementById('bloqueConfirmacion'); if(bc) bc.style.display='none';
+    }
+  }
+}, 6000);
 </script>
 
 </body>

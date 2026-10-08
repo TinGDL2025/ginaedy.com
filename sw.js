@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ginaedy-v24';
+const CACHE_NAME = 'ginaedy-v26';
 const urlsToCache = ['./','./manifest.json','./1.png'];
 self.addEventListener('install', e=>{
   e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(urlsToCache)));
