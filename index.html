@@ -147,18 +147,10 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 <p id="txtCuentasCon" style="font-size:13px;margin-top:8px;line-height:1.4"></p>
 <div id="preguntaTodos" style="margin-top:16px;text-align:center"><p style="font-size:13px;text-align:center;font-weight:500">¿Vendrán todos a la fiesta?</p>
 <div style="margin-top:12px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap"><button id="btnSi" class="btn-small active" onclick="confirmarTodos(true)">SÍ, TODOS</button><button id="btnNo" class="btn-small" onclick="confirmarTodos(false)">NO, VAN MENOS</button></div></div>
-<div id="bloqueCheckNombres" style="display:none;margin-top:16px;background:#fdfaf6;border-radius:16px;padding:14px;border:1px dashed #c9a88a55">
-<label class="label-mini" style="margin-bottom:8px">SELECCIONA QUIÉN SÍ VIENE (no puedes agregar otros)</label>
-<div id="listaCheckNombres" style="display:flex;flex-direction:column;gap:8px;margin-top:8px"></div>
-<div style="margin-top:12px;display:flex;gap:8px">
-<button onclick="seleccionarTodosChecks(true)" class="btn-small" style="flex:1;min-width:0;font-size:10px;padding:10px">TODOS</button>
-<button onclick="seleccionarTodosChecks(false)" class="btn-small" style="flex:1;min-width:0;font-size:10px;padding:10px;background:white;color:#8a9a96;border-color:#e8e0d6">NINGUNO</button>
-</div>
-<p id="resumenChecks" style="font-size:11px;color:#2f4a44;margin-top:10px;text-align:center;font-weight:600"></p>
-</div>
-<div id="cajaNumero" style="display:none"><input id="adultosConf" type="hidden"><input id="ninosConf" type="hidden"></div>
-<div id="bloqueNombres" style="display:none"><textarea id="quienes" style="display:none"></textarea></div>
-</div>
+<div id="cajaNumero" style="display:none;margin-top:12px"><label class="label-mini">AJUSTA LA CANTIDAD</label>
+<div style="display:flex;gap:8px"><div style="flex:1"><label style="font-size:10px;color:#8a9a96">ADULTOS CONFIRMADOS</label><input id="adultosConf" type="number" class="input" min="0" value="0"></div><div style="flex:1"><label style="font-size:10px;color:#8a9a96">MENORES CONFIRMADOS</label><input id="ninosConf" type="number" class="input" min="0" value="0"></div></div>
+</div></div>
+<div id="bloqueNombres" style="display:none;margin-top:20px"><label class="label-mini">CONFIRMA LOS NOMBRES</label><textarea id="quienes" rows="3" class="input" placeholder="Ej: Gabriela, Kenia, Sebastian"></textarea></div>
 <button id="btnConfirmar" onclick="confirmarFinal()" class="btn">CONFIRMAR ASISTENCIA</button>
  <div style="margin-top:8px; text-align:center; font-family:inherit; width:100%;">
   Antes del 20.12.2026
@@ -198,8 +190,7 @@ let isPlaying=false; const audio=document.getElementById('audio');
 function toggleMusic(){if(!audio) return; if(!isPlaying){audio.volume=0.7; audio.play().catch(()=>{}); isPlaying=true; let mb=document.getElementById('musicBtn'); if(mb) mb.textContent='🔊';} else {audio.pause(); isPlaying=false; let mb=document.getElementById('musicBtn'); if(mb) mb.textContent='🎵';}}
 const v=document.getElementById('heroVideo'); if(v){ v.addEventListener('error',()=>{v.style.display='none';}); }
 
-
-// CONTADOR ROBUSTO - independiente
+// CONTADOR - NO TOCAR - FIX robusto
 try{
   const fechaBoda=new Date('2027-01-02T17:00:00').getTime();
   setInterval(()=>{
@@ -207,25 +198,32 @@ try{
       const now=new Date().getTime();
       const dist=fechaBoda-now;
       if(dist<0) return;
-      const dEl=document.getElementById('d'), hEl=document.getElementById('h'), mEl=document.getElementById('m'), sEl=document.getElementById('s');
-      if(dEl) dEl.textContent=Math.floor(dist/(1000*60*60*24));
-      if(hEl) hEl.textContent=Math.floor((dist%(1000*60*60*24))/(1000*60*60));
-      if(mEl) mEl.textContent=Math.floor((dist%(1000*60*60))/(1000*60));
-      if(sEl) sEl.textContent=Math.floor((dist%(1000*60))/1000);
+      const d=document.getElementById('d'), h=document.getElementById('h'), m=document.getElementById('m'), s=document.getElementById('s');
+      if(d) d.textContent=Math.floor(dist/(1000*60*60*24));
+      if(h) h.textContent=Math.floor((dist%(1000*60*60*24))/(1000*60*60));
+      if(m) m.textContent=Math.floor((dist%(1000*60*60))/(1000*60));
+      if(s) s.textContent=Math.floor((dist%(1000*60))/1000);
     }catch(e){}
   },1000);
 }catch(e){}
-
+}},1000);
 
 // SECCION 8 - SHEET BUENO CON BLOQUEO
 let K_asignados=0,L_asignados=0,M_asignados=0,AB_confirmados=0,AC_confirmados=0,S_confirmados=0,vendranTodos=true,esFamiliaActual=false,DATA_ACTUAL=null;
 function renderData(obj){
   if(!obj) return;
-  if(obj.status==="no encontrado" || obj.status==="cancelada" || obj.cancelada){
+  if(obj.status==="no encontrado"){
+    let tt=document.getElementById('titularTxt'); if(tt) tt.textContent="ID no encontrado: "+(obj.id||"");
+    let lt=document.getElementById('lugaresTxt'); if(lt) lt.textContent="0";
+    return;
+  }
+  if(obj.status==="cancelada" || obj.cancelada){
     mostrarInvitacionCancelada(obj.id||idParam);
     return;
   }
-  if(obj.status==="no encontrado"){ let tt=document.getElementById('titularTxt'); if(tt) tt.textContent="ID no encontrado: "+(obj.id||""); return; }
+  if(obj.status==="ya_confirmado"){
+    obj.confirmado=true;
+  }
   if(obj.status==="ya_confirmado"){ obj.confirmado=true; obj.fechaConfirmacion=obj.fecha; obj.tConfirmado=obj.t; obj.sConfirmado=obj.s; }
   let sec7=document.getElementById('seccion7');
   if(sec7){
@@ -251,140 +249,65 @@ function renderData(obj){
   let ltt=document.getElementById('lTxt'); if(ltt) ltt.textContent=L_asignados;
   let mt=document.getElementById('mesaTxt'); if(mt) mt.textContent=obj.mesa||'-';
 let bc=document.getElementById('bloqueConfirmacion'); if(bc) bc.style.display='block';
-  try{ crearCheckboxes(obj.g||''); }catch(e){}
   let txt=document.getElementById('txtCuentasCon'); if(txt){ let nombres=obj.g||'sin acompañantes'; txt.innerHTML='Invitados confirmados:<br><b style="font-size:14px">'+nombres+'</b><br><span style="color:#8a9a96;font-size:11px;margin-top:6px;display:block">Total: '+M_asignados+' lugares</span>'; }
   let ac=document.getElementById('adultosConf'); if(ac){ ac.max=K_asignados; ac.value=K_asignados; }
   let nc2=document.getElementById('ninosConf'); if(nc2){ nc2.max=L_asignados; nc2.value=L_asignados; }
   vendranTodos=true;
-  
+  let bs=document.getElementById('btnSi'); let bn2=document.getElementById('btnNo');
+  if(bs){ bs.classList.add('active'); bs.textContent='CONFIRMA'; } if(bn2){ bn2.classList.remove('active'); bn2.textContent='NO, VAN MENOS'; }
+  let cn=document.getElementById('cajaNumero'); if(cn) cn.style.display='none';
+  let bn3=document.getElementById('bloqueNombres'); if(bn3) bn3.style.display='none';
+  let q=document.getElementById('quienes'); if(q) q.value=obj.g||'';
 }
-
-
-
-function crearCheckboxes(nombresStr){
-  const cont=document.getElementById('listaCheckNombres');
-  if(!cont) return;
-  cont.innerHTML='';
-  const nombres=(nombresStr||'').split(/[,
-\n]+/).map(s=>s.trim()).filter(Boolean);
-  const limiteAdultos=K_asignados + (esFamiliaActual?0:1);
-  nombres.forEach((nom,idx)=>{
-    const esMenor=idx>=limiteAdultos;
-    const tipo=esMenor?'menor':'adulto';
-    const div=document.createElement('div');
-    div.style.cssText='display:flex;align-items:center;gap:10px;background:white;border-radius:12px;padding:10px 12px;border:1px solid #e8e0d6';
-    div.innerHTML=`<input type="checkbox" checked data-tipo="${tipo}" value="${nom.replace(/"/g,'&quot;')}" onchange="actualizarDesdeChecks()" style="width:18px;height:18px;accent-color:#2f4a44"><span style="flex:1;font-size:13px">${nom} <small style="color:#8a9a96;font-size:10px">(${tipo})</small></span>`;
-    cont.appendChild(div);
-  });
-  actualizarDesdeChecks();
-}
-function seleccionarTodosChecks(v){
-  document.querySelectorAll('#listaCheckNombres input[type=checkbox]').forEach(c=>c.checked=v);
-  actualizarDesdeChecks();
-}
-function actualizarDesdeChecks(){
-  const checks=[...document.querySelectorAll('#listaCheckNombres input[type=checkbox]')];
-  if(checks.length===0) return;
-  const checked=checks.filter(c=>c.checked);
-  const nombresChecked=checked.map(c=>c.value);
-  const adultosChecked=checked.filter(c=>c.dataset.tipo==='adulto').length;
-  const menoresChecked=checked.filter(c=>c.dataset.tipo==='menor').length;
-  if(esFamiliaActual){
-    AB_confirmados=adultosChecked;
-    AC_confirmados=menoresChecked;
-    S_confirmados=adultosChecked+menoresChecked;
-  }else{
-    AB_confirmados=Math.max(0,adultosChecked-1);
-    AC_confirmados=menoresChecked;
-    S_confirmados=checked.length;
-  }
-  const q=document.getElementById('quienes'); if(q) q.value=nombresChecked.join(', ');
-  const a=document.getElementById('adultosConf'); if(a) a.value=AB_confirmados;
-  const n=document.getElementById('ninosConf'); if(n) n.value=AC_confirmados;
-  const resumen=document.getElementById('resumenChecks');
-  if(resumen) resumen.textContent=`${checked.length} de ${checks.length} confirmados — ${adultosChecked} adultos, ${menoresChecked} menores`;
-}
-function confirmarTodos(si){
-  vendranTodos=si;
-  const btnSi=document.getElementById('btnSi'),btnNo=document.getElementById('btnNo'),bloqueCheck=document.getElementById('bloqueCheckNombres');
-  if(si){
-    if(btnSi) btnSi.classList.add('active');
-    if(btnNo) btnNo.classList.remove('active');
-    if(bloqueCheck) bloqueCheck.style.display='none';
-    AB_confirmados=K_asignados; AC_confirmados=L_asignados; S_confirmados=M_asignados;
-    const q=document.getElementById('quienes'); if(q) q.value=DATA_ACTUAL?(DATA_ACTUAL.g||''):'';
-    try{ document.querySelectorAll('#listaCheckNombres input[type=checkbox]').forEach(c=>c.checked=true); actualizarDesdeChecks(); }catch(e){}
-  }else{
-    if(btnSi) btnSi.classList.remove('active');
-    if(btnNo) btnNo.classList.add('active');
-    if(bloqueCheck) bloqueCheck.style.display='block';
-    if(DATA_ACTUAL && document.getElementById('listaCheckNombres').children.length===0){
-      crearCheckboxes(DATA_ACTUAL.g||'');
-    }
-  }
-}
-
+function confirmarTodos(si){ vendranTodos=si; let btnSi=document.getElementById('btnSi'),btnNo=document.getElementById('btnNo'),cajaNumero=document.getElementById('cajaNumero'),bloqueNombres=document.getElementById('bloqueNombres');
+  if(si){ if(btnSi && btnSi.textContent==='CONFIRMA' && btnSi.classList.contains('active')){ confirmarFinal(); return; } if(btnSi){ btnSi.classList.add('active'); btnSi.textContent='CONFIRMA'; } if(btnNo){ btnNo.classList.remove('active'); btnNo.textContent='NO, VAN MENOS'; } if(cajaNumero) cajaNumero.style.display='none'; AB_confirmados=K_asignados; AC_confirmados=L_asignados; S_confirmados=M_asignados; let a=document.getElementById('adultosConf'); if(a) a.value=K_asignados; let n=document.getElementById('ninosConf'); if(n) n.value=L_asignados; if(bloqueNombres) bloqueNombres.style.display='none'; }
+  else{ if(btnSi){ btnSi.classList.remove('active'); btnSi.textContent='SÍ, TODOS'; } if(btnNo){ btnNo.classList.add('active'); btnNo.textContent='NO, VAN MENOS'; } if(cajaNumero) cajaNumero.style.display='block'; if(bloqueNombres) bloqueNombres.style.display='block'; } }
+let ae=document.getElementById('adultosConf'); if(ae) ae.addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>K_asignados)v=K_asignados; if(v<0)v=0; this.value=v; AB_confirmados=v; });
+let ne=document.getElementById('ninosConf'); if(ne) ne.addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>L_asignados)v=L_asignados; if(v<0)v=0; this.value=v; AC_confirmados=v; });
 function verInvitacion(){ window.scrollTo(0,0); }
 let _idParamRaw=new URLSearchParams(window.location.search).get('id');
 let _savedId=localStorage.getItem('invitacionId');
 let idParam=_idParamRaw || _savedId || '001';
 if(idParam && idParam!=='001'){ localStorage.setItem('invitacionId', idParam); }
 
-let s=document.createElement('script'); s.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData"; s.onerror=function(){ console.error("Error cargando Apps Script"); const tt=document.getElementById("titularTxt"); if(tt) tt.textContent="Error de conexión, recarga"; }; document.body.appendChild(s);
+let s=document.createElement('script'); s.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData"; s.onerror=function(){ console.error("Error Apps Script"); const tt=document.getElementById("titularTxt"); if(tt) tt.textContent="Error conexión, verifica despliegue"; }; document.body.appendChild(s);
 
-// Fallback si Google no responde en 4s
+// Fallback si Google no responde en 5s (evita Cargando infinito)
 setTimeout(()=>{
   try{
     const tt=document.getElementById('titularTxt');
     if(tt && tt.textContent && tt.textContent.includes('Cargando')){
-      console.warn('renderData no llego, reintentando');
-      // reintentar con id guardado o 001
+      console.warn('renderData no llego, reintentando id='+idParam);
       let sRetry=document.createElement('script');
       sRetry.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData&retry="+Date.now();
+      sRetry.onerror=function(){ const tt2=document.getElementById('titularTxt'); if(tt2) tt2.textContent='Error conexión, recarga la página'; };
       document.body.appendChild(sRetry);
-      // Si sigue sin id, mostrar mensaje para que no quede en Cargando
-      setTimeout(()=>{
-        const tt2=document.getElementById('titularTxt');
-        if(tt2 && tt2.textContent.includes('Cargando')){
-          tt2.textContent='Invitación - Agrega ?id= tu ID';
-          const lt=document.getElementById('lugaresTxt'); if(lt) lt.textContent='-';
-          const ok=document.getElementById('okBox'); if(ok){ ok.style.display='block'; ok.textContent='Abre el link con tu ID, ej: .../index.html?id=008'; }
-        }
-      },2000);
     }
   }catch(e){}
-},4000);
+},5000);
 
 function confirmarFinal(){
-  // Usar valores de checks si existen, si no usar asignados
-  try{ actualizarDesdeChecks(); }catch(e){}
-  // No recalcular S con +1, ya viene de checks
-  if(!S_confirmados || S_confirmados===0){
-    if(esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=AB_confirmados+AC_confirmados+1; }
-  }
+  if(esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=1+AB_confirmados+AC_confirmados; }
   if(AB_confirmados > K_asignados || AC_confirmados > L_asignados){ alert('No puedes confirmar más lugares de los asignados. Asignados: Adultos '+K_asignados+', Niños '+L_asignados); return; }
   if(S_confirmados > M_asignados){ alert('Total confirmado excede asignado. Total asignado: '+M_asignados); return; }
-  let q=document.getElementById('quienes').value||''; 
-  if(!q){ const checks=[...document.querySelectorAll('#listaCheckNombres input[type=checkbox]:checked')].map(c=>c.value); q=checks.join(', '); }
+  let q=document.getElementById('quienes').value||'';
   let Y=K_asignados-AB_confirmados,Z=L_asignados-AC_confirmados,AA=Y+Z,box=document.getElementById('okBox'),btn=document.getElementById('btnConfirmar');
-  if(!q && !vendranTodos){ alert('Selecciona al menos un nombre'); return; }
+  if(!q&&!vendranTodos){ alert('Escribe los nombres'); return; }
   let params=new URLSearchParams({id:idParam,s:S_confirmados,ab:AB_confirmados,ac:AC_confirmados,y:Y,z:Z,aa:AA,t:q||(DATA_ACTUAL?DATA_ACTUAL.g:'')});
-  if(box){box.style.display='block'; box.innerHTML='Enviando confirmación...';} if(btn){btn.textContent='ENVIANDO...'; btn.disabled=true;}
-  // Usar script JSONP en lugar de iframe (iframe lo bloquea Google)
+  if(box){box.style.display='block'; box.innerHTML='Enviando...';} if(btn){btn.textContent='ENVIANDO...'; btn.disabled=true;}
   let sConf=document.createElement('script');
   sConf.src=APPS_SCRIPT_URL+'?'+params.toString()+'&callback=confirmCallback&_='+Date.now();
+  sConf.onerror=function(){ if(box) box.innerHTML='Error de red, intenta de nuevo'; if(btn){btn.textContent='CONFIRMAR ASISTENCIA'; btn.disabled=false;} };
   document.body.appendChild(sConf);
-  // Fallback: aunque no responda, recargar datos en 2.5s
   setTimeout(()=>{
     let s2=document.createElement('script');
     s2.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData&rand="+Date.now();
     document.body.appendChild(s2);
     if(box) box.style.display='none';
     if(btn){ btn.textContent='CONFIRMAR ASISTENCIA'; btn.disabled=false; }
-  },2500);
+  },3000);
 }
 function confirmCallback(r){
-  // Callback opcional de confirmación
   let box=document.getElementById('okBox'),btn=document.getElementById('btnConfirmar');
   if(box) box.innerHTML='¡Confirmado!';
   setTimeout(()=>{
@@ -396,161 +319,30 @@ function confirmCallback(r){
   },800);
 }
 
-</script>
 
-
-<!-- === PASO 1: INSTRUCCIONES FOTOS (aparece al confirmar) === -->
-<div id="seccionFotos" class="card" style="display:none; border:2px solid #c9a88a; background:white;">
-  <div style="text-align:center">
-    <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
-    <span class="badge" style="background:#c9a88a;color:white;border-color:#c9a88a">NUEVO</span>
-    <h2 class="serif" style="font-size:24px; margin-top:8px;">Tus fotos en la pantalla del salón</h2>
-    <p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">Queremos que tus fotos también sean parte de la fiesta.</p>
-  </div>
-  <div style="margin-top:18px; background:#fdfaf6; border-radius:16px; padding:16px; border:1px dashed #c9a88a55; text-align:left">
-    <p style="font-size:11px;letter-spacing:1.5px;color:#8a9a96;font-weight:600">¿CÓMO FUNCIONA?</p>
-    <div style="margin-top:12px">
-      <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px"><span style="background:#2f4a44;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">1</span><p style="font-size:12px;color:#444;line-height:1.4"><b>Durante la fiesta</b>, toma fotos con tu celular como siempre.</p></div>
-      <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px"><span style="background:#2f4a44;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">2</span><p style="font-size:12px;color:#444;line-height:1.4"><b>El mismo día 02 Ene 2027</b>, de <b>18:00 a 02:00</b>, podrás subirlas en 1 toque.</p></div>
-      <div style="display:flex;gap:10px;align-items:flex-start"><span style="background:#2f4a44;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">3</span><p style="font-size:12px;color:#444;line-height:1.4"><b>Se mostrarán en vivo</b> en la pantalla del salón para todos los invitados.</p></div>
-    </div>
-    <div style="margin-top:14px;background:white;border-radius:12px;padding:10px;border:1px solid #e8e0d6">
-      <p style="font-size:10px;color:#8a9a96;line-height:1.4">📌 Esta opción queda pendiente y solo se activará el día del evento. No necesitas instalar nada extra. En tu mesa también habrá un QR como respaldo.</p>
-    </div>
-  </div>
-  <button id="btnEntendiFotos" class="btn" style="margin-top:18px">ENTENDIDO, CONTINUAR</button>
-  <button id="btnNoGraciasFotos" class="btn-outline" style="margin-top:10px; border-color:#e8e0d6; color:#8a9a96;">AHORA NO, GRACIAS</button>
-</div>
-
-<!-- === PASO 2: ACCESO DIRECTO (después de instrucciones) === -->
-
-<!-- === PASO 1: INSTRUCCIONES FOTOS - Aparece al confirmar === -->
-<div id="seccionFotos" class="card" style="display:none; border:2px solid #c9a88a; background:white;">
-  <div style="text-align:center">
-    <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
-    <span class="badge" style="background:#c9a88a;color:white;border-color:#c9a88a">NUEVO</span>
-    <h2 class="serif" style="font-size:24px; margin-top:8px;">Tus fotos en la pantalla del salón</h2>
-    <p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">Queremos que tus fotos también sean parte de la fiesta.</p>
-  </div>
-  <div style="margin-top:18px; background:#fdfaf6; border-radius:16px; padding:16px; border:1px dashed #c9a88a55; text-align:left">
-    <p style="font-size:11px;letter-spacing:1.5px;color:#8a9a96;font-weight:600">¿CÓMO FUNCIONA?</p>
-    <div style="margin-top:12px">
-      <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px"><span style="background:#2f4a44;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">1</span><p style="font-size:12px;color:#444;line-height:1.4"><b>Durante la fiesta</b>, toma fotos con tu celular como siempre.</p></div>
-      <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px"><span style="background:#2f4a44;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">2</span><p style="font-size:12px;color:#444;line-height:1.4"><b>El mismo día 02 Ene 2027</b>, de <b>18:00 a 02:00</b>, podrás subirlas en 1 toque.</p></div>
-      <div style="display:flex;gap:10px;align-items:flex-start"><span style="background:#2f4a44;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">3</span><p style="font-size:12px;color:#444;line-height:1.4"><b>Se mostrarán en vivo</b> en la pantalla del salón.</p></div>
-    </div>
-    <div style="margin-top:14px;background:white;border-radius:12px;padding:10px;border:1px solid #e8e0d6">
-      <p style="font-size:10px;color:#8a9a96;line-height:1.4">📌 Queda pendiente y solo se activará el día del evento. No necesitas instalar nada extra. En tu mesa también habrá un QR como respaldo.</p>
-    </div>
-  </div>
-  <button id="btnEntendiFotos" class="btn" style="margin-top:18px">ENTENDIDO, CONTINUAR</button>
-  <button id="btnNoGraciasFotos" class="btn-outline" style="margin-top:10px; border-color:#e8e0d6; color:#8a9a96;">AHORA NO, GRACIAS</button>
-</div>
-
-<!-- === PASO 2: ACCESO DIRECTO === -->
-<div id="seccionPWA" class="card" style="display:none; border:2px solid #2f4a44; background:white;">
-  <div style="text-align:center">
-    <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
-    <span class="badge" style="background:#2f4a44;color:white;border-color:#2f4a44">ACCESO RÁPIDO</span>
-    <h2 class="serif" style="font-size:24px; margin-top:8px;">Guarda tu acceso</h2>
-    <p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">Guarda el icono de Gina & Edy en tu pantalla. Abre tu invitación y tus fotos en 1 toque el día del evento.</p>
-  </div>
-  <div style="margin-top:18px; background:#fdfaf6; border-radius:16px; padding:16px; border:1px dashed #c9a88a55">
-    <p style="font-size:11px;letter-spacing:1.5px;color:#8a9a96;font-weight:600">TE SERVIRÁ PARA:</p>
-    <div style="display:flex; gap:10px; margin-top:10px; text-align:left">
-      <div style="flex:1;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6"><p style="font-size:18px">💌</p><p style="font-size:11px;font-weight:600;margin-top:4px">Invitación</p><p style="font-size:10px;color:#888;margin-top:2px">1 toque</p></div>
-      <div style="flex:1;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6"><p style="font-size:18px">📸</p><p style="font-size:11px;font-weight:600;margin-top:4px">Subir fotos</p><p style="font-size:10px;color:#888;margin-top:2px">18:00-02:00</p></div>
-    </div>
-  </div>
-  <button id="btnGuardarAcceso" class="btn" style="margin-top:18px">📲 GUARDAR EN MI CELULAR</button>
-  <button id="btnNoGuardar" class="btn-outline" style="margin-top:10px; border-color:#e8e0d6; color:#8a9a96;">AHORA NO, GRACIAS</button>
-  <p id="pwaStatus" style="font-size:11px;color:#8a9a96;margin-top:10px;display:none"></p>
-</div>
-
-<div id="pwaModal" class="pwa-overlay" onclick="if(event.target.id==='pwaModal') cerrarPwaModal()">
-  <div class="pwa-box">
-    <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
-    <h3 class="serif" style="font-size:22px;">Cómo guardar en iPhone</h3>
-    <p style="font-size:12px;color:#666;margin-top:8px;line-height:1.4">Safari no permite guardado automático. Sigue estos 3 pasos:</p>
-    <div class="pwa-step"><b class="num">1</b><div><p style="font-size:12px;font-weight:600">Toca Compartir</p><p style="font-size:11px;color:#666">El icono de cuadro con flecha arriba, abajo en Safari.</p><div style="margin-top:6px;background:#2f4a44;color:white;border-radius:8px;padding:6px 10px;display:inline-block;font-size:11px">⎙ Compartir</div></div></div>
-    <div class="pwa-step"><b class="num">2</b><div><p style="font-size:12px;font-weight:600">Agregar a pantalla de inicio</p><p style="font-size:11px;color:#666">Desliza hacia abajo y tócalo.</p></div></div>
-    <div class="pwa-step"><b class="num">3</b><div><p style="font-size:12px;font-weight:600">Toca Agregar</p><p style="font-size:11px;color:#666">Arriba a la derecha. Verás el logo de Gina & Edy en tu escritorio.</p></div></div>
-    <div style="margin-top:14px;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6;text-align:left">
-      <p style="font-size:11px;font-weight:600">📸 Fotos de la boda:</p>
-      <p style="font-size:11px;color:#555;margin-top:4px;line-height:1.4">Una vez guardado, ábrelo el día del evento. Desde las <b>18:00</b> verás el botón <b>Subir fotos de la boda</b> para compartir las fotos que tomes. Se mostrarán en la pantalla del salón. También funciona el QR de tu mesa.</p>
-      <p style="font-size:10px;color:#c9a88a;margin-top:6px">⏰ Solo activo en horario del evento.</p>
-    </div>
-    <button onclick="cerrarPwaModal()" class="btn" style="margin-top:14px">ENTENDIDO</button>
-  </div>
-</div>
-
-<div id="pwaModalAndroid" class="pwa-overlay" onclick="if(event.target.id==='pwaModalAndroid') cerrarPwaModalAndroid()">
-  <div class="pwa-box">
-    <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
-    <h3 class="serif" style="font-size:22px;">Acceso creado</h3>
-    <p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">¡Listo! Busca el icono <b>Gina & Edy</b> en tu pantalla principal.</p>
-    <div style="margin-top:14px;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6;text-align:left">
-      <p style="font-size:11px;font-weight:600">📸 ¿Cómo compartir fotos?</p>
-      <p style="font-size:11px;color:#555;margin-top:4px;line-height:1.4">1. El día del evento abre el acceso desde tu escritorio.<br>2. De 18:00 a 02:00 verás el botón <b>📸 SUBIR FOTOS</b><br>3. Elige las fotos de tu galería, se mostrarán en la pantalla del salón.</p>
-      <p style="font-size:10px;color:#888;margin-top:8px">Respaldo: QR en tu mesa del salón.</p>
-    </div>
-    <button onclick="cerrarPwaModalAndroid()" class="btn" style="margin-top:14px">PERFECTO, CERRAR</button>
-  </div>
-</div>
-
-<script>
-// === PWA + FOTOS BODA - FINAL V3 - SIN CINTILLA, SIN PALABRA ANTERIOR, FIX ID INVITADO ===
-const FOTOS_URL = "https://TU_NGROK_URL_AQUI.ngrok.io"; // <-- CAMBIA AQUÍ POR TU URL DE FOTOSFIESTA (PC del salón)
-const HORARIO_INICIO = new Date('2027-01-02T18:00:00').getTime();
-const HORARIO_FIN = new Date('2027-01-03T02:00:00').getTime();
-
-let deferredPrompt = null;
-const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-const isAndroid = /Android/.test(navigator.userAgent);
-const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js').catch(()=>{});
-}
-
-window.addEventListener('beforeinstallprompt', (e)=>{
-  e.preventDefault();
-  deferredPrompt = e;
-  const btn = document.getElementById('btnGuardarAcceso');
-  if(btn) btn.style.display='flex';
-});
-
-function getCurrentIdKey(){
-  try{ return (typeof idParam !== 'undefined' && idParam && idParam !== '001') ? idParam : (localStorage.getItem('invitacionId')||'global'); }catch(e){ return 'global'; }
-}
-function mostrarInvitacionCancelada(id){
-  const c=document.querySelector('.container');
-  if(c) c.innerHTML='<div class="card" style="text-align:center;border:2px solid #e74c3c"><h2 class="serif" style="font-size:24px;color:#e74c3c">Invitación Cancelada</h2><p style="font-size:13px;margin-top:8px">La invitación '+ (id||'') +' está cancelada o bloqueada.<br>Contacta a Gina & Edy.</p></div>';
-}
 function cerrarInvitacionTotal(){
-  const key=getCurrentIdKey();
-  try{ localStorage.setItem('pwaRechazado_'+key,'1'); }catch(e){}
-  const secF=document.getElementById('seccionFotos');
-  const secP=document.getElementById('seccionPWA');
+  localStorage.setItem('pwaRechazado','1');
+  const secF = document.getElementById('seccionFotos');
+  const secP = document.getElementById('seccionPWA');
   if(secF) secF.style.display='none';
   if(secP) secP.style.display='none';
-  document.body.innerHTML='<div style="min-height:100vh;background:#fdfaf6;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Inter,sans-serif"><div style="background:white;border-radius:28px;padding:32px 24px;max-width:380px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(47,74,68,0.08);border:1px solid rgba(201,168,138,0.15)"><div style="width:64px;height:64px;border-radius:50%;background:#fdfaf6;border:1px solid #e8e0d6;margin:0 auto 16px auto;display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="./1.png" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'"></div><h2 style="font-family:Cormorant Garamond,serif;font-size:28px;color:#2f4a44">¡Gracias!</h2><p style="font-size:13px;color:#666;margin-top:10px;line-height:1.5">Tu confirmación quedó guardada. Te esperamos el 02.01.27</p><p style="font-size:10px;letter-spacing:2px;color:#8a9a96;margin-top:16px">GINA & EDY</p><button onclick="location.reload()" style="margin-top:18px;width:100%;background:#2f4a44;color:white;border:none;padding:14px;border-radius:30px;font-size:12px;letter-spacing:1px;cursor:pointer">VOLVER A VER INVITACIÓN</button><button onclick="window.close(); location.href=\'about:blank\'" style="margin-top:10px;width:100%;background:white;color:#8a9a96;border:1px solid #e8e0d6;padding:12px;border-radius:30px;font-size:11px;cursor:pointer">CERRAR</button></div></div>';
+  document.body.innerHTML = '<div style="min-height:100vh;background:#fdfaf6;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Inter,sans-serif"><div style="background:white;border-radius:28px;padding:32px 24px;max-width:380px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(47,74,68,0.08);border:1px solid rgba(201,168,138,0.15)"><div style="width:64px;height:64px;border-radius:50%;background:#fdfaf6;border:1px solid #e8e0d6;margin:0 auto 16px auto;display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="./1.png" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'"></div><h2 style="font-family:Cormorant Garamond,serif;font-size:28px;color:#2f4a44">¡Gracias!</h2><p style="font-size:13px;color:#666;margin-top:10px;line-height:1.5">Tu confirmación quedó guardada. Te esperamos el 02.01.27</p><p style="font-size:10px;letter-spacing:2px;color:#8a9a96;margin-top:16px">GINA & EDY</p><button onclick="location.reload()" style="margin-top:18px;width:100%;background:#2f4a44;color:white;border:none;padding:14px;border-radius:30px;font-size:12px;letter-spacing:1px;cursor:pointer">VOLVER A VER INVITACIÓN</button><button onclick="window.close(); location.href=\'about:blank\'" style="margin-top:10px;width:100%;background:white;color:#8a9a96;border:1px solid #e8e0d6;padding:12px;border-radius:30px;font-size:11px;cursor:pointer">CERRAR</button></div></div>';
 }
+
 function mostrarSeccionFotos(){
-  const key=getCurrentIdKey();
-  if(localStorage.getItem('pwaRechazado_'+key)==='1') return;
-  const sec=document.getElementById('seccionFotos');
-  if(sec){ sec.style.display='block'; sec.scrollIntoView({behavior:'smooth', block:'center'}); }
-  const pwa=document.getElementById('seccionPWA');
+  if(localStorage.getItem('pwaRechazado')==='1') return;
+  const sec = document.getElementById('seccionFotos');
+  if(sec) { sec.style.display='block'; sec.scrollIntoView({behavior:'smooth', block:'center'}); }
+  const pwa = document.getElementById('seccionPWA');
   if(pwa) pwa.style.display='none';
 }
+
 function mostrarSeccionPWA(){
-  const key=getCurrentIdKey();
-  if(localStorage.getItem('pwaRechazado_'+key)==='1') return;
-  const secF=document.getElementById('seccionFotos');
+  if(localStorage.getItem('pwaRechazado')==='1') return;
+  const secF = document.getElementById('seccionFotos');
   if(secF) secF.style.display='none';
-  const sec=document.getElementById('seccionPWA');
-  if(sec){ sec.style.display='block'; sec.scrollIntoView({behavior:'smooth', block:'center'}); }
+  const sec = document.getElementById('seccionPWA');
+  if(sec) { sec.style.display='block'; sec.scrollIntoView({behavior:'smooth', block:'center'}); }
 }
 
 function abrirFotos(){
