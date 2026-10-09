@@ -151,38 +151,6 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 <div style="display:flex;gap:8px"><div style="flex:1"><label style="font-size:10px;color:#8a9a96">ADULTOS CONFIRMADOS</label><input id="adultosConf" type="number" class="input" min="0" value="0"></div><div style="flex:1"><label style="font-size:10px;color:#8a9a96">MENORES CONFIRMADOS</label><input id="ninosConf" type="number" class="input" min="0" value="0"></div></div>
 </div></div>
 <div id="bloqueNombres" style="display:none;margin-top:20px"><label class="label-mini">CONFIRMA LOS NOMBRES</label><textarea id="quienes" rows="3" class="input" placeholder="Ej: Gabriela, Kenia, Sebastian"></textarea></div>
-
-<!-- SUBRUTINA OPCION B -->
-<div id="contenedorCheck"></div>
-<script>
-// Cargar subrutina externa
-fetch('./check_opcion_b.html').then(r=>r.text()).then(h=>{
-  const cont=document.getElementById('contenedorCheck');
-  if(cont) cont.innerHTML=h;
-}).catch(()=>{ console.warn('No se pudo cargar check_opcion_b.html'); });
-</script>
-<script src="./check_opcion_b.js"></script>
-<script>
-// Hook para crear checks cuando renderData termina
-const _origRenderDataForCheck = window.renderData;
-window.renderData = function(obj){
-  if(typeof _origRenderDataForCheck==='function') _origRenderDataForCheck(obj);
-  try{
-    if(obj && obj.g){
-      if(typeof DATA_ACTUAL==='undefined') window.DATA_ACTUAL=obj;
-      if(typeof K_asignados!=='undefined'){
-        K_asignados=obj.k||0;
-        L_asignados=obj.l||0;
-        M_asignados=obj.m||0;
-        esFamiliaActual=!!obj.esFamilia;
-        grupoNombres=obj.g||'';
-      }
-      setTimeout(()=>{ if(window.crearCheckboxes) crearCheckboxes(); }, 300);
-    }
-  }catch(e){}
-};
-</script>
-
 <button id="btnConfirmar" onclick="confirmarFinal()" class="btn">CONFIRMAR ASISTENCIA</button>
  <div style="margin-top:8px; text-align:center; font-family:inherit; width:100%;">
   Antes del 20.12.2026
@@ -312,12 +280,12 @@ if(idParam && idParam!=='001'){ localStorage.setItem('invitacionId', idParam); }
 let s=document.createElement('script'); s.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData"; document.body.appendChild(s);
 function confirmarFinal(){
   try{
-    if(typeof esFamiliaActual!=='undefined' && esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=1+AB_confirmados+AC_confirmados; if(document.querySelectorAll('#listaChecks input[type=checkbox]').length===0) { /* sin checks, usa valores previos */ } }
+    if(typeof esFamiliaActual!=='undefined' && esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=1+AB_confirmados+AC_confirmados; }
     if(AB_confirmados > K_asignados || AC_confirmados > L_asignados){ alert('No puedes confirmar más lugares de los asignados. Asignados: Adultos '+K_asignados+', Niños '+L_asignados); return; }
     if(S_confirmados > M_asignados){ alert('Total confirmado excede asignado. Total asignado: '+M_asignados); return; }
     let q=document.getElementById('quienes')?.value||'';
     let Y=K_asignados-AB_confirmados,Z=L_asignados-AC_confirmados,AA=Y+Z,box=document.getElementById('okBox'),btn=document.getElementById('btnConfirmar');
-    if(!q && typeof vendranTodos!=='undefined' && !vendranTodos){ alert('Escribe los nombres o marca casillas'); return; }
+    if(!q && typeof vendranTodos!=='undefined' && !vendranTodos){ alert('Escribe los nombres'); return; }
     let params=new URLSearchParams({id:idParam,s:S_confirmados,ab:AB_confirmados,ac:AC_confirmados,y:Y,z:Z,aa:AA,t:q||(typeof DATA_ACTUAL!=='undefined'&&DATA_ACTUAL?DATA_ACTUAL.g:'')});
     if(box){box.style.display='block'; box.innerHTML='Enviando...';} if(btn){btn.textContent='ENVIANDO...'; btn.disabled=true;}
     let sConf=document.createElement('script');
