@@ -1,0 +1,13 @@
+<!-- OPCION B - Subrutina HTML -->
+<div id="bloqueCheckNombres" style="display:none;margin-top:18px;padding:16px;background:#fdfaf6;border-radius:16px;border:1px solid #e8e0d6">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <b style="font-size:12px;letter-spacing:1px">¿QUIÉN VIENE?</b>
+    <span id="resumenCheck" style="font-size:11px;color:#8a9a96">0 seleccionados</span>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:12px">
+    <button type="button" onclick="seleccionarTodosChecks(true)" class="btn-small" style="min-width:80px;padding:8px 12px;font-size:10px">TODOS</button>
+    <button type="button" onclick="seleccionarTodosChecks(false)" class="btn-small" style="min-width:80px;padding:8px 12px;font-size:10px;background:white;color:#2f4a44">NINGUNO</button>
+  </div>
+  <div id="listaChecks" style="display:flex;flex-direction:column;gap:8px;max-height:220px;overflow:auto"></div>
+  <div id="detalleNoVienen" style="margin-top:10px;font-size:11px;color:#666;display:none"></div>
+</div>

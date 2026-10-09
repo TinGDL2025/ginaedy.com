@@ -151,6 +151,38 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 <div style="display:flex;gap:8px"><div style="flex:1"><label style="font-size:10px;color:#8a9a96">ADULTOS CONFIRMADOS</label><input id="adultosConf" type="number" class="input" min="0" value="0"></div><div style="flex:1"><label style="font-size:10px;color:#8a9a96">MENORES CONFIRMADOS</label><input id="ninosConf" type="number" class="input" min="0" value="0"></div></div>
 </div></div>
 <div id="bloqueNombres" style="display:none;margin-top:20px"><label class="label-mini">CONFIRMA LOS NOMBRES</label><textarea id="quienes" rows="3" class="input" placeholder="Ej: Gabriela, Kenia, Sebastian"></textarea></div>
+
+<!-- SUBRUTINA OPCION B -->
+<div id="contenedorCheck"></div>
+<script>
+// Cargar subrutina externa
+fetch('./check_opcion_b.html').then(r=>r.text()).then(h=>{
+  const cont=document.getElementById('contenedorCheck');
+  if(cont) cont.innerHTML=h;
+}).catch(()=>{ console.warn('No se pudo cargar check_opcion_b.html'); });
+</script>
+<script src="./check_opcion_b.js"></script>
+<script>
+// Hook para crear checks cuando renderData termina
+const _origRenderDataForCheck = window.renderData;
+window.renderData = function(obj){
+  if(typeof _origRenderDataForCheck==='function') _origRenderDataForCheck(obj);
+  try{
+    if(obj && obj.g){
+      if(typeof DATA_ACTUAL==='undefined') window.DATA_ACTUAL=obj;
+      if(typeof K_asignados!=='undefined'){
+        K_asignados=obj.k||0;
+        L_asignados=obj.l||0;
+        M_asignados=obj.m||0;
+        esFamiliaActual=!!obj.esFamilia;
+        grupoNombres=obj.g||'';
+      }
+      setTimeout(()=>{ if(window.crearCheckboxes) crearCheckboxes(); }, 300);
+    }
+  }catch(e){}
+};
+</script>
+
 <button id="btnConfirmar" onclick="confirmarFinal()" class="btn">CONFIRMAR ASISTENCIA</button>
  <div style="margin-top:8px; text-align:center; font-family:inherit; width:100%;">
   Antes del 20.12.2026
@@ -279,165 +311,40 @@ if(idParam && idParam!=='001'){ localStorage.setItem('invitacionId', idParam); }
 
 let s=document.createElement('script'); s.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData"; document.body.appendChild(s);
 function confirmarFinal(){
-  if(esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=1+AB_confirmados+AC_confirmados; }
-  // VALIDACION NO SUBIR MAS
-  if(AB_confirmados > K_asignados || AC_confirmados > L_asignados){ alert('No puedes confirmar más lugares de los asignados. Asignados: Adultos '+K_asignados+', Niños '+L_asignados); return; }
-  if(S_confirmados > M_asignados){ alert('Total confirmado excede asignado. Total asignado: '+M_asignados); return; }
-  let q=document.getElementById('quienes').value||''; let Y=K_asignados-AB_confirmados,Z=L_asignados-AC_confirmados,AA=Y+Z,box=document.getElementById('okBox'),btn=document.getElementById('btnConfirmar');
-  if(!q&&!vendranTodos){ alert('Escribe los nombres'); return; }
-  let params=new URLSearchParams({id:idParam,s:S_confirmados,ab:AB_confirmados,ac:AC_confirmados,y:Y,z:Z,aa:AA,t:q||(DATA_ACTUAL?DATA_ACTUAL.g:'')});
-  if(box){box.style.display='block'; box.innerHTML='Enviando...';} if(btn)btn.textContent='ENVIANDO...';
-  let iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=APPS_SCRIPT_URL+'?'+params.toString(); document.body.appendChild(iframe);
-  iframe.onload=function(){ setTimeout(()=>{ let s2=document.createElement('script'); s2.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData&rand="+Date.now(); document.body.appendChild(s2); if(box) box.style.display='none'; if(btn) btn.textContent='CONFIRMAR ASISTENCIA'; },1500); };
+  try{
+    if(typeof esFamiliaActual!=='undefined' && esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=1+AB_confirmados+AC_confirmados; if(document.querySelectorAll('#listaChecks input[type=checkbox]').length===0) { /* sin checks, usa valores previos */ } }
+    if(AB_confirmados > K_asignados || AC_confirmados > L_asignados){ alert('No puedes confirmar más lugares de los asignados. Asignados: Adultos '+K_asignados+', Niños '+L_asignados); return; }
+    if(S_confirmados > M_asignados){ alert('Total confirmado excede asignado. Total asignado: '+M_asignados); return; }
+    let q=document.getElementById('quienes')?.value||'';
+    let Y=K_asignados-AB_confirmados,Z=L_asignados-AC_confirmados,AA=Y+Z,box=document.getElementById('okBox'),btn=document.getElementById('btnConfirmar');
+    if(!q && typeof vendranTodos!=='undefined' && !vendranTodos){ alert('Escribe los nombres o marca casillas'); return; }
+    let params=new URLSearchParams({id:idParam,s:S_confirmados,ab:AB_confirmados,ac:AC_confirmados,y:Y,z:Z,aa:AA,t:q||(typeof DATA_ACTUAL!=='undefined'&&DATA_ACTUAL?DATA_ACTUAL.g:'')});
+    if(box){box.style.display='block'; box.innerHTML='Enviando...';} if(btn){btn.textContent='ENVIANDO...'; btn.disabled=true;}
+    let sConf=document.createElement('script');
+    sConf.src=APPS_SCRIPT_URL+'?'+params.toString()+'&callback=confirmCallback&_='+Date.now();
+    sConf.onerror=function(){ if(box) box.innerHTML='Error de red, intenta de nuevo'; if(btn){btn.textContent='CONFIRMAR ASISTENCIA'; btn.disabled=false;} };
+    document.body.appendChild(sConf);
+    setTimeout(()=>{
+      let s2=document.createElement('script');
+      s2.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData&rand="+Date.now();
+      document.body.appendChild(s2);
+      if(box) box.style.display='none';
+      if(btn){ btn.textContent='CONFIRMAR ASISTENCIA'; btn.disabled=false; }
+    },3500);
+  }catch(e){ console.error('confirmarFinal error', e); alert('Error: '+e.message); }
 }
-</script>
-
-
-<!-- === PASO 1: INSTRUCCIONES FOTOS (aparece al confirmar) === -->
-<div id="seccionFotos" class="card" style="display:none; border:2px solid #c9a88a; background:white;">
-  <div style="text-align:center">
-    <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
-    <span class="badge" style="background:#c9a88a;color:white;border-color:#c9a88a">NUEVO</span>
-    <h2 class="serif" style="font-size:24px; margin-top:8px;">Tus fotos en la pantalla del salón</h2>
-    <p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">Queremos que tus fotos también sean parte de la fiesta.</p>
-  </div>
-  <div style="margin-top:18px; background:#fdfaf6; border-radius:16px; padding:16px; border:1px dashed #c9a88a55; text-align:left">
-    <p style="font-size:11px;letter-spacing:1.5px;color:#8a9a96;font-weight:600">¿CÓMO FUNCIONA?</p>
-    <div style="margin-top:12px">
-      <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px"><span style="background:#2f4a44;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">1</span><p style="font-size:12px;color:#444;line-height:1.4"><b>Durante la fiesta</b>, toma fotos con tu celular como siempre.</p></div>
-      <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px"><span style="background:#2f4a44;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">2</span><p style="font-size:12px;color:#444;line-height:1.4"><b>El mismo día 02 Ene 2027</b>, de <b>18:00 a 02:00</b>, podrás subirlas en 1 toque.</p></div>
-      <div style="display:flex;gap:10px;align-items:flex-start"><span style="background:#2f4a44;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">3</span><p style="font-size:12px;color:#444;line-height:1.4"><b>Se mostrarán en vivo</b> en la pantalla del salón para todos los invitados.</p></div>
-    </div>
-    <div style="margin-top:14px;background:white;border-radius:12px;padding:10px;border:1px solid #e8e0d6">
-      <p style="font-size:10px;color:#8a9a96;line-height:1.4">📌 Esta opción queda pendiente y solo se activará el día del evento. No necesitas instalar nada extra. En tu mesa también habrá un QR como respaldo.</p>
-    </div>
-  </div>
-  <button id="btnEntendiFotos" class="btn" style="margin-top:18px">ENTENDIDO, CONTINUAR</button>
-  <button id="btnNoGraciasFotos" class="btn-outline" style="margin-top:10px; border-color:#e8e0d6; color:#8a9a96;">AHORA NO, GRACIAS</button>
-</div>
-
-<!-- === PASO 2: ACCESO DIRECTO (después de instrucciones) === -->
-
-<!-- === PASO 1: INSTRUCCIONES FOTOS - Aparece al confirmar === -->
-<div id="seccionFotos" class="card" style="display:none; border:2px solid #c9a88a; background:white;">
-  <div style="text-align:center">
-    <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
-    <span class="badge" style="background:#c9a88a;color:white;border-color:#c9a88a">NUEVO</span>
-    <h2 class="serif" style="font-size:24px; margin-top:8px;">Tus fotos en la pantalla del salón</h2>
-    <p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">Queremos que tus fotos también sean parte de la fiesta.</p>
-  </div>
-  <div style="margin-top:18px; background:#fdfaf6; border-radius:16px; padding:16px; border:1px dashed #c9a88a55; text-align:left">
-    <p style="font-size:11px;letter-spacing:1.5px;color:#8a9a96;font-weight:600">¿CÓMO FUNCIONA?</p>
-    <div style="margin-top:12px">
-      <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px"><span style="background:#2f4a44;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">1</span><p style="font-size:12px;color:#444;line-height:1.4"><b>Durante la fiesta</b>, toma fotos con tu celular como siempre.</p></div>
-      <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:12px"><span style="background:#2f4a44;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">2</span><p style="font-size:12px;color:#444;line-height:1.4"><b>El mismo día 02 Ene 2027</b>, de <b>18:00 a 02:00</b>, podrás subirlas en 1 toque.</p></div>
-      <div style="display:flex;gap:10px;align-items:flex-start"><span style="background:#2f4a44;color:white;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">3</span><p style="font-size:12px;color:#444;line-height:1.4"><b>Se mostrarán en vivo</b> en la pantalla del salón.</p></div>
-    </div>
-    <div style="margin-top:14px;background:white;border-radius:12px;padding:10px;border:1px solid #e8e0d6">
-      <p style="font-size:10px;color:#8a9a96;line-height:1.4">📌 Queda pendiente y solo se activará el día del evento. No necesitas instalar nada extra. En tu mesa también habrá un QR como respaldo.</p>
-    </div>
-  </div>
-  <button id="btnEntendiFotos" class="btn" style="margin-top:18px">ENTENDIDO, CONTINUAR</button>
-  <button id="btnNoGraciasFotos" class="btn-outline" style="margin-top:10px; border-color:#e8e0d6; color:#8a9a96;">AHORA NO, GRACIAS</button>
-</div>
-
-<!-- === PASO 2: ACCESO DIRECTO === -->
-<div id="seccionPWA" class="card" style="display:none; border:2px solid #2f4a44; background:white;">
-  <div style="text-align:center">
-    <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
-    <span class="badge" style="background:#2f4a44;color:white;border-color:#2f4a44">ACCESO RÁPIDO</span>
-    <h2 class="serif" style="font-size:24px; margin-top:8px;">Guarda tu acceso</h2>
-    <p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">Guarda el icono de Gina & Edy en tu pantalla. Abre tu invitación y tus fotos en 1 toque el día del evento.</p>
-  </div>
-  <div style="margin-top:18px; background:#fdfaf6; border-radius:16px; padding:16px; border:1px dashed #c9a88a55">
-    <p style="font-size:11px;letter-spacing:1.5px;color:#8a9a96;font-weight:600">TE SERVIRÁ PARA:</p>
-    <div style="display:flex; gap:10px; margin-top:10px; text-align:left">
-      <div style="flex:1;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6"><p style="font-size:18px">💌</p><p style="font-size:11px;font-weight:600;margin-top:4px">Invitación</p><p style="font-size:10px;color:#888;margin-top:2px">1 toque</p></div>
-      <div style="flex:1;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6"><p style="font-size:18px">📸</p><p style="font-size:11px;font-weight:600;margin-top:4px">Subir fotos</p><p style="font-size:10px;color:#888;margin-top:2px">18:00-02:00</p></div>
-    </div>
-  </div>
-  <button id="btnGuardarAcceso" class="btn" style="margin-top:18px">📲 GUARDAR EN MI CELULAR</button>
-  <button id="btnNoGuardar" class="btn-outline" style="margin-top:10px; border-color:#e8e0d6; color:#8a9a96;">AHORA NO, GRACIAS</button>
-  <p id="pwaStatus" style="font-size:11px;color:#8a9a96;margin-top:10px;display:none"></p>
-</div>
-
-<div id="pwaModal" class="pwa-overlay" onclick="if(event.target.id==='pwaModal') cerrarPwaModal()">
-  <div class="pwa-box">
-    <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
-    <h3 class="serif" style="font-size:22px;">Cómo guardar en iPhone</h3>
-    <p style="font-size:12px;color:#666;margin-top:8px;line-height:1.4">Safari no permite guardado automático. Sigue estos 3 pasos:</p>
-    <div class="pwa-step"><b class="num">1</b><div><p style="font-size:12px;font-weight:600">Toca Compartir</p><p style="font-size:11px;color:#666">El icono de cuadro con flecha arriba, abajo en Safari.</p><div style="margin-top:6px;background:#2f4a44;color:white;border-radius:8px;padding:6px 10px;display:inline-block;font-size:11px">⎙ Compartir</div></div></div>
-    <div class="pwa-step"><b class="num">2</b><div><p style="font-size:12px;font-weight:600">Agregar a pantalla de inicio</p><p style="font-size:11px;color:#666">Desliza hacia abajo y tócalo.</p></div></div>
-    <div class="pwa-step"><b class="num">3</b><div><p style="font-size:12px;font-weight:600">Toca Agregar</p><p style="font-size:11px;color:#666">Arriba a la derecha. Verás el logo de Gina & Edy en tu escritorio.</p></div></div>
-    <div style="margin-top:14px;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6;text-align:left">
-      <p style="font-size:11px;font-weight:600">📸 Fotos de la boda:</p>
-      <p style="font-size:11px;color:#555;margin-top:4px;line-height:1.4">Una vez guardado, ábrelo el día del evento. Desde las <b>18:00</b> verás el botón <b>Subir fotos de la boda</b> para compartir las fotos que tomes. Se mostrarán en la pantalla del salón. También funciona el QR de tu mesa.</p>
-      <p style="font-size:10px;color:#c9a88a;margin-top:6px">⏰ Solo activo en horario del evento.</p>
-    </div>
-    <button onclick="cerrarPwaModal()" class="btn" style="margin-top:14px">ENTENDIDO</button>
-  </div>
-</div>
-
-<div id="pwaModalAndroid" class="pwa-overlay" onclick="if(event.target.id==='pwaModalAndroid') cerrarPwaModalAndroid()">
-  <div class="pwa-box">
-    <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
-    <h3 class="serif" style="font-size:22px;">Acceso creado</h3>
-    <p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">¡Listo! Busca el icono <b>Gina & Edy</b> en tu pantalla principal.</p>
-    <div style="margin-top:14px;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6;text-align:left">
-      <p style="font-size:11px;font-weight:600">📸 ¿Cómo compartir fotos?</p>
-      <p style="font-size:11px;color:#555;margin-top:4px;line-height:1.4">1. El día del evento abre el acceso desde tu escritorio.<br>2. De 18:00 a 02:00 verás el botón <b>📸 SUBIR FOTOS</b><br>3. Elige las fotos de tu galería, se mostrarán en la pantalla del salón.</p>
-      <p style="font-size:10px;color:#888;margin-top:8px">Respaldo: QR en tu mesa del salón.</p>
-    </div>
-    <button onclick="cerrarPwaModalAndroid()" class="btn" style="margin-top:14px">PERFECTO, CERRAR</button>
-  </div>
-</div>
-
-<script>
-// === PWA + FOTOS BODA - FINAL V3 - SIN CINTILLA, SIN PALABRA ANTERIOR, FIX ID INVITADO ===
-const FOTOS_URL = "https://TU_NGROK_URL_AQUI.ngrok.io"; // <-- CAMBIA AQUÍ POR TU URL DE FOTOSFIESTA (PC del salón)
-const HORARIO_INICIO = new Date('2027-01-02T18:00:00').getTime();
-const HORARIO_FIN = new Date('2027-01-03T02:00:00').getTime();
-
-let deferredPrompt = null;
-const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-const isAndroid = /Android/.test(navigator.userAgent);
-const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+function confirmCallback(r){
+  let box=document.getElementById('okBox'),btn=document.getElementById('btnConfirmar');
+  if(box) box.innerHTML='¡Confirmado!';
+  setTimeout(()=>{
+    let s2=document.createElement('script');
+    s2.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData&rand="+Date.now();
+    document.body.appendChild(s2);
+    if(box) box.style.display='none';
+    if(btn){ btn.textContent='CONFIRMAR ASISTENCIA'; btn.disabled=false; }
+  },800);
 }
 
-window.addEventListener('beforeinstallprompt', (e)=>{
-  e.preventDefault();
-  deferredPrompt = e;
-  const btn = document.getElementById('btnGuardarAcceso');
-  if(btn) btn.style.display='flex';
-});
-
-function cerrarInvitacionTotal(){
-  localStorage.setItem('pwaRechazado','1');
-  const secF = document.getElementById('seccionFotos');
-  const secP = document.getElementById('seccionPWA');
-  if(secF) secF.style.display='none';
-  if(secP) secP.style.display='none';
-  document.body.innerHTML = '<div style="min-height:100vh;background:#fdfaf6;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Inter,sans-serif"><div style="background:white;border-radius:28px;padding:32px 24px;max-width:380px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(47,74,68,0.08);border:1px solid rgba(201,168,138,0.15)"><div style="width:64px;height:64px;border-radius:50%;background:#fdfaf6;border:1px solid #e8e0d6;margin:0 auto 16px auto;display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="./1.png" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display=\'none\'"></div><h2 style="font-family:Cormorant Garamond,serif;font-size:28px;color:#2f4a44">¡Gracias!</h2><p style="font-size:13px;color:#666;margin-top:10px;line-height:1.5">Tu confirmación quedó guardada. Te esperamos el 02.01.27</p><p style="font-size:10px;letter-spacing:2px;color:#8a9a96;margin-top:16px">GINA & EDY</p><button onclick="location.reload()" style="margin-top:18px;width:100%;background:#2f4a44;color:white;border:none;padding:14px;border-radius:30px;font-size:12px;letter-spacing:1px;cursor:pointer">VOLVER A VER INVITACIÓN</button><button onclick="window.close(); location.href=\'about:blank\'" style="margin-top:10px;width:100%;background:white;color:#8a9a96;border:1px solid #e8e0d6;padding:12px;border-radius:30px;font-size:11px;cursor:pointer">CERRAR</button></div></div>';
-}
-
-function mostrarSeccionFotos(){
-  if(localStorage.getItem('pwaRechazado')==='1') return;
-  const sec = document.getElementById('seccionFotos');
-  if(sec) { sec.style.display='block'; sec.scrollIntoView({behavior:'smooth', block:'center'}); }
-  const pwa = document.getElementById('seccionPWA');
-  if(pwa) pwa.style.display='none';
-}
-
-function mostrarSeccionPWA(){
-  if(localStorage.getItem('pwaRechazado')==='1') return;
-  const secF = document.getElementById('seccionFotos');
-  if(secF) secF.style.display='none';
-  const sec = document.getElementById('seccionPWA');
-  if(sec) { sec.style.display='block'; sec.scrollIntoView({behavior:'smooth', block:'center'}); }
-}
 
 function abrirFotos(){
   const ahora = Date.now();
@@ -512,7 +419,7 @@ const _observer = new MutationObserver(()=>{
     const secP = document.getElementById('seccionPWA');
     const hiddenF = !secF || secF.style.display==='none';
     const hiddenP = !secP || secP.style.display==='none';
-    if(hiddenF && hiddenP && localStorage.getItem('pwaRechazado')!=='1'){
+    if(hiddenF && hiddenP && localStorage.getItem(getCurrentIdKey())!=='1'){
       mostrarSeccionFotos();
     }
   }
