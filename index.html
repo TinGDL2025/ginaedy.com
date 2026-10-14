@@ -151,6 +151,7 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 <div style="display:flex;gap:8px"><div style="flex:1"><label style="font-size:10px;color:#8a9a96">ADULTOS CONFIRMADOS</label><input id="adultosConf" type="number" class="input" min="0" value="0"></div><div style="flex:1"><label style="font-size:10px;color:#8a9a96">MENORES CONFIRMADOS</label><input id="ninosConf" type="number" class="input" min="0" value="0"></div></div>
 </div></div>
 <div id="bloqueNombres" style="display:none;margin-top:20px"><label class="label-mini">CONFIRMA LOS NOMBRES</label><textarea id="quienes" rows="3" class="input" placeholder="Ej: Gabriela, Kenia, Sebastian"></textarea></div>
+<div id="bloqueChecks" style="display:none;margin-top:22px"><label class="label-mini">SELECCIONA QUIÉNES VIENEN</label><div id="listaChecks" style="display:flex;flex-direction:column;gap:10px;margin-top:12px"></div><label style="display:flex;gap:8px;align-items:center;margin-top:14px;padding:12px;background:#fdfaf6;border-radius:12px;border:1px solid #e8e0d6;font-size:12px;cursor:pointer"><input type="checkbox" id="checkTodos" checked onchange="toggleTodosChecks(this)"> <b>Seleccionar todos</b></label><p style="font-size:10px;color:#8a9a96;margin-top:8px">Solo se muestran las casillas con nombres en AE-AN. Si hay 2 invitados, solo 2 casillas.</p></div>
 <button id="btnConfirmar" onclick="confirmarFinal()" class="btn">CONFIRMAR ASISTENCIA</button>
  <div style="margin-top:8px; text-align:center; font-family:inherit; width:100%;">
   Antes del 20.12.2026
@@ -196,6 +197,68 @@ setInterval(()=>{const now=new Date().getTime(); const dist=fechaBoda-now; if(di
 
 // SECCION 8 - SHEET BUENO CON BLOQUEO
 let K_asignados=0,L_asignados=0,M_asignados=0,AB_confirmados=0,AC_confirmados=0,S_confirmados=0,vendranTodos=true,esFamiliaActual=false,DATA_ACTUAL=null;
+
+// === V31 AE-AN CASILLAS DINAMICAS ===
+let LISTA_AE_ACTUAL = [];
+function renderChecks(lista){
+  LISTA_AE_ACTUAL = lista||[];
+  const cont = document.getElementById('listaChecks');
+  const bloque = document.getElementById('bloqueChecks');
+  if(!cont || !bloque) return;
+  cont.innerHTML='';
+  if(!lista || lista.length===0){
+    bloque.style.display='none';
+    return;
+  }
+  lista.forEach((nombre, idx)=>{
+    const id = 'chk_'+idx;
+    const row = document.createElement('label');
+    row.style.cssText='display:flex;gap:10px;align-items:center;background:white;border:1px solid #e8e0d6;border-radius:14px;padding:12px 14px;cursor:pointer;transition:all .15s';
+    row.innerHTML = `<input type="checkbox" id="${id}" value="${nombre.replace(/"/g,'&quot;')}" checked onchange="actualizarConteoChecks()" style="width:18px;height:18px;accent-color:#2f4a44"><span style="font-size:13px;color:#2f4a44">${nombre}</span>`;
+    cont.appendChild(row);
+  });
+  bloque.style.display='block';
+  // ocultar textarea antiguo cuando hay checks
+  const bn = document.getElementById('bloqueNombres');
+  if(bn) bn.style.display='none';
+  actualizarConteoChecks();
+}
+function toggleTodosChecks(el){
+  const todos = document.querySelectorAll('#listaChecks input[type=checkbox]');
+  todos.forEach(c=>c.checked = el.checked);
+  actualizarConteoChecks();
+}
+function actualizarConteoChecks(){
+  const todos = document.querySelectorAll('#listaChecks input[type=checkbox]');
+  const checked = document.querySelectorAll('#listaChecks input[type=checkbox]:checked');
+  // sincronizar checkTodos
+  const chkTodos = document.getElementById('checkTodos');
+  if(chkTodos){
+    chkTodos.checked = (checked.length===todos.length);
+  }
+  // actualizar AB/S confirmados segun checks
+  // Si es familia, S = checked.length, si no, S = 1 + checked.length? Para V31 simplificamos: S = checked.length, AB = checked.length
+  // Pero respetamos esFamiliaActual para calculo final en confirmarFinal
+  AB_confirmados = checked.length;
+  AC_confirmados = 0;
+  // visual feedback opcional en txtCuentasCon
+  const txt = document.getElementById('txtCuentasCon');
+  if(txt && LISTA_AE_ACTUAL.length>0){
+    txt.innerHTML = `Invitados confirmados: <b style="font-size:14px">${checked.length} de ${LISTA_AE_ACTUAL.length}</b><br><span style="color:#8a9a96;font-size:11px;margin-top:6px;display:block">Total asignado: ${M_asignados} lugares</span>`;
+  }
+}
+function getNombresChecks(){
+  const checked = document.querySelectorAll('#listaChecks input[type=checkbox]:checked');
+  const nombres = Array.from(checked).map(c=>c.value.trim()).filter(v=>v);
+  return nombres.join(', ');
+}
+function tieneChecksVisibles(){
+  const b = document.getElementById('bloqueChecks');
+  return b && b.style.display!=='none' && document.querySelectorAll('#listaChecks input').length>0;
+}
+// === FIN V31 ===
+
+
 function mostrarInvitacionCancelada(idMostrado){
   localStorage.removeItem('invitacionId');
   const WA_GINA = "5213311111111"; // <-- CAMBIA por número real de Gina
@@ -265,6 +328,18 @@ let bc=document.getElementById('bloqueConfirmacion'); if(bc) bc.style.display='b
   let cn=document.getElementById('cajaNumero'); if(cn) cn.style.display='none';
   let bn3=document.getElementById('bloqueNombres'); if(bn3) bn3.style.display='none';
   let q=document.getElementById('quienes'); if(q) q.value=obj.g||'';
+  // V31 AE-AN
+  try{
+    const lista = obj.listaAE || obj.listaInvitados || [];
+    if(lista && lista.length>0){
+      renderChecks(lista);
+    }else{
+      // si no hay AE-AN, ocultar checks y dejar textarea como antes
+      const bc = document.getElementById('bloqueChecks');
+      if(bc) bc.style.display='none';
+      LISTA_AE_ACTUAL=[];
+    }
+  }catch(e){ console.warn('renderChecks error', e); }
 }
 function confirmarTodos(si){ vendranTodos=si; let btnSi=document.getElementById('btnSi'),btnNo=document.getElementById('btnNo'),cajaNumero=document.getElementById('cajaNumero'),bloqueNombres=document.getElementById('bloqueNombres');
   if(si){ if(btnSi && btnSi.textContent==='CONFIRMA' && btnSi.classList.contains('active')){ confirmarFinal(); return; } if(btnSi){ btnSi.classList.add('active'); btnSi.textContent='CONFIRMA'; } if(btnNo){ btnNo.classList.remove('active'); btnNo.textContent='NO, VAN MENOS'; } if(cajaNumero) cajaNumero.style.display='none'; AB_confirmados=K_asignados; AC_confirmados=L_asignados; S_confirmados=M_asignados; let a=document.getElementById('adultosConf'); if(a) a.value=K_asignados; let n=document.getElementById('ninosConf'); if(n) n.value=L_asignados; if(bloqueNombres) bloqueNombres.style.display='none'; }
@@ -283,9 +358,25 @@ function confirmarFinal(){
     if(typeof esFamiliaActual!=='undefined' && esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=1+AB_confirmados+AC_confirmados; }
     if(AB_confirmados > K_asignados || AC_confirmados > L_asignados){ alert('No puedes confirmar más lugares de los asignados. Asignados: Adultos '+K_asignados+', Niños '+L_asignados); return; }
     if(S_confirmados > M_asignados){ alert('Total confirmado excede asignado. Total asignado: '+M_asignados); return; }
-    let q=document.getElementById('quienes')?.value||'';
+    let q='';
+    if(tieneChecksVisibles()){
+      q = getNombresChecks();
+    }else{
+      q = document.getElementById('quienes')?.value||'';
+    }
     let Y=K_asignados-AB_confirmados,Z=L_asignados-AC_confirmados,AA=Y+Z,box=document.getElementById('okBox'),btn=document.getElementById('btnConfirmar');
-    if(!q && typeof vendranTodos!=='undefined' && !vendranTodos){ alert('Escribe los nombres'); return; }
+    if(!q && typeof vendranTodos!=='undefined' && !vendranTodos){
+      if(tieneChecksVisibles()){
+        alert('Selecciona al menos un nombre');
+      }else{
+        alert('Escribe los nombres');
+      }
+      return;
+    }
+    if(tieneChecksVisibles() && !q){
+      alert('Selecciona al menos un nombre');
+      return;
+    }
     let params=new URLSearchParams({id:idParam,s:S_confirmados,ab:AB_confirmados,ac:AC_confirmados,y:Y,z:Z,aa:AA,t:q||(typeof DATA_ACTUAL!=='undefined'&&DATA_ACTUAL?DATA_ACTUAL.g:'')});
     if(box){box.style.display='block'; box.innerHTML='Enviando...';} if(btn){btn.textContent='ENVIANDO...'; btn.disabled=true;}
     let sConf=document.createElement('script');
