@@ -170,7 +170,6 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 <div id="okBox" class="ok"></div>
 </div></div>
 <div class="card" id="seccionGracias" style="text-align:center;background:#2f4a44;color:white;border:none;max-width:440px;margin:20px auto 0 auto;border-radius:20px;padding:32px 24px"><h2 class="serif" style="font-size:32px;margin-top:12px;color:white">¡Gracias!</h2><p style="font-size:13px;margin-top:12px;line-height:1.6;color:#c9cbc8">De corazón, gracias por ser parte de este día tan especial. Su presencia, cariño y buenos deseos hacen que nuestro amor sea aún más grande.</p><p class="serif" style="font-size:22px;margin-top:18px;color:#c9a88a;font-style:italic">Con amor,</p><p class="serif" style="font-size:28px;font-weight:700;margin-top:4px;color:white">Gina & Edy</p><p style="font-size:10px;letter-spacing:4px;color:#8a9a96;margin-top:12px">02. 01. 27</p></div>
-</div>
 <!-- === PWA + TUNEL FOTOS - AGREGADO - NO TOCA FORMATO EXISTENTE === -->
 <div id="seccionPWA" class="card" style="display:none; border:2px solid #2f4a44; background:white;">
   <div style="text-align:center">
@@ -229,6 +228,7 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 
 
 
+</div>
 </div>
 
 <script>
@@ -500,11 +500,11 @@ function abrirFotos(){
   window.open(FOTOS_URL, '_blank');
 }
 
-// === PWA + TUNEL - AGREGADO - NO TOCA LÓGICA EXISTENTE ===
-const TUNEL_URL = "https://TU_NGROK_URL_AQUI.ngrok.io"; // <-- CAMBIA AQUÍ POR TU URL DE FOTOSFIESTA
+// === PWA + TUNEL - CONSTANTES Y FUNCIONES CORREGIDAS ===
+const TUNEL_URL = "https://TU_NGROK_URL_AQUI.ngrok.io";
 const HORARIO_INICIO = new Date('2027-01-02T18:00:00').getTime();
 const HORARIO_FIN = new Date('2027-01-03T02:00:00').getTime();
-
+const FOTOS_URL = TUNEL_URL;
 let deferredPrompt = null;
 const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 const isAndroid = /Android/.test(navigator.userAgent);
@@ -513,7 +513,6 @@ const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('./sw.js').catch(()=>{});
 }
-
 window.addEventListener('beforeinstallprompt', (e)=>{
   e.preventDefault();
   deferredPrompt = e;
@@ -524,26 +523,24 @@ window.addEventListener('beforeinstallprompt', (e)=>{
 function mostrarSeccionPWA(){
   const sec = document.getElementById('seccionPWA');
   if(sec) { sec.style.display='block'; sec.scrollIntoView({behavior:'smooth', block:'center'}); }
-  // Mostrar botón flotante si está en horario (para pruebas, siempre muestra si ya confirmaron y quieren probar)
   verificarHorarioTunel();
 }
-
+function mostrarSeccionFotos(){
+  mostrarSeccionPWA();
+}
 function verificarHorarioTunel(){
   const ahora = Date.now();
   const btn = document.getElementById('btnFlotanteTunel');
   if(!btn) return;
-  // Para producción: solo en horario. Para pruebas ahora, si quieres verlo, comenta la condición
   if(ahora >= HORARIO_INICIO && ahora <= HORARIO_FIN){
     btn.style.display='flex';
   } else {
-    // Durante pruebas, si ya confirmaron, mostrar igual pero con aviso de horario
     if(isStandalone || localStorage.getItem('pwaInstalado')){
       btn.style.display='flex';
       btn.innerHTML='📸 TÚNEL (PRUEBA - Solo activo 18:00-02:00)';
     }
   }
 }
-
 function abrirTunel(){
   const ahora = Date.now();
   if(ahora < HORARIO_INICIO || ahora > HORARIO_FIN){
@@ -551,73 +548,6 @@ function abrirTunel(){
   }
   window.open(TUNEL_URL, '_blank');
 }
-
-function cerrarPwaModal(){ document.getElementById('pwaModal').classList.remove('show'); document.getElementById('pwaModal').style.display='none'; }
-function cerrarPwaModalAndroid(){ document.getElementById('pwaModalAndroid').classList.remove('show'); document.getElementById('pwaModalAndroid').style.display='none'; }
-
-// Botones
-document.getElementById('btnGuardarAcceso')?.addEventListener('click', async ()=>{
-  const status = document.getElementById('pwaStatus');
-  if(isIos){
-    document.getElementById('pwaModal').style.display='flex';
-    document.getElementById('pwaModal').classList.add('show');
-    return;
-  }
-  if(deferredPrompt){
-    deferredPrompt.prompt();
-    const {outcome} = await deferredPrompt.userChoice;
-    if(outcome==='accepted'){
-      if(status){ status.style.display='block'; status.textContent='¡Acceso creado! Busca Gina & Edy en tu escritorio.'; }
-      localStorage.setItem('pwaInstalado','1');
-      document.getElementById('pwaModalAndroid').style.display='flex';
-      document.getElementById('pwaModalAndroid').classList.add('show');
-    } else {
-      if(status){ status.style.display='block'; status.textContent='No se agregó. Puedes intentarlo de nuevo.'; }
-    }
-    deferredPrompt=null;
-  } else {
-    // PC o Android sin prompt capturado (ya instalado o navegador no compatible)
-    if(status){ status.style.display='block'; status.innerHTML='En tu navegador busca: <b>⋮ Menú > Guardar y compartir > Crear acceso directo</b> o <b>Instalar app</b>. Usa el logo 1.png'; }
-    if(isAndroid){
-      alert('En Android: toca ⋮ (arriba derecha) > Agregar a pantalla principal > Agregar. Se creará con el logo de la boda.');
-    } else {
-      alert('En PC Chrome: en la barra de direcciones verás un icono de instalar ⊞ o en menú ⋮ > Guardar y compartir > Crear acceso directo.');
-    }
-  }
-});
-
-document.getElementById('btnNoGuardar')?.addEventListener('click', ()=>{
-  document.getElementById('seccionPWA').style.display='none';
-});
-
-// === HOOK A TU CONFIRMACIÓN EXISTENTE SIN TOCARLA ===
-// Guardamos renderData original y lo envolvemos
-const _renderDataOriginal = window.renderData;
-window.renderData = function(obj){
-  if(typeof _renderDataOriginal === 'function') _renderDataOriginal(obj);
-  if(obj && obj.confirmado){
-    setTimeout(()=>{ mostrarSeccionPWA(); }, 800);
-  }
-};
-
-// Si ya confirmó antes (ya_confirmado), también mostrar
-const _observer = new MutationObserver(()=>{
-  const ac = document.getElementById('areaCongelada');
-  if(ac && ac.style.display==='block'){
-    const sec = document.getElementById('seccionPWA');
-    if(sec && sec.style.display==='none'){
-      mostrarSeccionPWA();
-    }
-  }
-});
-_observer.observe(document.body, {attributes:true, subtree:true, attributeFilter:['style']});
-
-// Si ya está en PWA instalada, mostrar botón flotante de túnel
-if(isStandalone){
-  setTimeout(verificarHorarioTunel, 1000);
-  localStorage.setItem('pwaInstalado','1');
-}
-
 function cerrarPwaModal(){ 
   document.getElementById('pwaModal').classList.remove('show'); 
   document.getElementById('pwaModal').style.display='none';
@@ -628,13 +558,22 @@ function cerrarPwaModalAndroid(){
   document.getElementById('pwaModalAndroid').style.display='none';
   mostrarGraciasFinal();
 }
-
 function mostrarGraciasFinal(){
   const sec = document.getElementById('seccionPWA');
   if(sec) sec.innerHTML = '<div style="text-align:center"><div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.style.display=\'none\'"></div><h2 class="serif" style="font-size:24px;">¡Acceso guardado!</h2><p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">Ya puedes cerrar esta ventana. Usa el icono Gina & Edy de tu pantalla el día del evento para subir fotos.</p><button onclick="cerrarInvitacionTotal()" class="btn" style="margin-top:18px">GRACIAS, CERRAR</button></div>';
 }
+function cerrarInvitacionTotal(){
+  const secP = document.getElementById('seccionPWA');
+  if(secP) secP.style.display='none';
+  const btnF = document.getElementById('btnFlotanteTunel');
+  if(btnF) btnF.style.display='none';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function getCurrentIdKey(){
+  return 'pwaVisto_'+(idParam||'001');
+}
 
-// Listeners PWA (corregidos)
+// Listeners PWA corregidos
 document.getElementById('btnEntendiFotos')?.addEventListener('click', ()=>{ mostrarSeccionPWA(); });
 document.getElementById('btnNoGraciasFotos')?.addEventListener('click', ()=>{ cerrarInvitacionTotal(); });
 document.getElementById('btnGuardarAcceso')?.addEventListener('click', async ()=>{
@@ -667,7 +606,7 @@ document.getElementById('btnGuardarAcceso')?.addEventListener('click', async ()=
 });
 document.getElementById('btnNoGuardar')?.addEventListener('click', ()=>{ cerrarInvitacionTotal(); });
 
-// === HOOK CORREGIDO - AHORA LLAMA A PWA, NO A FOTOS ===
+// === HOOK CORREGIDO ===
 const _renderDataOriginal = window.renderData;
 window.renderData = function(obj){
   if(typeof _renderDataOriginal === 'function') _renderDataOriginal(obj);
@@ -690,6 +629,7 @@ _observer.observe(document.body, {attributes:true, subtree:true, attributeFilter
 
 if(isStandalone){
   localStorage.setItem('pwaInstalado','1');
+  setTimeout(()=>{ try{ verificarHorarioTunel(); }catch(e){} }, 1000);
 }
 </script>
 
