@@ -151,7 +151,7 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 <div style="display:flex;gap:8px"><div style="flex:1"><label style="font-size:10px;color:#8a9a96">ADULTOS CONFIRMADOS</label><input id="adultosConf" type="number" class="input" min="0" value="0"></div><div style="flex:1"><label style="font-size:10px;color:#8a9a96">MENORES CONFIRMADOS</label><input id="ninosConf" type="number" class="input" min="0" value="0"></div></div>
 </div></div>
 <div id="bloqueNombres" style="display:none;margin-top:20px"><label class="label-mini">CONFIRMA LOS NOMBRES</label><textarea id="quienes" rows="3" class="input" placeholder="Ej: Gabriela, Kenia, Sebastian"></textarea></div>
-<div id="bloqueChecks" style="display:none;margin-top:22px"><label class="label-mini">SELECCIONA QUIÉNES VIENEN</label><div id="listaChecks" style="display:flex;flex-direction:column;gap:10px;margin-top:12px"></div><label style="display:flex;gap:8px;align-items:center;margin-top:14px;padding:12px;background:#fdfaf6;border-radius:12px;border:1px solid #e8e0d6;font-size:12px;cursor:pointer"><input type="checkbox" id="checkTodos" checked onchange="toggleTodosChecks(this)"> <b>Seleccionar todos</b></label><p style="font-size:10px;color:#8a9a96;margin-top:8px">Solo se muestran las casillas con nombres en AE-AN. Si hay 2 invitados, solo 2 casillas.</p></div>
+<div id="bloqueChecks" style="display:none;margin-top:22px"><label class="label-mini">SELECCIONA QUIÉNES VIENEN</label><div id="listaChecks" style="display:flex;flex-direction:column;gap:10px;margin-top:12px"></div><label style="display:flex;gap:8px;align-items:center;margin-top:14px;padding:12px;background:#fdfaf6;border-radius:12px;border:1px solid #e8e0d6;font-size:12px;cursor:pointer"><input type="checkbox" id="checkTodos" checked onchange="toggleTodosChecks(this)"> <b>Seleccionar todos</b></label></div>
 <button id="btnConfirmar" onclick="confirmarFinal()" class="btn">CONFIRMAR ASISTENCIA</button>
  <div style="margin-top:8px; text-align:center; font-family:inherit; width:100%;">
   Antes del 20.12.2026
@@ -198,7 +198,7 @@ setInterval(()=>{const now=new Date().getTime(); const dist=fechaBoda-now; if(di
 // SECCION 8 - SHEET BUENO CON BLOQUEO
 let K_asignados=0,L_asignados=0,M_asignados=0,AB_confirmados=0,AC_confirmados=0,S_confirmados=0,vendranTodos=true,esFamiliaActual=false,DATA_ACTUAL=null;
 
-// === V31 AE-AN CASILLAS DINAMICAS ===
+// === V31.1 AE-AN CASILLAS DINAMICAS FIX ===
 let LISTA_AE_ACTUAL = [];
 function renderChecks(lista){
   LISTA_AE_ACTUAL = lista||[];
@@ -208,6 +208,11 @@ function renderChecks(lista){
   cont.innerHTML='';
   if(!lista || lista.length===0){
     bloque.style.display='none';
+    // mostrar botones normales cuando no hay casillas
+    const bSi = document.getElementById('btnSi');
+    const bNo = document.getElementById('btnNo');
+    if(bSi) bSi.style.display='';
+    if(bNo) bNo.style.display='';
     return;
   }
   lista.forEach((nombre, idx)=>{
@@ -218,9 +223,16 @@ function renderChecks(lista){
     cont.appendChild(row);
   });
   bloque.style.display='block';
-  // ocultar textarea antiguo cuando hay checks
+  // FIX: ocultar todo lo viejo cuando hay casillas
   const bn = document.getElementById('bloqueNombres');
   if(bn) bn.style.display='none';
+  const cajaNumero = document.getElementById('cajaNumero');
+  if(cajaNumero) cajaNumero.style.display='none';
+  const btnSi = document.getElementById('btnSi');
+  const btnNo = document.getElementById('btnNo');
+  if(btnSi) btnSi.style.display='none';
+  if(btnNo) btnNo.style.display='none';
+  // asegurar que el texto de cuentas se actualice
   actualizarConteoChecks();
 }
 function toggleTodosChecks(el){
@@ -231,20 +243,23 @@ function toggleTodosChecks(el){
 function actualizarConteoChecks(){
   const todos = document.querySelectorAll('#listaChecks input[type=checkbox]');
   const checked = document.querySelectorAll('#listaChecks input[type=checkbox]:checked');
-  // sincronizar checkTodos
   const chkTodos = document.getElementById('checkTodos');
   if(chkTodos){
-    chkTodos.checked = (checked.length===todos.length);
+    chkTodos.checked = (checked.length===todos.length && todos.length>0);
   }
-  // actualizar AB/S confirmados segun checks
-  // Si es familia, S = checked.length, si no, S = 1 + checked.length? Para V31 simplificamos: S = checked.length, AB = checked.length
-  // Pero respetamos esFamiliaActual para calculo final en confirmarFinal
+  // FIX BUG 2 lugares vs 1: cuando hay casillas, S = familia? checked : 1+checked, y validacion contra listaAE.length
   AB_confirmados = checked.length;
   AC_confirmados = 0;
-  // visual feedback opcional en txtCuentasCon
+  if(typeof esFamiliaActual !== 'undefined'){
+    S_confirmados = esFamiliaActual ? checked.length : (checked.length>0 ? 1 + checked.length : 0);
+  }else{
+    S_confirmados = checked.length;
+  }
   const txt = document.getElementById('txtCuentasCon');
   if(txt && LISTA_AE_ACTUAL.length>0){
-    txt.innerHTML = `Invitados confirmados: <b style="font-size:14px">${checked.length} de ${LISTA_AE_ACTUAL.length}</b><br><span style="color:#8a9a96;font-size:11px;margin-top:6px;display:block">Total asignado: ${M_asignados} lugares</span>`;
+    const totalMostrar = esFamiliaActual ? LISTA_AE_ACTUAL.length : 1 + LISTA_AE_ACTUAL.length;
+    const confMostrar = esFamiliaActual ? checked.length : (checked.length>0 ? 1 + checked.length : 0);
+    txt.innerHTML = `Invitados confirmados: <b style="font-size:14px">${confMostrar} de ${totalMostrar}</b><br><span style="color:#8a9a96;font-size:11px;margin-top:6px;display:block">Selecciona quienes vienen</span>`;
   }
 }
 function getNombresChecks(){
@@ -256,7 +271,8 @@ function tieneChecksVisibles(){
   const b = document.getElementById('bloqueChecks');
   return b && b.style.display!=='none' && document.querySelectorAll('#listaChecks input').length>0;
 }
-// === FIN V31 ===
+// === FIN V31.1 ===
+
 
 
 function mostrarInvitacionCancelada(idMostrado){
@@ -309,6 +325,8 @@ function renderData(obj){
     let mc=document.getElementById('mConfTxt'); if(mc) mc.textContent=obj.m||0;
     let nc=document.getElementById('nombresConfTxt'); if(nc) nc.textContent=obj.tConfirmado||obj.g||'';
     let tt=document.getElementById('titularTxt'); if(tt) tt.textContent=obj.t||obj.tConfirmado||'';
+    // FIX V31.1: asegurar que fotos y PWA se muestren tras confirmar aunque haya casillas
+    setTimeout(()=>{ try{ mostrarSeccionFotos(); }catch(e){} }, 900);
     return;
   }
   DATA_ACTUAL=obj; K_asignados=parseInt(obj.k)||0; L_asignados=parseInt(obj.l)||0; M_asignados=parseInt(obj.m)||0; esFamiliaActual=!!obj.esFamilia;
@@ -355,9 +373,24 @@ if(idParam && idParam!=='001'){ localStorage.setItem('invitacionId', idParam); }
 let s=document.createElement('script'); s.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData"; document.body.appendChild(s);
 function confirmarFinal(){
   try{
-    if(typeof esFamiliaActual!=='undefined' && esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=1+AB_confirmados+AC_confirmados; }
-    if(AB_confirmados > K_asignados || AC_confirmados > L_asignados){ alert('No puedes confirmar más lugares de los asignados. Asignados: Adultos '+K_asignados+', Niños '+L_asignados); return; }
-    if(S_confirmados > M_asignados){ alert('Total confirmado excede asignado. Total asignado: '+M_asignados); return; }
+    if(tieneChecksVisibles()){
+      // ya calculado en actualizarConteoChecks, asegurar
+      const chk = document.querySelectorAll('#listaChecks input[type=checkbox]:checked').length;
+      AB_confirmados = chk; AC_confirmados = 0;
+      if(typeof esFamiliaActual!=='undefined' && esFamiliaActual){ S_confirmados=chk; }else{ S_confirmados = chk>0 ? 1+chk : 0; }
+    }else{
+      if(typeof esFamiliaActual!=='undefined' && esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=1+AB_confirmados+AC_confirmados; }
+    }
+    // FIX V31.1: si hay casillas, validar contra listaAE.length, no contra K/L/M viejos
+    if(tieneChecksVisibles()){
+      const maxPermitido = LISTA_AE_ACTUAL.length;
+      const checkedAhora = document.querySelectorAll('#listaChecks input[type=checkbox]:checked').length;
+      if(checkedAhora > maxPermitido){ alert('No puedes seleccionar más de '+maxPermitido+' invitados'); return; }
+      if(checkedAhora===0){ alert('Selecciona al menos un nombre'); return; }
+    }else{
+      if(AB_confirmados > K_asignados || AC_confirmados > L_asignados){ alert('No puedes confirmar más lugares de los asignados. Asignados: Adultos '+K_asignados+', Niños '+L_asignados); return; }
+      if(S_confirmados > M_asignados){ alert('Total confirmado excede asignado. Total asignado: '+M_asignados); return; }
+    }
     let q='';
     if(tieneChecksVisibles()){
       q = getNombresChecks();
