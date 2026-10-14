@@ -157,11 +157,6 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
   Antes del 20.12.2026
   </div>
 </div>
-<button id="btnConfirmar" onclick="confirmarFinal()" class="btn">CONFIRMAR ASISTENCIA</button>
- <div style="margin-top:8px; text-align:center; font-family:inherit; width:100%;">
-  Antes del 20.12.2026
-  </div>
-</div>
 <div id="areaCongelada" style="display:none">
 <div class="frozen">
 <p class="serif" style="font-size:20px">¡Gracias por confirmar!</p>
@@ -176,171 +171,6 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 </div></div>
 <div class="card" id="seccionGracias" style="text-align:center;background:#2f4a44;color:white;border:none;max-width:440px;margin:20px auto 0 auto;border-radius:20px;padding:32px 24px"><h2 class="serif" style="font-size:32px;margin-top:12px;color:white">¡Gracias!</h2><p style="font-size:13px;margin-top:12px;line-height:1.6;color:#c9cbc8">De corazón, gracias por ser parte de este día tan especial. Su presencia, cariño y buenos deseos hacen que nuestro amor sea aún más grande.</p><p class="serif" style="font-size:22px;margin-top:18px;color:#c9a88a;font-style:italic">Con amor,</p><p class="serif" style="font-size:28px;font-weight:700;margin-top:4px;color:white">Gina & Edy</p><p style="font-size:10px;letter-spacing:4px;color:#8a9a96;margin-top:12px">02. 01. 27</p></div>
 </div>
-</div>
-
-<script>
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwegwvZIg46B4xRdfBL4AoyIs_-4RLX4vmgPifp0pbBHhVjYhgLJqlPfVRYAQNkobFsHg/exec";
-const mesaRegalosURL1 = "https://mesaderegalos.liverpool.com.mx/milistaderegalos/60051643";
-const mesaRegalosURL2 = "https://www.amazon.com.mx/hz/wishlist/ls/ABC123";
-const bancoNombre = "BBVA Bancomer";
-const titularCuenta = "Gina Hernandez / Edy Lopez";
-const clabeCuenta = "012 320 01234567890 1";
-const el1=document.getElementById('linkMesa1'); if(el1) el1.href=mesaRegalosURL1;
-const el2=document.getElementById('linkMesa2'); if(el2) el2.href=mesaRegalosURL2;
-const bn=document.getElementById('bancoNombre'); if(bn) bn.textContent=bancoNombre;
-const tc=document.getElementById('titularCuenta'); if(tc) tc.textContent=titularCuenta;
-const cc=document.getElementById('clabeCuenta'); if(cc) cc.textContent=clabeCuenta;
-
-function copiarClabe(){try{navigator.clipboard.writeText(clabeCuenta.replace(/ /g,'')); let cm=document.getElementById('copyMsg'); if(cm){cm.style.display='block'; setTimeout(()=>cm.style.display='none',2000);}}catch(e){}}
-let isPlaying=false; const audio=document.getElementById('audio');
-function toggleMusic(){if(!audio) return; if(!isPlaying){audio.volume=0.7; audio.play().catch(()=>{}); isPlaying=true; let mb=document.getElementById('musicBtn'); if(mb) mb.textContent='🔊';} else {audio.pause(); isPlaying=false; let mb=document.getElementById('musicBtn'); if(mb) mb.textContent='🎵';}}
-const v=document.getElementById('heroVideo'); if(v){ v.addEventListener('error',()=>{v.style.display='none';}); }
-
-// CONTADOR - NO TOCAR
-const fechaBoda=new Date('2027-01-02T17:00:00').getTime();
-setInterval(()=>{const now=new Date().getTime(); const dist=fechaBoda-now; if(dist<0) return; let d=document.getElementById('d'); if(d){d.textContent=Math.floor(dist/(1000*60*60*24)); document.getElementById('h').textContent=Math.floor((dist%(1000*60*60*24))/(1000*60*60)); document.getElementById('m').textContent=Math.floor((dist%(1000*60*60))/(1000*60)); document.getElementById('s').textContent=Math.floor((dist%(1000*60))/1000);}},1000);
-
-// SECCION 8 - SHEET BUENO CON BLOQUEO
-let K_asignados=0,L_asignados=0,M_asignados=0,AB_confirmados=0,AC_confirmados=0,S_confirmados=0,vendranTodos=true,esFamiliaActual=false,DATA_ACTUAL=null;
-
-// === V31.4 CASILLAS AE-AN + FIX 2 DE 2 ===
-let LISTA_AE_ACTUAL = [];
-function renderChecks(lista){
-  LISTA_AE_ACTUAL = lista||[];
-  const cont = document.getElementById('listaChecks');
-  const bloque = document.getElementById('bloqueChecks');
-  if(!cont || !bloque) return;
-  cont.innerHTML='';
-  if(!lista || lista.length===0){
-    bloque.style.display='none';
-    const bSi = document.getElementById('btnSi');
-    const bNo = document.getElementById('btnNo');
-    if(bSi) bSi.style.display='';
-    if(bNo) bNo.style.display='';
-    return;
-  }
-  lista.forEach((nombre, idx)=>{
-    const id = 'chk_'+idx;
-    const row = document.createElement('label');
-    row.style.cssText='display:flex;gap:10px;align-items:center;background:white;border:1px solid #e8e0d6;border-radius:14px;padding:12px 14px;cursor:pointer;transition:all .15s';
-    row.innerHTML = `<input type="checkbox" id="${id}" value="${nombre.replace(/"/g,'&quot;')}" checked onchange="actualizarConteoChecks()" style="width:18px;height:18px;accent-color:#2f4a44"><span style="font-size:13px;color:#2f4a44">${nombre}</span>`;
-    cont.appendChild(row);
-  });
-  bloque.style.display='block';
-  const bn = document.getElementById('bloqueNombres');
-  if(bn) bn.style.display='none';
-  const cajaNumero = document.getElementById('cajaNumero');
-  if(cajaNumero) cajaNumero.style.display='none';
-  const btnSi = document.getElementById('btnSi');
-  const btnNo = document.getElementById('btnNo');
-  if(btnSi) btnSi.style.display='none';
-  if(btnNo) btnNo.style.display='none';
-  actualizarConteoChecks();
-}
-function toggleTodosChecks(el){
-  const todos = document.querySelectorAll('#listaChecks input[type=checkbox]');
-  todos.forEach(c=>c.checked = el.checked);
-  actualizarConteoChecks();
-}
-function actualizarConteoChecks(){
-  const todos = document.querySelectorAll('#listaChecks input[type=checkbox]');
-  const checked = document.querySelectorAll('#listaChecks input[type=checkbox]:checked');
-  const chkTodos = document.getElementById('checkTodos');
-  if(chkTodos){
-    chkTodos.checked = (checked.length===todos.length && todos.length>0);
-  }
-  AB_confirmados = checked.length;
-  AC_confirmados = 0;
-  S_confirmados = checked.length;
-  const txt = document.getElementById('txtCuentasCon');
-  if(txt && LISTA_AE_ACTUAL.length>0){
-    const totalMostrar = LISTA_AE_ACTUAL.length;
-    const confMostrar = checked.length;
-    txt.innerHTML = `Invitados confirmados: <b style="font-size:14px">${confMostrar} de ${totalMostrar}</b><br><span style="color:#8a9a96;font-size:11px;margin-top:6px;display:block">Selecciona quienes vienen</span>`;
-  }
-}
-function getNombresChecks(){
-  const checked = document.querySelectorAll('#listaChecks input[type=checkbox]:checked');
-  const nombres = Array.from(checked).map(c=>c.value.trim()).filter(v=>v);
-  return nombres.join(', ');
-}
-function tieneChecksVisibles(){
-  const b = document.getElementById('bloqueChecks');
-  return b && b.style.display!=='none' && document.querySelectorAll('#listaChecks input').length>0;
-}
-// === FIN CASILLAS ===
-
-function renderData(obj){
-  if(!obj) return;
-  if(obj.status==="no encontrado"){ let tt=document.getElementById('titularTxt'); if(tt) tt.textContent="ID no encontrado: "+(obj.id||""); return; }
-  if(obj.status==="ya_confirmado"){ obj.confirmado=true; obj.fechaConfirmacion=obj.fecha; obj.tConfirmado=obj.t; obj.sConfirmado=obj.s; }
-  let sec7=document.getElementById('seccion7');
-  if(sec7){
-    let tipo=(obj.tipo||obj.j||'').toString().toLowerCase();
-    if(tipo.includes('sin')) sec7.style.display='none'; else sec7.style.display='block';
-  }
-  if(obj.confirmado){
-    DATA_ACTUAL=obj;
-    let an=document.getElementById('areaNormal'); if(an) an.style.display='none';
-    let ac=document.getElementById('areaCongelada'); if(ac) ac.style.display='block';
-    let fc=document.getElementById('fechaConfTxt'); if(fc) fc.textContent=obj.fechaConfirmacion||'';
-    let sc=document.getElementById('sConfTxt'); if(sc) sc.textContent=obj.sConfirmado||obj.m||0;
-    let mc=document.getElementById('mConfTxt'); if(mc) mc.textContent=obj.m||0;
-    let nc=document.getElementById('nombresConfTxt'); if(nc) nc.textContent=obj.tConfirmado||obj.g||'';
-    let tt=document.getElementById('titularTxt'); if(tt) tt.textContent=obj.t||obj.tConfirmado||'';
-    return;
-  }
-  DATA_ACTUAL=obj; K_asignados=parseInt(obj.k)||0; L_asignados=parseInt(obj.l)||0; M_asignados=parseInt(obj.m)||0; esFamiliaActual=!!obj.esFamilia;
-  AB_confirmados=K_asignados; AC_confirmados=L_asignados; S_confirmados=M_asignados;
-  let tt=document.getElementById('titularTxt'); if(tt) tt.textContent=obj.t||'';
-  let lt=document.getElementById('lugaresTxt'); if(lt) lt.textContent=M_asignados;
-  let kt=document.getElementById('kTxt'); if(kt) kt.textContent=K_asignados;
-  let ltt=document.getElementById('lTxt'); if(ltt) ltt.textContent=L_asignados;
-  let mt=document.getElementById('mesaTxt'); if(mt) mt.textContent=obj.mesa||'-';
-let bc=document.getElementById('bloqueConfirmacion'); if(bc) bc.style.display='block';
-  let txt=document.getElementById('txtCuentasCon'); if(txt){ let nombres=obj.g||'sin acompañantes'; txt.innerHTML='Invitados confirmados:<br><b style="font-size:14px">'+nombres+'</b><br><span style="color:#8a9a96;font-size:11px;margin-top:6px;display:block">Total: '+M_asignados+' lugares</span>'; }
-  let ac=document.getElementById('adultosConf'); if(ac){ ac.max=K_asignados; ac.value=K_asignados; }
-  let nc2=document.getElementById('ninosConf'); if(nc2){ nc2.max=L_asignados; nc2.value=L_asignados; }
-  vendranTodos=true;
-  let bs=document.getElementById('btnSi'); let bn2=document.getElementById('btnNo');
-  if(bs){ bs.classList.add('active'); bs.textContent='CONFIRMA'; } if(bn2){ bn2.classList.remove('active'); bn2.textContent='NO, VAN MENOS'; }
-  let cn=document.getElementById('cajaNumero'); if(cn) cn.style.display='none';
-  let bn3=document.getElementById('bloqueNombres'); if(bn3) bn3.style.display='none';
-  let q=document.getElementById('quienes'); if(q) q.value=obj.g||'';
-  try{
-    let lista = obj.listaAE || obj.listaInvitados || [];
-    if(lista && lista.length>0){
-      renderChecks(lista);
-    }else{
-      const bc = document.getElementById('bloqueChecks');
-      if(bc) bc.style.display='none';
-      LISTA_AE_ACTUAL=[];
-    }
-  }catch(e){ console.warn('renderChecks error', e); }
-}
-function confirmarTodos(si){ vendranTodos=si; let btnSi=document.getElementById('btnSi'),btnNo=document.getElementById('btnNo'),cajaNumero=document.getElementById('cajaNumero'),bloqueNombres=document.getElementById('bloqueNombres');
-  if(si){ if(btnSi && btnSi.textContent==='CONFIRMA' && btnSi.classList.contains('active')){ confirmarFinal(); return; } if(btnSi){ btnSi.classList.add('active'); btnSi.textContent='CONFIRMA'; } if(btnNo){ btnNo.classList.remove('active'); btnNo.textContent='NO, VAN MENOS'; } if(cajaNumero) cajaNumero.style.display='none'; AB_confirmados=K_asignados; AC_confirmados=L_asignados; S_confirmados=M_asignados; let a=document.getElementById('adultosConf'); if(a) a.value=K_asignados; let n=document.getElementById('ninosConf'); if(n) n.value=L_asignados; if(bloqueNombres) bloqueNombres.style.display='none'; }
-  else{ if(btnSi){ btnSi.classList.remove('active'); btnSi.textContent='SÍ, TODOS'; } if(btnNo){ btnNo.classList.add('active'); btnNo.textContent='NO, VAN MENOS'; } if(cajaNumero) cajaNumero.style.display='block'; if(bloqueNombres) bloqueNombres.style.display='block'; } }
-let ae=document.getElementById('adultosConf'); if(ae) ae.addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>K_asignados)v=K_asignados; if(v<0)v=0; this.value=v; AB_confirmados=v; });
-let ne=document.getElementById('ninosConf'); if(ne) ne.addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>L_asignados)v=L_asignados; if(v<0)v=0; this.value=v; AC_confirmados=v; });
-function verInvitacion(){ window.scrollTo(0,0); }
-const idParam=new URLSearchParams(window.location.search).get('id')||'001';
-let s=document.createElement('script'); s.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData"; document.body.appendChild(s);
-function confirmarFinal(){
-  if(esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=1+AB_confirmados+AC_confirmados; }
-  // VALIDACION NO SUBIR MAS
-  if(AB_confirmados > K_asignados || AC_confirmados > L_asignados){ alert('No puedes confirmar más lugares de los asignados. Asignados: Adultos '+K_asignados+', Niños '+L_asignados); return; }
-  if(S_confirmados > M_asignados){ alert('Total confirmado excede asignado. Total asignado: '+M_asignados); return; }
-  let q=document.getElementById('quienes').value||''; let Y=K_asignados-AB_confirmados,Z=L_asignados-AC_confirmados,AA=Y+Z,box=document.getElementById('okBox'),btn=document.getElementById('btnConfirmar');
-  if(!q&&!vendranTodos){ alert('Escribe los nombres'); return; }
-  let params=new URLSearchParams({id:idParam,s:S_confirmados,ab:AB_confirmados,ac:AC_confirmados,y:Y,z:Z,aa:AA,t:q||(DATA_ACTUAL?DATA_ACTUAL.g:'')});
-  if(box){box.style.display='block'; box.innerHTML='Enviando...';} if(btn)btn.textContent='ENVIANDO...';
-  let iframe=document.createElement('iframe'); iframe.style.display='none'; iframe.src=APPS_SCRIPT_URL+'?'+params.toString(); document.body.appendChild(iframe);
-  iframe.onload=function(){ setTimeout(()=>{ let s2=document.createElement('script'); s2.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData&rand="+Date.now(); document.body.appendChild(s2); if(box) box.style.display='none'; if(btn) btn.textContent='CONFIRMAR ASISTENCIA'; },1500); };
-}
-</script>
-
-
 <!-- === PWA + TUNEL FOTOS - AGREGADO - NO TOCA FORMATO EXISTENTE === -->
 <div id="seccionPWA" class="card" style="display:none; border:2px solid #2f4a44; background:white;">
   <div style="text-align:center">
@@ -398,7 +228,278 @@ function confirmarFinal(){
 </div>
 
 
+
+</div>
+
 <script>
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwegwvZIg46B4xRdfBL4AoyIs_-4RLX4vmgPifp0pbBHhVjYhgLJqlPfVRYAQNkobFsHg/exec";
+const mesaRegalosURL1 = "https://mesaderegalos.liverpool.com.mx/milistaderegalos/60051643";
+const mesaRegalosURL2 = "https://www.amazon.com.mx/hz/wishlist/ls/ABC123";
+const bancoNombre = "BBVA Bancomer";
+const titularCuenta = "Gina Hernandez / Edy Lopez";
+const clabeCuenta = "012 320 01234567890 1";
+const el1=document.getElementById('linkMesa1'); if(el1) el1.href=mesaRegalosURL1;
+const el2=document.getElementById('linkMesa2'); if(el2) el2.href=mesaRegalosURL2;
+const bn=document.getElementById('bancoNombre'); if(bn) bn.textContent=bancoNombre;
+const tc=document.getElementById('titularCuenta'); if(tc) tc.textContent=titularCuenta;
+const cc=document.getElementById('clabeCuenta'); if(cc) cc.textContent=clabeCuenta;
+
+function copiarClabe(){try{navigator.clipboard.writeText(clabeCuenta.replace(/ /g,'')); let cm=document.getElementById('copyMsg'); if(cm){cm.style.display='block'; setTimeout(()=>cm.style.display='none',2000);}}catch(e){}}
+let isPlaying=false; const audio=document.getElementById('audio');
+function toggleMusic(){if(!audio) return; if(!isPlaying){audio.volume=0.7; audio.play().catch(()=>{}); isPlaying=true; let mb=document.getElementById('musicBtn'); if(mb) mb.textContent='🔊';} else {audio.pause(); isPlaying=false; let mb=document.getElementById('musicBtn'); if(mb) mb.textContent='🎵';}}
+const v=document.getElementById('heroVideo'); if(v){ v.addEventListener('error',()=>{v.style.display='none';}); }
+
+// CONTADOR - NO TOCAR
+const fechaBoda=new Date('2027-01-02T17:00:00').getTime();
+setInterval(()=>{const now=new Date().getTime(); const dist=fechaBoda-now; if(dist<0) return; let d=document.getElementById('d'); if(d){d.textContent=Math.floor(dist/(1000*60*60*24)); document.getElementById('h').textContent=Math.floor((dist%(1000*60*60*24))/(1000*60*60)); document.getElementById('m').textContent=Math.floor((dist%(1000*60*60))/(1000*60)); document.getElementById('s').textContent=Math.floor((dist%(1000*60))/1000);}},1000);
+
+// SECCION 8 - SHEET BUENO CON BLOQUEO
+let K_asignados=0,L_asignados=0,M_asignados=0,AB_confirmados=0,AC_confirmados=0,S_confirmados=0,vendranTodos=true,esFamiliaActual=false,DATA_ACTUAL=null;
+
+// === V31.1 AE-AN CASILLAS DINAMICAS FIX ===
+let LISTA_AE_ACTUAL = [];
+function renderChecks(lista){
+  LISTA_AE_ACTUAL = lista||[];
+  const cont = document.getElementById('listaChecks');
+  const bloque = document.getElementById('bloqueChecks');
+  if(!cont || !bloque) return;
+  cont.innerHTML='';
+  if(!lista || lista.length===0){
+    bloque.style.display='none';
+    // mostrar botones normales cuando no hay casillas
+    const bSi = document.getElementById('btnSi');
+    const bNo = document.getElementById('btnNo');
+    if(bSi) bSi.style.display='';
+    if(bNo) bNo.style.display='';
+    return;
+  }
+  lista.forEach((nombre, idx)=>{
+    const id = 'chk_'+idx;
+    const row = document.createElement('label');
+    row.style.cssText='display:flex;gap:10px;align-items:center;background:white;border:1px solid #e8e0d6;border-radius:14px;padding:12px 14px;cursor:pointer;transition:all .15s';
+    row.innerHTML = `<input type="checkbox" id="${id}" value="${nombre.replace(/"/g,'&quot;')}" checked onchange="actualizarConteoChecks()" style="width:18px;height:18px;accent-color:#2f4a44"><span style="font-size:13px;color:#2f4a44">${nombre}</span>`;
+    cont.appendChild(row);
+  });
+  bloque.style.display='block';
+  // FIX: ocultar todo lo viejo cuando hay casillas
+  const bn = document.getElementById('bloqueNombres');
+  if(bn) bn.style.display='none';
+  const cajaNumero = document.getElementById('cajaNumero');
+  if(cajaNumero) cajaNumero.style.display='none';
+  const btnSi = document.getElementById('btnSi');
+  const btnNo = document.getElementById('btnNo');
+  if(btnSi) btnSi.style.display='none';
+  if(btnNo) btnNo.style.display='none';
+  // asegurar que el texto de cuentas se actualice
+  actualizarConteoChecks();
+}
+function toggleTodosChecks(el){
+  const todos = document.querySelectorAll('#listaChecks input[type=checkbox]');
+  todos.forEach(c=>c.checked = el.checked);
+  actualizarConteoChecks();
+}
+function actualizarConteoChecks(){
+  const todos = document.querySelectorAll('#listaChecks input[type=checkbox]');
+  const checked = document.querySelectorAll('#listaChecks input[type=checkbox]:checked');
+  const chkTodos = document.getElementById('checkTodos');
+  if(chkTodos){
+    chkTodos.checked = (checked.length===todos.length && todos.length>0);
+  }
+  // FIX FINAL V31.3: cuando hay casillas, AE ya incluye titular, S = checked directo
+  AB_confirmados = checked.length;
+  AC_confirmados = 0;
+  S_confirmados = checked.length;
+  const txt = document.getElementById('txtCuentasCon');
+  if(txt && LISTA_AE_ACTUAL.length>0){
+    const totalMostrar = LISTA_AE_ACTUAL.length;
+    const confMostrar = checked.length;
+    txt.innerHTML = `Invitados confirmados: <b style="font-size:14px">${confMostrar} de ${totalMostrar}</b><br><span style="color:#8a9a96;font-size:11px;margin-top:6px;display:block">Selecciona quienes vienen</span>`;
+  }
+}
+function getNombresChecks(){
+  const checked = document.querySelectorAll('#listaChecks input[type=checkbox]:checked');
+  const nombres = Array.from(checked).map(c=>c.value.trim()).filter(v=>v);
+  return nombres.join(', ');
+}
+function tieneChecksVisibles(){
+  const b = document.getElementById('bloqueChecks');
+  return b && b.style.display!=='none' && document.querySelectorAll('#listaChecks input').length>0;
+}
+// === FIN V31.1 ===
+
+
+
+function mostrarInvitacionCancelada(idMostrado){
+  localStorage.removeItem('invitacionId');
+  const WA_GINA = "5213311111111"; // <-- CAMBIA por número real de Gina
+  const WA_EDY = "5213322222222"; // <-- CAMBIA por número real de Edy
+  const mensaje = encodeURIComponent(`Hola Gina y Edy, mi invitación ${idMostrado||''} aparece como cancelada. ¿Me pueden ayudar?`);
+  document.body.innerHTML = `
+    <div style="min-height:100vh;background:#fdfaf6;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Inter,sans-serif">
+      <div style="background:white;border-radius:28px;padding:36px 24px;max-width:400px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(47,74,68,0.08);border:1px solid rgba(201,168,138,0.15)">
+        <div style="width:80px;height:80px;border-radius:50%;background:#fdfaf6;border:1px solid #e8e0d6;margin:0 auto 18px auto;display:flex;align-items:center;justify-content:center;overflow:hidden">
+          <img src="./1.png" alt="Gina & Edy" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='G&E'">
+        </div>
+        <div style="width:48px;height:48px;border-radius:50%;background:#fdedec;border:1px solid #f5b7b1;margin:0 auto 12px auto;display:flex;align-items:center;justify-content:center;font-size:22px">✕</div>
+        <h2 class="serif" style="font-family:Cormorant Garamond,serif;font-size:28px;color:#2f4a44;margin-top:4px">Invitación cancelada</h2>
+        <p style="font-size:13px;color:#666;margin-top:12px;line-height:1.6">Esta invitación <b style="color:#2f4a44">${idMostrado||''}</b> fue cancelada.</p>
+        <p style="font-size:13px;color:#666;margin-top:8px;line-height:1.6">Favor de comunicarse con <b>Gina y Edy</b>.</p>
+        <div style="margin-top:18px;display:flex;gap:10px">
+          <a href="https://wa.me/${WA_GINA}?text=${mensaje}" target="_blank" style="flex:1;background:#25D366;color:white;padding:12px;border-radius:30px;font-size:12px;text-decoration:none;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px">💬 Gina</a>
+          <a href="https://wa.me/${WA_EDY}?text=${mensaje}" target="_blank" style="flex:1;background:#2f4a44;color:white;padding:12px;border-radius:30px;font-size:12px;text-decoration:none;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px">💬 Edy</a>
+        </div>
+        <div style="margin-top:18px;background:#fdfaf6;border-radius:14px;padding:12px;border:1px solid #e8e0d6">
+          <p style="font-size:11px;color:#8a9a96">Si crees que es un error, contacta directamente a los novios.</p>
+          <p style="font-size:10px;letter-spacing:2px;color:#8a9a96;margin-top:8px">GINA & EDY - 02.01.27</p>
+        </div>
+        <p style="font-size:10px;color:#aaa;margin-top:14px">ID: ${idMostrado||'no encontrado'}</p>
+        <button onclick="window.close(); location.href='about:blank'" style="margin-top:14px;width:100%;background:white;color:#8a9a96;border:1px solid #e8e0d6;padding:10px;border-radius:30px;font-size:11px;cursor:pointer">CERRAR</button>
+      </div>
+    </div>`;
+}
+
+function renderData(obj){
+  if(!obj) return;
+  if(obj.status==="no encontrado" || obj.status==="cancelada" || obj.cancelada){
+    mostrarInvitacionCancelada(obj.id || idParam);
+    return;
+  }
+  if(obj.status==="ya_confirmado"){ obj.confirmado=true; obj.fechaConfirmacion=obj.fecha; obj.tConfirmado=obj.t; obj.sConfirmado=obj.s; }
+  let sec7=document.getElementById('seccion7');
+  if(sec7){
+    let tipo=(obj.tipo||obj.j||'').toString().toLowerCase();
+    if(tipo.includes('sin')) sec7.style.display='none'; else sec7.style.display='block';
+  }
+  if(obj.confirmado){
+    DATA_ACTUAL=obj;
+    let an=document.getElementById('areaNormal'); if(an) an.style.display='none';
+    let ac=document.getElementById('areaCongelada'); if(ac) ac.style.display='block';
+    let fc=document.getElementById('fechaConfTxt'); if(fc) fc.textContent=obj.fechaConfirmacion||'';
+    let sc=document.getElementById('sConfTxt'); if(sc) sc.textContent=obj.sConfirmado||obj.m||0;
+    let mc=document.getElementById('mConfTxt'); if(mc) mc.textContent=obj.m||0;
+    let nc=document.getElementById('nombresConfTxt'); if(nc) nc.textContent=obj.tConfirmado||obj.g||'';
+    let tt=document.getElementById('titularTxt'); if(tt) tt.textContent=obj.t||obj.tConfirmado||'';
+    // FIX V31.1: asegurar que fotos y PWA se muestren tras confirmar aunque haya casillas
+    setTimeout(()=>{ try{ mostrarSeccionFotos(); }catch(e){} }, 900);
+    return;
+  }
+  DATA_ACTUAL=obj; K_asignados=parseInt(obj.k)||0; L_asignados=parseInt(obj.l)||0; M_asignados=parseInt(obj.m)||0; esFamiliaActual=!!obj.esFamilia;
+  AB_confirmados=K_asignados; AC_confirmados=L_asignados; S_confirmados=M_asignados;
+  let tt=document.getElementById('titularTxt'); if(tt) tt.textContent=obj.t||'';
+  let lt=document.getElementById('lugaresTxt'); if(lt) lt.textContent=M_asignados;
+  let kt=document.getElementById('kTxt'); if(kt) kt.textContent=K_asignados;
+  let ltt=document.getElementById('lTxt'); if(ltt) ltt.textContent=L_asignados;
+  let mt=document.getElementById('mesaTxt'); if(mt) mt.textContent=obj.mesa||'-';
+let bc=document.getElementById('bloqueConfirmacion'); if(bc) bc.style.display='block';
+  let txt=document.getElementById('txtCuentasCon'); if(txt){ let nombres=obj.g||'sin acompañantes'; txt.innerHTML='Invitados confirmados:<br><b style="font-size:14px">'+nombres+'</b><br><span style="color:#8a9a96;font-size:11px;margin-top:6px;display:block">Total: '+M_asignados+' lugares</span>'; }
+  let ac=document.getElementById('adultosConf'); if(ac){ ac.max=K_asignados; ac.value=K_asignados; }
+  let nc2=document.getElementById('ninosConf'); if(nc2){ nc2.max=L_asignados; nc2.value=L_asignados; }
+  vendranTodos=true;
+  let bs=document.getElementById('btnSi'); let bn2=document.getElementById('btnNo');
+  if(bs){ bs.classList.add('active'); bs.textContent='CONFIRMA'; } if(bn2){ bn2.classList.remove('active'); bn2.textContent='NO, VAN MENOS'; }
+  let cn=document.getElementById('cajaNumero'); if(cn) cn.style.display='none';
+  let bn3=document.getElementById('bloqueNombres'); if(bn3) bn3.style.display='none';
+  let q=document.getElementById('quienes'); if(q) q.value=obj.g||'';
+  // V31 AE-AN
+  try{
+    const lista = obj.listaAE || obj.listaInvitados || [];
+    if(lista && lista.length>0){
+      renderChecks(lista);
+    }else{
+      // si no hay AE-AN, ocultar checks y dejar textarea como antes
+      const bc = document.getElementById('bloqueChecks');
+      if(bc) bc.style.display='none';
+      LISTA_AE_ACTUAL=[];
+    }
+  }catch(e){ console.warn('renderChecks error', e); }
+}
+function confirmarTodos(si){ vendranTodos=si; let btnSi=document.getElementById('btnSi'),btnNo=document.getElementById('btnNo'),cajaNumero=document.getElementById('cajaNumero'),bloqueNombres=document.getElementById('bloqueNombres');
+  if(si){ if(btnSi && btnSi.textContent==='CONFIRMA' && btnSi.classList.contains('active')){ confirmarFinal(); return; } if(btnSi){ btnSi.classList.add('active'); btnSi.textContent='CONFIRMA'; } if(btnNo){ btnNo.classList.remove('active'); btnNo.textContent='NO, VAN MENOS'; } if(cajaNumero) cajaNumero.style.display='none'; AB_confirmados=K_asignados; AC_confirmados=L_asignados; S_confirmados=M_asignados; let a=document.getElementById('adultosConf'); if(a) a.value=K_asignados; let n=document.getElementById('ninosConf'); if(n) n.value=L_asignados; if(bloqueNombres) bloqueNombres.style.display='none'; }
+  else{ if(btnSi){ btnSi.classList.remove('active'); btnSi.textContent='SÍ, TODOS'; } if(btnNo){ btnNo.classList.add('active'); btnNo.textContent='NO, VAN MENOS'; } if(cajaNumero) cajaNumero.style.display='block'; if(bloqueNombres) bloqueNombres.style.display='block'; } }
+let ae=document.getElementById('adultosConf'); if(ae) ae.addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>K_asignados)v=K_asignados; if(v<0)v=0; this.value=v; AB_confirmados=v; });
+let ne=document.getElementById('ninosConf'); if(ne) ne.addEventListener('input', function(){ let v=parseInt(this.value)||0; if(v>L_asignados)v=L_asignados; if(v<0)v=0; this.value=v; AC_confirmados=v; });
+function verInvitacion(){ window.scrollTo(0,0); }
+let _idParamRaw=new URLSearchParams(window.location.search).get('id');
+let _savedId=localStorage.getItem('invitacionId');
+let idParam=_idParamRaw || _savedId || '001';
+if(idParam && idParam!=='001'){ localStorage.setItem('invitacionId', idParam); }
+
+let s=document.createElement('script'); s.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData"; document.body.appendChild(s);
+function confirmarFinal(){
+  try{
+    if(tieneChecksVisibles()){
+      const chk = document.querySelectorAll('#listaChecks input[type=checkbox]:checked').length;
+      AB_confirmados = chk; AC_confirmados = 0;
+      S_confirmados = chk;
+    }else{
+      if(typeof esFamiliaActual!=='undefined' && esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=1+AB_confirmados+AC_confirmados; }
+    }
+    // FIX V31.1: si hay casillas, validar contra listaAE.length, no contra K/L/M viejos
+    if(tieneChecksVisibles()){
+      const maxPermitido = LISTA_AE_ACTUAL.length;
+      const checkedAhora = document.querySelectorAll('#listaChecks input[type=checkbox]:checked').length;
+      if(checkedAhora > maxPermitido){ alert('No puedes seleccionar más de '+maxPermitido+' invitados'); return; }
+      if(checkedAhora===0){ alert('Selecciona al menos un nombre'); return; }
+    }else{
+      if(AB_confirmados > K_asignados || AC_confirmados > L_asignados){ alert('No puedes confirmar más lugares de los asignados. Asignados: Adultos '+K_asignados+', Niños '+L_asignados); return; }
+      if(S_confirmados > M_asignados){ alert('Total confirmado excede asignado. Total asignado: '+M_asignados); return; }
+    }
+    let q='';
+    if(tieneChecksVisibles()){
+      q = getNombresChecks();
+    }else{
+      q = document.getElementById('quienes')?.value||'';
+    }
+    let Y=K_asignados-AB_confirmados,Z=L_asignados-AC_confirmados,AA=Y+Z,box=document.getElementById('okBox'),btn=document.getElementById('btnConfirmar');
+    if(!q && typeof vendranTodos!=='undefined' && !vendranTodos){
+      if(tieneChecksVisibles()){
+        alert('Selecciona al menos un nombre');
+      }else{
+        alert('Escribe los nombres');
+      }
+      return;
+    }
+    if(tieneChecksVisibles() && !q){
+      alert('Selecciona al menos un nombre');
+      return;
+    }
+    let params=new URLSearchParams({id:idParam,s:S_confirmados,ab:AB_confirmados,ac:AC_confirmados,y:Y,z:Z,aa:AA,t:q||(typeof DATA_ACTUAL!=='undefined'&&DATA_ACTUAL?DATA_ACTUAL.g:'')});
+    if(box){box.style.display='block'; box.innerHTML='Enviando...';} if(btn){btn.textContent='ENVIANDO...'; btn.disabled=true;}
+    let sConf=document.createElement('script');
+    sConf.src=APPS_SCRIPT_URL+'?'+params.toString()+'&callback=confirmCallback&_='+Date.now();
+    sConf.onerror=function(){ if(box) box.innerHTML='Error de red, intenta de nuevo'; if(btn){btn.textContent='CONFIRMAR ASISTENCIA'; btn.disabled=false;} };
+    document.body.appendChild(sConf);
+    setTimeout(()=>{
+      let s2=document.createElement('script');
+      s2.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData&rand="+Date.now();
+      document.body.appendChild(s2);
+      if(box) box.style.display='none';
+      if(btn){ btn.textContent='CONFIRMAR ASISTENCIA'; btn.disabled=false; }
+    },3500);
+  }catch(e){ console.error('confirmarFinal error', e); alert('Error: '+e.message); }
+}
+function confirmCallback(r){
+  let box=document.getElementById('okBox'),btn=document.getElementById('btnConfirmar');
+  if(box) box.innerHTML='¡Confirmado!';
+  setTimeout(()=>{
+    let s2=document.createElement('script');
+    s2.src=APPS_SCRIPT_URL+"?id="+idParam+"&callback=renderData&rand="+Date.now();
+    document.body.appendChild(s2);
+    if(box) box.style.display='none';
+    if(btn){ btn.textContent='CONFIRMAR ASISTENCIA'; btn.disabled=false; }
+  },800);
+}
+
+
+
+function abrirFotos(){
+  const ahora = Date.now();
+  if(ahora < HORARIO_INICIO || ahora > HORARIO_FIN){
+    if(!confirm('La opción de compartir fotos solo estará activa de 18:00 a 02:00 el día del evento (02 Ene 2027). ¿Quieres abrirlo en modo prueba?')) return;
+  }
+  window.open(FOTOS_URL, '_blank');
+}
+
 // === PWA + TUNEL - AGREGADO - NO TOCA LÓGICA EXISTENTE ===
 const TUNEL_URL = "https://TU_NGROK_URL_AQUI.ngrok.io"; // <-- CAMBIA AQUÍ POR TU URL DE FOTOSFIESTA
 const HORARIO_INICIO = new Date('2027-01-02T18:00:00').getTime();
@@ -514,6 +615,80 @@ _observer.observe(document.body, {attributes:true, subtree:true, attributeFilter
 // Si ya está en PWA instalada, mostrar botón flotante de túnel
 if(isStandalone){
   setTimeout(verificarHorarioTunel, 1000);
+  localStorage.setItem('pwaInstalado','1');
+}
+
+function cerrarPwaModal(){ 
+  document.getElementById('pwaModal').classList.remove('show'); 
+  document.getElementById('pwaModal').style.display='none';
+  mostrarGraciasFinal();
+}
+function cerrarPwaModalAndroid(){ 
+  document.getElementById('pwaModalAndroid').classList.remove('show'); 
+  document.getElementById('pwaModalAndroid').style.display='none';
+  mostrarGraciasFinal();
+}
+
+function mostrarGraciasFinal(){
+  const sec = document.getElementById('seccionPWA');
+  if(sec) sec.innerHTML = '<div style="text-align:center"><div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.style.display=\'none\'"></div><h2 class="serif" style="font-size:24px;">¡Acceso guardado!</h2><p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">Ya puedes cerrar esta ventana. Usa el icono Gina & Edy de tu pantalla el día del evento para subir fotos.</p><button onclick="cerrarInvitacionTotal()" class="btn" style="margin-top:18px">GRACIAS, CERRAR</button></div>';
+}
+
+// Listeners PWA (corregidos)
+document.getElementById('btnEntendiFotos')?.addEventListener('click', ()=>{ mostrarSeccionPWA(); });
+document.getElementById('btnNoGraciasFotos')?.addEventListener('click', ()=>{ cerrarInvitacionTotal(); });
+document.getElementById('btnGuardarAcceso')?.addEventListener('click', async ()=>{
+  const status = document.getElementById('pwaStatus');
+  if(isIos){
+    document.getElementById('pwaModal').style.display='flex';
+    document.getElementById('pwaModal').classList.add('show');
+    return;
+  }
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    const {outcome} = await deferredPrompt.userChoice;
+    if(outcome==='accepted'){
+      if(status){ status.style.display='block'; status.textContent='¡Acceso creado! Busca Gina & Edy en tu escritorio.'; }
+      localStorage.setItem('pwaInstalado','1');
+      document.getElementById('pwaModalAndroid').style.display='flex';
+      document.getElementById('pwaModalAndroid').classList.add('show');
+    } else {
+      if(status){ status.style.display='block'; status.textContent='No se agregó. Puedes intentarlo de nuevo.'; }
+    }
+    deferredPrompt=null;
+  } else {
+    if(status){ status.style.display='block'; status.innerHTML='En tu navegador busca: <b>⋮ Menú > Guardar y compartir > Crear acceso directo</b> o <b>Instalar app</b>. Usa el logo 1.png'; }
+    if(isAndroid){
+      alert('En Android: toca ⋮ (arriba derecha) > Agregar a pantalla principal > Agregar.');
+    } else {
+      alert('En PC Chrome: en la barra de direcciones verás icono instalar ⊞ o en menú ⋮ > Guardar y compartir > Crear acceso directo.');
+    }
+  }
+});
+document.getElementById('btnNoGuardar')?.addEventListener('click', ()=>{ cerrarInvitacionTotal(); });
+
+// === HOOK CORREGIDO - AHORA LLAMA A PWA, NO A FOTOS ===
+const _renderDataOriginal = window.renderData;
+window.renderData = function(obj){
+  if(typeof _renderDataOriginal === 'function') _renderDataOriginal(obj);
+  if(obj && obj.confirmado){
+    setTimeout(()=>{ mostrarSeccionPWA(); }, 800);
+  }
+};
+
+const _observer = new MutationObserver(()=>{
+  const ac = document.getElementById('areaCongelada');
+  if(ac && ac.style.display==='block'){
+    const secP = document.getElementById('seccionPWA');
+    const hiddenP = !secP || secP.style.display==='none';
+    if(hiddenP && localStorage.getItem(getCurrentIdKey())!=='1'){
+      mostrarSeccionPWA();
+    }
+  }
+});
+_observer.observe(document.body, {attributes:true, subtree:true, attributeFilter:['style']});
+
+if(isStandalone){
   localStorage.setItem('pwaInstalado','1');
 }
 </script>
