@@ -247,18 +247,14 @@ function actualizarConteoChecks(){
   if(chkTodos){
     chkTodos.checked = (checked.length===todos.length && todos.length>0);
   }
-  // FIX BUG 2 lugares vs 1: cuando hay casillas, S = familia? checked : 1+checked, y validacion contra listaAE.length
+  // FIX FINAL V31.3: cuando hay casillas, AE ya incluye titular, S = checked directo
   AB_confirmados = checked.length;
   AC_confirmados = 0;
-  if(typeof esFamiliaActual !== 'undefined'){
-    S_confirmados = esFamiliaActual ? checked.length : (checked.length>0 ? 1 + checked.length : 0);
-  }else{
-    S_confirmados = checked.length;
-  }
+  S_confirmados = checked.length;
   const txt = document.getElementById('txtCuentasCon');
   if(txt && LISTA_AE_ACTUAL.length>0){
-    const totalMostrar = esFamiliaActual ? LISTA_AE_ACTUAL.length : 1 + LISTA_AE_ACTUAL.length;
-    const confMostrar = esFamiliaActual ? checked.length : (checked.length>0 ? 1 + checked.length : 0);
+    const totalMostrar = LISTA_AE_ACTUAL.length;
+    const confMostrar = checked.length;
     txt.innerHTML = `Invitados confirmados: <b style="font-size:14px">${confMostrar} de ${totalMostrar}</b><br><span style="color:#8a9a96;font-size:11px;margin-top:6px;display:block">Selecciona quienes vienen</span>`;
   }
 }
@@ -374,10 +370,9 @@ let s=document.createElement('script'); s.src=APPS_SCRIPT_URL+"?id="+idParam+"&c
 function confirmarFinal(){
   try{
     if(tieneChecksVisibles()){
-      // ya calculado en actualizarConteoChecks, asegurar
       const chk = document.querySelectorAll('#listaChecks input[type=checkbox]:checked').length;
       AB_confirmados = chk; AC_confirmados = 0;
-      if(typeof esFamiliaActual!=='undefined' && esFamiliaActual){ S_confirmados=chk; }else{ S_confirmados = chk>0 ? 1+chk : 0; }
+      S_confirmados = chk;
     }else{
       if(typeof esFamiliaActual!=='undefined' && esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=1+AB_confirmados+AC_confirmados; }
     }
