@@ -222,8 +222,13 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
   </div>
 </div>
 
-<div id="btnFlotanteTunel" style="display:none; position:fixed; bottom:90px; right:20px; z-index:999; background:#2f4a44; color:white; padding:14px 18px; border-radius:30px; box-shadow:0 10px 30px rgba(0,0,0,0.25); cursor:pointer; font-size:12px; letter-spacing:1px; font-weight:600; align-items:center; gap:8px;" onclick="abrirTunel()">
-  📸 SUBIR AL TÚNEL
+<div id="contenedorFlotante" style="display:none; position:fixed; bottom:90px; right:20px; z-index:999; flex-direction:column; gap:10px; align-items:flex-end;">
+  <div id="btnFlotanteInvitacion" style="background:white; color:#2f4a44; border:1.5px solid #2f4a44; padding:12px 18px; border-radius:30px; box-shadow:0 8px 20px rgba(0,0,0,0.15); cursor:pointer; font-size:11px; letter-spacing:1px; font-weight:700; display:flex; align-items:center; gap:6px;" onclick="verInvitacionFlotante()">
+    💌 INVITACIÓN
+  </div>
+  <div id="btnFlotanteTunel" style="background:#2f4a44; color:white; padding:12px 18px; border-radius:30px; box-shadow:0 10px 30px rgba(0,0,0,0.25); cursor:pointer; font-size:11px; letter-spacing:1px; font-weight:700; display:flex; align-items:center; gap:6px;" onclick="abrirTunel()">
+    📸 TÚNEL
+  </div>
 </div>
 
 
@@ -273,11 +278,15 @@ function renderChecks(lista){
     if(bNo) bNo.style.display='';
     return;
   }
+  const ad = (typeof esFamiliaActual!=='undefined' && esFamiliaActual) ? 0 : 1;
+  const kParaTipo = (typeof K_asignados!=='undefined') ? K_asignados : 0;
   lista.forEach((nombre, idx)=>{
     const id = 'chk_'+idx;
+    const esMenor = idx >= (kParaTipo + ad);
+    const tipo = esMenor ? 'menor' : 'adulto';
     const row = document.createElement('label');
     row.style.cssText='display:flex;gap:10px;align-items:center;background:white;border:1px solid #e8e0d6;border-radius:14px;padding:12px 14px;cursor:pointer;transition:all .15s';
-    row.innerHTML = `<input type="checkbox" id="${id}" value="${nombre.replace(/"/g,'&quot;')}" checked onchange="actualizarConteoChecks()" style="width:18px;height:18px;accent-color:#2f4a44"><span style="font-size:13px;color:#2f4a44">${nombre}</span>`;
+    row.innerHTML = `<input type="checkbox" id="${id}" data-idx="${idx}" data-tipo="${tipo}" value="${nombre.replace(/"/g,'&quot;')}" checked onchange="actualizarConteoChecks()" style="width:18px;height:18px;accent-color:#2f4a44"><span style="font-size:13px;color:#2f4a44">${nombre} ${esMenor ? '<small style="color:#8a9a96;font-size:10px">· menor</small>' : ''}</span>`;
     cont.appendChild(row);
   });
   bloque.style.display='block';
@@ -305,15 +314,20 @@ function actualizarConteoChecks(){
   if(chkTodos){
     chkTodos.checked = (checked.length===todos.length && todos.length>0);
   }
-  // FIX FINAL V31.3: cuando hay casillas, AE ya incluye titular, S = checked directo
-  AB_confirmados = checked.length;
-  AC_confirmados = 0;
-  S_confirmados = checked.length;
-  const txt = document.getElementById('txtCuentasCon');
-  if(txt && LISTA_AE_ACTUAL.length>0){
+  // FIX V31.8: contar adultos y menores por tipo, igual que admin getPersonasDeMesa
+  let ab = 0, ac = 0;
+  checked.forEach(c=>{
+    const tipo = c.getAttribute('data-tipo') || (parseInt(c.getAttribute('data-idx')) >= (K_asignados + (esFamiliaActual?0:1)) ? 'menor' : 'adulto');
+    if(tipo==='menor') ac++; else ab++;
+  });
+  AB_confirmados = ab;
+  AC_confirmados = ac;
+  S_confirmados = ab + ac;
+  const txtC = document.getElementById('txtCuentasCon');
+  if(txtC && LISTA_AE_ACTUAL.length>0){
     const totalMostrar = LISTA_AE_ACTUAL.length;
     const confMostrar = checked.length;
-    txt.innerHTML = `Invitados confirmados: <b style="font-size:14px">${confMostrar} de ${totalMostrar}</b><br><span style="color:#8a9a96;font-size:11px;margin-top:6px;display:block">Selecciona quienes vienen</span>`;
+    txtC.innerHTML = `Invitados confirmados: <b style="font-size:14px">${confMostrar} de ${totalMostrar}</b> <small style="color:#8a9a96">(A:${ab} N:${ac})</small><br><span style="color:#8a9a96;font-size:11px;margin-top:6px;display:block">Selecciona quienes vienen</span>`;
   }
 }
 function getNombresChecks(){
@@ -428,9 +442,14 @@ let s=document.createElement('script'); s.src=APPS_SCRIPT_URL+"?id="+idParam+"&c
 function confirmarFinal(){
   try{
     if(tieneChecksVisibles()){
-      const chk = document.querySelectorAll('#listaChecks input[type=checkbox]:checked').length;
-      AB_confirmados = chk; AC_confirmados = 0;
-      S_confirmados = chk;
+      const checked = document.querySelectorAll('#listaChecks input[type=checkbox]:checked');
+      let ab=0, ac=0;
+      checked.forEach(c=>{
+        const tipo = c.getAttribute('data-tipo') || (parseInt(c.getAttribute('data-idx')) >= (K_asignados + (esFamiliaActual?0:1)) ? 'menor' : 'adulto');
+        if(tipo==='menor') ac++; else ab++;
+      });
+      AB_confirmados = ab; AC_confirmados = ac;
+      S_confirmados = ab + ac;
     }else{
       if(typeof esFamiliaActual!=='undefined' && esFamiliaActual){ S_confirmados=AB_confirmados+AC_confirmados; }else{ S_confirmados=1+AB_confirmados+AC_confirmados; }
     }
@@ -530,17 +549,29 @@ function mostrarSeccionFotos(){
 }
 function verificarHorarioTunel(){
   const ahora = Date.now();
-  const btn = document.getElementById('btnFlotanteTunel');
-  if(!btn) return;
-  if(ahora >= HORARIO_INICIO && ahora <= HORARIO_FIN){
-    btn.style.display='flex';
+  const cont = document.getElementById('contenedorFlotante');
+  const btnTunel = document.getElementById('btnFlotanteTunel');
+  if(!cont || !btnTunel) return;
+  // Siempre mostrar ambos botones tras confirmar, sin texto largo de prueba
+  cont.style.display='flex';
+  // Si está fuera de horario, solo atenuar túnel pero no mostrar cintilla molesta
+  if(ahora < HORARIO_INICIO || ahora > HORARIO_FIN){
+    btnTunel.style.opacity='0.85';
+    btnTunel.title='Solo activo 18:00-02:00 el día del evento';
   } else {
-    if(isStandalone || localStorage.getItem('pwaInstalado')){
-      btn.style.display='flex';
-      btn.innerHTML='📸 TÚNEL (PRUEBA - Solo activo 18:00-02:00)';
-    }
+    btnTunel.style.opacity='1';
+    btnTunel.title='';
   }
 }
+function verInvitacionFlotante(){
+  // Cierra PWA y lleva arriba
+  const secP = document.getElementById('seccionPWA');
+  if(secP) secP.style.display='none';
+  window.scrollTo({top:0, behavior:'smooth'});
+  // Si quieres ver invitación completa
+  try{ verInvitacion(); }catch(e){}
+}
+
 function abrirTunel(){
   const ahora = Date.now();
   if(ahora < HORARIO_INICIO || ahora > HORARIO_FIN){
@@ -565,8 +596,8 @@ function mostrarGraciasFinal(){
 function cerrarInvitacionTotal(){
   const secP = document.getElementById('seccionPWA');
   if(secP) secP.style.display='none';
-  const btnF = document.getElementById('btnFlotanteTunel');
-  if(btnF) btnF.style.display='none';
+  const cont = document.getElementById('contenedorFlotante');
+  if(cont) cont.style.display='none';
   window.scrollTo({top:0, behavior:'smooth'});
 }
 function getCurrentIdKey(){
