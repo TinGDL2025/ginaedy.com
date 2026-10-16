@@ -180,9 +180,21 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
   </div>
   <div style="margin-top:18px; background:#fdfaf6; border-radius:16px; padding:16px; border:1px dashed #c9a88a55">
     <p style="font-size:11px;letter-spacing:1.5px;color:#8a9a96;font-weight:600">INCLUYE:</p>
-    <div style="display:flex; gap:10px; margin-top:10px; text-align:left">
-      <div style="flex:1;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6"><p style="font-size:18px">💌</p><p style="font-size:11px;font-weight:600;margin-top:4px">Invitación</p><p style="font-size:10px;color:#888;margin-top:2px">Acceso rápido</p></div>
-      <div style="flex:1;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6"><p style="font-size:18px">📸</p><p style="font-size:11px;font-weight:600;margin-top:4px">Túnel fotos</p><p style="font-size:10px;color:#888;margin-top:2px">Activo 18:00-02:00</p></div>
+    <div style="display:flex; flex-direction:column; gap:12px; margin-top:12px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; background:white; border-radius:14px; padding:12px 14px; border:1px solid #e8e0d6;">
+        <div style="text-align:left; display:flex; gap:10px; align-items:center;">
+          <p style="font-size:18px">💌</p>
+          <div><p style="font-size:11px;font-weight:700;">Invitación</p><p style="font-size:10px;color:#888;">Acceso rápido</p></div>
+        </div>
+        <button id="btnPWAInvitacion" onclick="verInvitacionFlotante()" style="background:white; color:#2f4a44; border:1.5px solid #2f4a44; padding:8px 14px; border-radius:20px; font-size:10px; font-weight:800; letter-spacing:0.8px; cursor:pointer; white-space:nowrap;">💌 INVITACIÓN</button>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; background:white; border-radius:14px; padding:12px 14px; border:1px solid #e8e0d6;">
+        <div style="text-align:left; display:flex; gap:10px; align-items:center;">
+          <p style="font-size:18px">📸</p>
+          <div><p style="font-size:11px;font-weight:700;">Túnel fotos</p><p style="font-size:10px;color:#888;">Activo 18:00-02:00</p></div>
+        </div>
+        <button id="btnPWATunel" onclick="abrirTunel()" style="background:#2f4a44; color:white; border:1.5px solid #2f4a44; padding:8px 14px; border-radius:20px; font-size:10px; font-weight:800; letter-spacing:0.8px; cursor:pointer; white-space:nowrap;">📸 TÚNEL</button>
+      </div>
     </div>
     <p style="font-size:10px;color:#8a9a96;margin-top:12px;line-height:1.4">Podrás usarlo desde la iglesia, no necesitas escanear el QR. En la mesa del salón también habrá QR como respaldo. Solo funciona en horario del evento.</p>
   </div>
@@ -221,17 +233,6 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
     <button onclick="cerrarPwaModalAndroid()" class="btn" style="margin-top:14px">PERFECTO</button>
   </div>
 </div>
-
-<div id="contenedorFlotante" style="display:none; position:fixed; bottom:90px; right:20px; z-index:999; flex-direction:column; gap:10px; align-items:flex-end;">
-  <div id="btnFlotanteInvitacion" style="background:white; color:#2f4a44; border:1.5px solid #2f4a44; padding:12px 18px; border-radius:30px; box-shadow:0 8px 20px rgba(0,0,0,0.15); cursor:pointer; font-size:11px; letter-spacing:1px; font-weight:700; display:flex; align-items:center; gap:6px;" onclick="verInvitacionFlotante()">
-    💌 INVITACIÓN
-  </div>
-  <div id="btnFlotanteTunel" style="background:#2f4a44; color:white; padding:12px 18px; border-radius:30px; box-shadow:0 10px 30px rgba(0,0,0,0.25); cursor:pointer; font-size:11px; letter-spacing:1px; font-weight:700; display:flex; align-items:center; gap:6px;" onclick="abrirTunel()">
-    📸 TÚNEL
-  </div>
-</div>
-
-
 
 </div>
 </div>
@@ -549,12 +550,9 @@ function mostrarSeccionFotos(){
 }
 function verificarHorarioTunel(){
   const ahora = Date.now();
-  const cont = document.getElementById('contenedorFlotante');
-  const btnTunel = document.getElementById('btnFlotanteTunel');
-  if(!cont || !btnTunel) return;
-  // Siempre mostrar ambos botones tras confirmar, sin texto largo de prueba
-  cont.style.display='flex';
-  // Si está fuera de horario, solo atenuar túnel pero no mostrar cintilla molesta
+  const btnTunel = document.getElementById('btnPWATunel');
+  if(!btnTunel) return;
+  // Ya no hay cintilla molesta, solo atenuar si fuera de horario
   if(ahora < HORARIO_INICIO || ahora > HORARIO_FIN){
     btnTunel.style.opacity='0.85';
     btnTunel.title='Solo activo 18:00-02:00 el día del evento';
@@ -596,8 +594,7 @@ function mostrarGraciasFinal(){
 function cerrarInvitacionTotal(){
   const secP = document.getElementById('seccionPWA');
   if(secP) secP.style.display='none';
-  const cont = document.getElementById('contenedorFlotante');
-  if(cont) cont.style.display='none';
+  // sin flotantes
   window.scrollTo({top:0, behavior:'smooth'});
 }
 function getCurrentIdKey(){
