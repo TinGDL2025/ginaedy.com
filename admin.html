@@ -279,6 +279,8 @@ function calcularMesas(){
   mesasSiVan={};
   for(let i=1;i<=TOTAL_MESAS;i++) mesasSiVan[i]=0;
   DATA.forEach(it=>{
+    const esCancelada = String(it.estatus||'').toLowerCase().includes('cancelada') || it.cancelada;
+    if(esCancelada) return; // FIX 7: canceladas liberan lugares
     const mesa=getMesaNum(it);
     if(mesa>=1&&mesa<=TOTAL_MESAS){
       const esConf=String(getVal(it, ['estatus','Estado','status','V'])||'').toLowerCase().includes('confirm');

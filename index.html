@@ -173,7 +173,7 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
 <!-- === PWA + TUNEL FOTOS - AGREGADO - NO TOCA FORMATO EXISTENTE === -->
 <div id="seccionPWA" class="card" style="display:none; border:2px solid #2f4a44; background:white;">
   <div style="text-align:center">
-    <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
+    <div class="pwa-logo"><img src="./1.png" alt="G&E"></div>
     <span class="badge" style="background:#2f4a44;color:white;border-color:#2f4a44">ACCESO RÁPIDO</span>
     <h2 class="serif" style="font-size:24px; margin-top:8px;">Guarda tu acceso</h2>
     <p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">Con el icono de la boda en tu pantalla podrás abrir tu invitación en 1 toque y subir fotos al túnel el día del evento.</p>
@@ -196,45 +196,78 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
         <button id="btnPWATunel" onclick="abrirTunel()" style="background:#2f4a44; color:white; border:1.5px solid #2f4a44; padding:8px 14px; border-radius:20px; font-size:10px; font-weight:800; letter-spacing:0.8px; cursor:pointer; white-space:nowrap;">📸 TÚNEL</button>
       </div>
     </div>
-    <p style="font-size:10px;color:#8a9a96;margin-top:12px;line-height:1.4">Podrás usarlo desde la iglesia, no necesitas escanear el QR. En la mesa del salón también habrá QR como respaldo. Solo funciona en horario del evento.</p>
+    <p style="font-size:10px;color:#8a9a96;margin-top:12px;line-height:1.4">Podrás usarlo desde la iglesia, no necesitas escanear el QR. En la mesa del salón también habrá QR como respaldo.</p>
   </div>
-  <button id="btnGuardarAcceso" class="btn" style="margin-top:18px">📲 GUARDAR EN MI CELULAR</button>
-  <button id="btnNoGuardar" class="btn-outline" style="margin-top:10px; border-color:#e8e0d6; color:#8a9a96;">AHORA NO, GRACIAS</button>
+  <div id="bloqueGuardarBtns">
+    <button id="btnGuardarAcceso" class="btn" style="margin-top:18px">📲 GUARDAR EN MI CELULAR</button>
+    <button id="btnNoGuardar" class="btn-outline" style="margin-top:10px; border-color:#e8e0d6; color:#8a9a96;">AHORA NO, GRACIAS</button>
+  </div>
+  <button id="btnCerrarPWA" onclick="cerrarInvitacionTotal()" class="btn-outline" style="margin-top:18px;display:none;border-color:#2f4a44;color:#2f4a44">CERRAR</button>
   <p id="pwaStatus" style="font-size:11px;color:#8a9a96;margin-top:10px;display:none"></p>
 </div>
 
+
 <div id="pwaModal" class="pwa-overlay" onclick="if(event.target.id==='pwaModal') cerrarPwaModal()">
   <div class="pwa-box">
-    <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
+    <div class="pwa-logo"><img src="./1.png" alt="G&E"></div>
     <h3 class="serif" style="font-size:22px;">Cómo guardar en iPhone</h3>
     <p style="font-size:12px;color:#666;margin-top:8px;line-height:1.4">Safari no permite guardado automático. Sigue estos 3 pasos:</p>
-    <div class="pwa-step"><b class="num">1</b><div><p style="font-size:12px;font-weight:600">Toca Compartir</p><p style="font-size:11px;color:#666">El icono de cuadro con flecha arriba, abajo en Safari.</p><div style="margin-top:6px;background:#2f4a44;color:white;border-radius:8px;padding:6px 10px;display:inline-block;font-size:11px">⎙ Compartir</div></div></div>
-    <div class="pwa-step"><b class="num">2</b><div><p style="font-size:12px;font-weight:600">Agregar a pantalla de inicio</p><p style="font-size:11px;color:#666">Desliza hacia abajo y tócalo.</p></div></div>
-    <div class="pwa-step"><b class="num">3</b><div><p style="font-size:12px;font-weight:600">Toca Agregar</p><p style="font-size:11px;color:#666">Arriba a la derecha. Verás el logo de Gina & Edy en tu escritorio.</p></div></div>
-    <div style="margin-top:14px;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6;text-align:left">
-      <p style="font-size:11px;font-weight:600">📸 Túnel de fotos:</p>
-      <p style="font-size:11px;color:#555;margin-top:4px;line-height:1.4">Una vez guardado, ábrelo el día del evento. Desde las <b>18:00</b> verás el botón <b>Subir al túnel</b> que te lleva directo a fotosfiesta (ngrok) en tu PC del salón. También funciona el QR de tu mesa.</p>
-      <p style="font-size:10px;color:#c9a88a;margin-top:6px">⏰ Solo activo en horario del evento.</p>
-    </div>
+    <div class="pwa-step"><b class="num">1</b><div><p style="font-size:12px;font-weight:600">Toca Compartir</p><p style="font-size:11px;color:#666">El icono de cuadro con flecha arriba.</p></div></div>
+    <div class="pwa-step"><b class="num">2</b><div><p style="font-size:12px;font-weight:600">Agregar a pantalla de inicio</p><p style="font-size:11px;color:#666">Desliza y tócalo.</p></div></div>
+    <div class="pwa-step"><b class="num">3</b><div><p style="font-size:12px;font-weight:600">Toca Agregar</p><p style="font-size:11px;color:#666">Verás el logo de Gina & Edy.</p></div></div>
     <button onclick="cerrarPwaModal()" class="btn" style="margin-top:14px">ENTENDIDO</button>
   </div>
 </div>
 
 <div id="pwaModalAndroid" class="pwa-overlay" onclick="if(event.target.id==='pwaModalAndroid') cerrarPwaModalAndroid()">
   <div class="pwa-box">
-    <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.src='./icono_iglesia.png'"></div>
+    <div class="pwa-logo"><img src="./1.png" alt="G&E"></div>
     <h3 class="serif" style="font-size:22px;">Acceso creado</h3>
     <p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">¡Listo! Busca el icono <b>Gina & Edy</b> en tu pantalla principal.</p>
-    <div style="margin-top:14px;background:white;border-radius:14px;padding:12px;border:1px solid #e8e0d6;text-align:left">
-      <p style="font-size:11px;font-weight:600">📸 ¿Cómo usar el túnel?</p>
-      <p style="font-size:11px;color:#555;margin-top:4px;line-height:1.4">1. El día del evento abre el acceso desde tu escritorio (o desde la iglesia).<br>2. De 18:00 a 02:00 verás el botón <b>📸 SUBIR AL TÚNEL</b><br>3. Sube fotos, llegan directo a la PC del salón (fotosfiesta).</p>
-      <p style="font-size:10px;color:#888;margin-top:8px">Respaldo: QR en tu mesa del salón.</p>
-    </div>
-    <button onclick="cerrarPwaModalAndroid()" class="btn" style="margin-top:14px">PERFECTO</button>
+    <button onclick="cerrarPwaModalAndroid()" class="btn" style="margin-top:14px">PERFECTO, CERRAR</button>
   </div>
 </div>
 
+<div id="pwaModalNoGracias" class="pwa-overlay" onclick="if(event.target.id==='pwaModalNoGracias') cerrarNoGraciasModal()">
+  <div class="pwa-box">
+    <div class="pwa-logo"><img src="./1.png" alt="G&E"></div>
+    <h3 class="serif" style="font-size:22px;">¡Entendido!</h3>
+    <p style="font-size:13px;color:#555;margin-top:10px;line-height:1.6">Puedes guardar el acceso en otro momento.<br><br>Para acceder a tu invitación nuevamente, usa el enlace que se te envió por <b>WhatsApp</b>.</p>
+    <button onclick="cerrarNoGraciasModal()" class="btn" style="margin-top:18px">ENTENDIDO</button>
+  </div>
 </div>
+
+<div id="modalCancelar" class="pwa-overlay">
+  <div class="pwa-box">
+    <div class="pwa-logo"><img src="./1.png" alt="G&E"></div>
+    <h3 class="serif" style="font-size:22px;">¿Cancelar invitación?</h3>
+    <p style="font-size:12px;color:#555;margin-top:8px;line-height:1.5">¿Seguro que deseas cancelar tu asistencia?<br>Esta acción liberará tus lugares en la mesa y no se puede deshacer.</p>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button onclick="cerrarModalCancelar()" class="btn-outline" style="flex:1">VOLVER</button>
+      <button onclick="confirmarCancelacionInvitado()" class="btn" style="flex:1;background:#c0392b">SÍ, CANCELAR</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalMotivo" class="pwa-overlay">
+  <div class="pwa-box" style="max-width:440px">
+    <div class="pwa-logo"><img src="./1.png" alt="G&E"></div>
+    <h3 class="serif" style="font-size:22px;">Lamentamos que no puedas asistir</h3>
+    <p style="font-size:12px;color:#555;margin-top:8px;line-height:1.5">Si pudieras compartirnos el motivo, nos ayudaría mucho.</p>
+    <textarea id="txtMotivo" placeholder="Escribe aquí el motivo (opcional)" style="width:100%;margin-top:12px;border:1px solid #e8e0d6;border-radius:14px;padding:12px;font-size:12px;min-height:80px;resize:vertical"></textarea>
+    <button onclick="enviarMotivoWhats()" class="btn" style="margin-top:14px;background:#25D366">📲 ENVIAR POR WHATSAPP</button>
+    <button onclick="cerrarMotivoGracias()" class="btn-outline" style="margin-top:10px">OMITIR Y CERRAR</button>
+    <p style="font-size:10px;color:#8a9a96;margin-top:10px">Se enviará al número 33 1606 2864</p>
+  </div>
+</div>
+
+<div id="modalGraciasCancel" class="pwa-overlay">
+  <div class="pwa-box">
+    <div class="pwa-logo"><img src="./1.png" alt="G&E"></div>
+    <h3 class="serif" style="font-size:22px;">Gracias por tu retroalimentación</h3>
+    <p style="font-size:13px;color:#555;margin-top:10px;line-height:1.6">Sentimos que no puedas asistir.<br>Esperamos verte pronto.</p>
+    <button onclick="cerrarTodoFinal()" class="btn" style="margin-top:18px">CERRAR</button>
+  </div>
 </div>
 
 <script>
@@ -521,10 +554,13 @@ function abrirFotos(){
 }
 
 // === PWA + TUNEL - CONSTANTES Y FUNCIONES CORREGIDAS ===
-const TUNEL_URL = "https://TU_NGROK_URL_AQUI.ngrok.io";
+
+// === PWA + TUNEL - V32 FINAL ===
+const TUNEL_URL = "https://TU_TUNEL_URL_AQUI.ngrok.io";
 const HORARIO_INICIO = new Date('2027-01-02T18:00:00').getTime();
 const HORARIO_FIN = new Date('2027-01-03T02:00:00').getTime();
 const FOTOS_URL = TUNEL_URL;
+const WHATS_CANCEL = "523316062864";
 let deferredPrompt = null;
 const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 const isAndroid = /Android/.test(navigator.userAgent);
@@ -537,22 +573,34 @@ window.addEventListener('beforeinstallprompt', (e)=>{
   e.preventDefault();
   deferredPrompt = e;
   const btn = document.getElementById('btnGuardarAcceso');
-  if(btn) btn.style.display='flex';
+  if(btn && !isStandalone) btn.style.display='flex';
 });
 
 function mostrarSeccionPWA(){
   const sec = document.getElementById('seccionPWA');
-  if(sec) { sec.style.display='block'; sec.scrollIntoView({behavior:'smooth', block:'center'}); }
+  if(sec) { 
+    sec.style.display='block'; 
+    sec.scrollIntoView({behavior:'smooth', block:'center'}); 
+    // Fix 3: Si ya está instalada, ocultar guardar
+    const yaInstalado = isStandalone || localStorage.getItem('pwaInstalado') || localStorage.getItem(getCurrentIdKey())==='1';
+    const bloqueGuardar = document.getElementById('bloqueGuardarBtns');
+    const btnCerrar = document.getElementById('btnCerrarPWA');
+    if(yaInstalado){
+      if(bloqueGuardar) bloqueGuardar.style.display='none';
+      if(btnCerrar) btnCerrar.style.display='block';
+    } else {
+      if(bloqueGuardar) bloqueGuardar.style.display='block';
+      if(btnCerrar) btnCerrar.style.display='none';
+    }
+  }
   verificarHorarioTunel();
 }
-function mostrarSeccionFotos(){
-  mostrarSeccionPWA();
-}
+function mostrarSeccionFotos(){ mostrarSeccionPWA(); }
+
 function verificarHorarioTunel(){
-  const ahora = Date.now();
   const btnTunel = document.getElementById('btnPWATunel');
   if(!btnTunel) return;
-  // Ya no hay cintilla molesta, solo atenuar si fuera de horario
+  const ahora = Date.now();
   if(ahora < HORARIO_INICIO || ahora > HORARIO_FIN){
     btnTunel.style.opacity='0.85';
     btnTunel.title='Solo activo 18:00-02:00 el día del evento';
@@ -562,14 +610,11 @@ function verificarHorarioTunel(){
   }
 }
 function verInvitacionFlotante(){
-  // Cierra PWA y lleva arriba
   const secP = document.getElementById('seccionPWA');
   if(secP) secP.style.display='none';
   window.scrollTo({top:0, behavior:'smooth'});
-  // Si quieres ver invitación completa
   try{ verInvitacion(); }catch(e){}
 }
-
 function abrirTunel(){
   const ahora = Date.now();
   if(ahora < HORARIO_INICIO || ahora > HORARIO_FIN){
@@ -589,21 +634,88 @@ function cerrarPwaModalAndroid(){
 }
 function mostrarGraciasFinal(){
   const sec = document.getElementById('seccionPWA');
-  if(sec) sec.innerHTML = '<div style="text-align:center"><div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.style.display=\'none\'"></div><h2 class="serif" style="font-size:24px;">¡Acceso guardado!</h2><p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">Ya puedes cerrar esta ventana. Usa el icono Gina & Edy de tu pantalla el día del evento para subir fotos.</p><button onclick="cerrarInvitacionTotal()" class="btn" style="margin-top:18px">GRACIAS, CERRAR</button></div>';
+  if(sec){
+    sec.innerHTML = '<div style="text-align:center"><div class="pwa-logo"><img src="./1.png" alt="G&E"></div><h2 class="serif" style="font-size:24px;">¡Acceso guardado!</h2><p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">Ya puedes cerrar esta ventana. Usa el icono Gina & Edy de tu pantalla el día del evento.</p><button onclick="cerrarInvitacionTotal()" class="btn" style="margin-top:18px">GRACIAS, CERRAR</button></div>';
+    sec.style.display='block';
+  }
 }
 function cerrarInvitacionTotal(){
   const secP = document.getElementById('seccionPWA');
   if(secP) secP.style.display='none';
-  // sin flotantes
-  window.scrollTo({top:0, behavior:'smooth'});
+  // Fix 2: no hacer scroll infinito, solo ocultar
+  try{ window.scrollTo({top:0, behavior:'smooth'}); }catch(e){}
 }
+function cerrarNoGraciasModal(){
+  document.getElementById('pwaModalNoGracias').classList.remove('show');
+  document.getElementById('pwaModalNoGracias').style.display='none';
+  cerrarInvitacionTotal();
+}
+function cerrarModalCancelar(){
+  document.getElementById('modalCancelar').classList.remove('show');
+  document.getElementById('modalCancelar').style.display='none';
+}
+function cerrarMotivoGracias(){
+  document.getElementById('modalMotivo').classList.remove('show');
+  document.getElementById('modalMotivo').style.display='none';
+  document.getElementById('modalGraciasCancel').style.display='flex';
+  document.getElementById('modalGraciasCancel').classList.add('show');
+}
+function cerrarTodoFinal(){
+  document.querySelectorAll('.pwa-overlay').forEach(m=>{ m.classList.remove('show'); m.style.display='none'; });
+  const secP = document.getElementById('seccionPWA');
+  if(secP) secP.style.display='none';
+  // Mostrar estado cancelado en invitacion
+  const area = document.getElementById('areaCongelada');
+  if(area){
+    area.style.display='block';
+    area.innerHTML='<div class="frozen" style="background:#c0392b"><h3 class="serif">Invitación cancelada</h3><p style="font-size:12px;margin-top:6px">Gracias por avisarnos. Lamentamos que no puedas asistir.</p></div>';
+  }
+}
+
 function getCurrentIdKey(){
   return 'pwaVisto_'+(idParam||'001');
 }
 
-// Listeners PWA corregidos
+// Fix 6: Botón cancelar invitación
+function abrirModalCancelar(){
+  if(!idParam){ alert('No se encontró ID'); return; }
+  document.getElementById('modalCancelar').style.display='flex';
+  document.getElementById('modalCancelar').classList.add('show');
+}
+function confirmarCancelacionInvitado(){
+  cerrarModalCancelar();
+  // Enviar cancelación a Sheet
+  const box=document.getElementById('okBox');
+  if(box){ box.style.display='block'; box.innerHTML='Cancelando...'; }
+  const params = new URLSearchParams({id:idParam, action:'cancelar', s:0, ab:0, ac:0, t:'CANCELADO POR INVITADO'});
+  const s=document.createElement('script');
+  s.src=APPS_SCRIPT_URL+'?'+params.toString()+'&callback=cancelCallback&_='+Date.now();
+  s.onerror=function(){ if(box) box.innerHTML='Error al cancelar, intenta de nuevo'; };
+  document.body.appendChild(s);
+}
+function cancelCallback(r){
+  const box=document.getElementById('okBox');
+  if(box) box.style.display='none';
+  // Mostrar modal motivo
+  document.getElementById('modalMotivo').style.display='flex';
+  document.getElementById('modalMotivo').classList.add('show');
+}
+function enviarMotivoWhats(){
+  const motivo = document.getElementById('txtMotivo').value.trim();
+  const nombre = (typeof DATA_ACTUAL!=='undefined' && DATA_ACTUAL && DATA_ACTUAL.titular) ? DATA_ACTUAL.titular : idParam;
+  const texto = `Hola, soy ${nombre} (ID ${idParam}). Cancelé mi invitación a la boda Gina & Edy. Motivo: ${motivo || 'No especificado'}`;
+  const url = `https://wa.me/${WHATS_CANCEL}?text=${encodeURIComponent(texto)}`;
+  window.open(url, '_blank');
+  cerrarMotivoGracias();
+}
+
+// Listeners PWA
 document.getElementById('btnEntendiFotos')?.addEventListener('click', ()=>{ mostrarSeccionPWA(); });
-document.getElementById('btnNoGraciasFotos')?.addEventListener('click', ()=>{ cerrarInvitacionTotal(); });
+document.getElementById('btnNoGraciasFotos')?.addEventListener('click', ()=>{ 
+  // Fix 5: mostrar modal NoGracias en vez de scroll
+  document.getElementById('pwaModalNoGracias').style.display='flex';
+  document.getElementById('pwaModalNoGracias').classList.add('show');
+});
 document.getElementById('btnGuardarAcceso')?.addEventListener('click', async ()=>{
   const status = document.getElementById('pwaStatus');
   if(isIos){
@@ -617,6 +729,7 @@ document.getElementById('btnGuardarAcceso')?.addEventListener('click', async ()=
     if(outcome==='accepted'){
       if(status){ status.style.display='block'; status.textContent='¡Acceso creado! Busca Gina & Edy en tu escritorio.'; }
       localStorage.setItem('pwaInstalado','1');
+      localStorage.setItem(getCurrentIdKey(),'1');
       document.getElementById('pwaModalAndroid').style.display='flex';
       document.getElementById('pwaModalAndroid').classList.add('show');
     } else {
@@ -624,22 +737,40 @@ document.getElementById('btnGuardarAcceso')?.addEventListener('click', async ()=
     }
     deferredPrompt=null;
   } else {
-    if(status){ status.style.display='block'; status.innerHTML='En tu navegador busca: <b>⋮ Menú > Guardar y compartir > Crear acceso directo</b> o <b>Instalar app</b>. Usa el logo 1.png'; }
+    // Fix 4: ya no mostrar leyenda de guardar
     if(isAndroid){
-      alert('En Android: toca ⋮ (arriba derecha) > Agregar a pantalla principal > Agregar.');
+      document.getElementById('pwaModal').style.display='flex';
+      document.getElementById('pwaModal').classList.add('show');
     } else {
-      alert('En PC Chrome: en la barra de direcciones verás icono instalar ⊞ o en menú ⋮ > Guardar y compartir > Crear acceso directo.');
+      // En PC mostrar modal generico
+      document.getElementById('pwaModal').style.display='flex';
+      document.getElementById('pwaModal').classList.add('show');
     }
   }
 });
-document.getElementById('btnNoGuardar')?.addEventListener('click', ()=>{ cerrarInvitacionTotal(); });
+document.getElementById('btnNoGuardar')?.addEventListener('click', ()=>{ 
+  document.getElementById('pwaModalNoGracias').style.display='flex';
+  document.getElementById('pwaModalNoGracias').classList.add('show');
+});
 
-// === HOOK CORREGIDO ===
+// === HOOK CONFIRMACIÓN ===
 const _renderDataOriginal = window.renderData;
 window.renderData = function(obj){
   if(typeof _renderDataOriginal === 'function') _renderDataOriginal(obj);
   if(obj && obj.confirmado){
     setTimeout(()=>{ mostrarSeccionPWA(); }, 800);
+    // Fix 6: agregar botón cancelar visible tras confirmar
+    setTimeout(()=>{
+      const area = document.getElementById('areaCongelada');
+      if(area && !document.getElementById('btnCancelarInvitado')){
+        const btn = document.createElement('button');
+        btn.id='btnCancelarInvitado';
+        btn.textContent='CANCELAR MI INVITACIÓN';
+        btn.style.cssText='width:100%;margin-top:12px;background:white;border:1.5px solid #c0392b;color:#c0392b;padding:12px;border-radius:30px;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer';
+        btn.onclick=abrirModalCancelar;
+        area.appendChild(btn);
+      }
+    },900);
   }
 };
 
@@ -648,8 +779,11 @@ const _observer = new MutationObserver(()=>{
   if(ac && ac.style.display==='block'){
     const secP = document.getElementById('seccionPWA');
     const hiddenP = !secP || secP.style.display==='none';
-    if(hiddenP && localStorage.getItem(getCurrentIdKey())!=='1'){
-      mostrarSeccionPWA();
+    if(hiddenP && localStorage.getItem(getCurrentIdKey())!=='1' && !isStandalone){
+      // No auto-mostrar si ya dijo No gracias
+      if(localStorage.getItem('pwaNoGracias_'+(idParam||'001'))!=='1'){
+        mostrarSeccionPWA();
+      }
     }
   }
 });
