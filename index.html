@@ -581,8 +581,8 @@ function mostrarSeccionPWA(){
   if(sec) { 
     sec.style.display='block'; 
     sec.scrollIntoView({behavior:'smooth', block:'center'}); 
-    // Fix 3: Si ya está instalada, ocultar guardar
-    const yaInstalado = isStandalone || localStorage.getItem('pwaInstalado') || localStorage.getItem(getCurrentIdKey())==='1';
+    // Fix 3 V32.1: solo ocultar guardar cuando es standalone real
+    const yaInstalado = isStandalone;
     const bloqueGuardar = document.getElementById('bloqueGuardarBtns');
     const btnCerrar = document.getElementById('btnCerrarPWA');
     if(yaInstalado){
@@ -779,8 +779,7 @@ const _observer = new MutationObserver(()=>{
   if(ac && ac.style.display==='block'){
     const secP = document.getElementById('seccionPWA');
     const hiddenP = !secP || secP.style.display==='none';
-    if(hiddenP && localStorage.getItem(getCurrentIdKey())!=='1' && !isStandalone){
-      // No auto-mostrar si ya dijo No gracias
+    if(hiddenP && !isStandalone){
       if(localStorage.getItem('pwaNoGracias_'+(idParam||'001'))!=='1'){
         mostrarSeccionPWA();
       }

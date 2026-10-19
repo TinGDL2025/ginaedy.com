@@ -279,7 +279,8 @@ function calcularMesas(){
   mesasSiVan={};
   for(let i=1;i<=TOTAL_MESAS;i++) mesasSiVan[i]=0;
   DATA.forEach(it=>{
-    const esCancelada = String(it.estatus||'').toLowerCase().includes('cancelada') || it.cancelada;
+    const estatusRaw = getVal(it, ['estatus','Estado','Estatus','Q','estado','ESTATUS']) || it.estatus || '';
+    const esCancelada = String(estatusRaw).toLowerCase().includes('cancelada') || it.cancelada || String(getVal(it, ['Q'])||'').toLowerCase().includes('cancelada');
     if(esCancelada) return; // FIX 7: canceladas liberan lugares
     const mesa=getMesaNum(it);
     if(mesa>=1&&mesa<=TOTAL_MESAS){
@@ -434,15 +435,17 @@ function render(list){
   let kPor=0,lPor=0,adPor=0,mPor=0;
   let mesasM={}, mesasS={}, mesasConf={};
   for(let i=1;i<=TOTAL_MESAS;i++){mesasM[i]=0; mesasS[i]=0; mesasConf[i]=false;}
-  // Contar canceladas primero para no romper
+  // Contar canceladas primero para no romper - FIX robusto Q
   list.forEach(it=>{
-    if(String(it.estatus||'').toLowerCase().includes('cancelada') || it.cancelada) canceladasCount++;
+    const estRaw = getVal(it, ['estatus','Estado','Estatus','Q','ESTATUS','estado']) || it.estatus || '';
+    if(String(estRaw).toLowerCase().includes('cancelada') || it.cancelada || String(getVal(it, ['Q'])||'').toLowerCase().includes('cancelada')) canceladasCount++;
   });
   invitaciones = list.length - canceladasCount;
 
 
   list.forEach(it=>{
-    const esCanceladaCheck=String(it.estatus||'').toLowerCase().includes('cancelada') || it.cancelada;
+    const estRaw2 = getVal(it, ['estatus','Estado','Estatus','Q','ESTATUS','estado']) || it.estatus || '';
+    const esCanceladaCheck=String(estRaw2).toLowerCase().includes('cancelada') || it.cancelada || String(getVal(it, ['Q'])||'').toLowerCase().includes('cancelada');
     if(esCanceladaCheck) return; // FIX: canceladas no ocupan mesa ni cuentan
     const k=parseInt(getVal(it, ['k','adultos','Adultos invitados'])||0)||0;
     const l=parseInt(getVal(it, ['l','ninos','Ninos invitados'])||0)||0;
