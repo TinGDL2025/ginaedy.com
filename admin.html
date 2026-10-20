@@ -452,8 +452,16 @@ function render(list){
     let m=parseInt(getVal(it, ['lugaresM','lugares','Lugares Asignados','m'])||0)||0;
     const s=parseInt(getVal(it, ['s','lugaresConf','Lugares Confirmados','S'])||0)||0;
     const ad=parseInt(getVal(it, ['ad'])||(esFamilia(it.titular)?0:1))||0;
-    const ab=it.ab!=null?parseInt(it.ab):k;
-    const ac=it.ac!=null?parseInt(it.ac):l;
+    let ab=it.ab!=null?parseInt(it.ab):k;
+    let ac=it.ac!=null?parseInt(it.ac):l;
+    // FIX V28: si es familia, AB siempre = K y AC = L (corrige en memoria aunque Sheet siga mal)
+    if(esFamilia(it.titular)){
+      if(ab===k+1) ab=k;
+      if(ac===l-1) ac=l;
+      // forzado definitivo
+      if(ab!==k) ab=k;
+      if(ac!==l) ac=l;
+    }
     const mesa=getMesaNum(it);
     const esConf=String(getVal(it, ['estatus','Estado','status','V','Estatus'])||it.estatus||'').toLowerCase().includes('confirm');
     if(m===0) m=k+l+ad;

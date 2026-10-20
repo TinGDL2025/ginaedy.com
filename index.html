@@ -379,8 +379,8 @@ function tieneChecksVisibles(){
 
 function mostrarInvitacionCancelada(idMostrado){
   localStorage.removeItem('invitacionId');
-  const WA_GINA = "5213311111111"; // <-- CAMBIA por número real de Gina
-  const WA_EDY = "5213322222222"; // <-- CAMBIA por número real de Edy
+  const WA_GINA = "5213311111111"; // PENDIENTE: cambia por número real de Gina - Ej: 5213331112223
+  const WA_EDY = "5213322222222"; // PENDIENTE: cambia por número real de Edy - Ej: 5213344445556
   const mensaje = encodeURIComponent(`Hola Gina y Edy, mi invitación ${idMostrado||''} aparece como cancelada. ¿Me pueden ayudar?`);
   document.body.innerHTML = `
     <div style="min-height:100vh;background:#fdfaf6;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Inter,sans-serif">
@@ -431,7 +431,10 @@ function renderData(obj){
     setTimeout(()=>{ try{ mostrarSeccionFotos(); }catch(e){} }, 900);
     return;
   }
-  DATA_ACTUAL=obj; K_asignados=parseInt(obj.k)||0; L_asignados=parseInt(obj.l)||0; M_asignados=parseInt(obj.m)||0; esFamiliaActual=!!obj.esFamilia;
+  DATA_ACTUAL=obj; K_asignados=parseInt(obj.k)||0; L_asignados=parseInt(obj.l)||0; M_asignados=parseInt(obj.m)||0;
+  // FIX V33: detectar familia por bandera o por titular
+  function isFamObj(o){ if(!o) return false; if(o.esFamilia!==undefined) return !!o.esFamilia; if(o.familia!==undefined) return !!o.familia; if(o.esFam!==undefined) return !!o.esFam; const t=(o.titular||o.t||'').toString().toLowerCase().trim(); return t.startsWith('fam'); }
+  esFamiliaActual=isFamObj(obj);
   AB_confirmados=K_asignados; AC_confirmados=L_asignados; S_confirmados=M_asignados;
   let tt=document.getElementById('titularTxt'); if(tt) tt.textContent=obj.t||'';
   let lt=document.getElementById('lugaresTxt'); if(lt) lt.textContent=M_asignados;
@@ -556,11 +559,11 @@ function abrirFotos(){
 // === PWA + TUNEL - CONSTANTES Y FUNCIONES CORREGIDAS ===
 
 // === PWA + TUNEL - V32 FINAL ===
-const TUNEL_URL = "https://TU_TUNEL_URL_AQUI.ngrok.io";
+const TUNEL_URL = "https://TU_TUNEL_URL_AQUI.ngrok.io"; // <-- PENDIENTE: cambia por tu ngrok real el día del evento ej: https://abcd-1234.ngrok-free.app
 const HORARIO_INICIO = new Date('2027-01-02T18:00:00').getTime();
 const HORARIO_FIN = new Date('2027-01-03T02:00:00').getTime();
 const FOTOS_URL = TUNEL_URL;
-const WHATS_CANCEL = "523316062864";
+const WHATS_CANCEL = "523316062864"; // PENDIENTE: teléfono único fallback - luego serán 2
 let deferredPrompt = null;
 const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 const isAndroid = /Android/.test(navigator.userAgent);
@@ -633,19 +636,38 @@ function cerrarPwaModalAndroid(){
   mostrarGraciasFinal();
 }
 function mostrarGraciasFinal(){
+  // FIX V33: despedida final no autodestruye
   const sec = document.getElementById('seccionPWA');
   if(sec){
-    sec.innerHTML = '<div style="text-align:center"><div class="pwa-logo"><img src="./1.png" alt="G&E"></div><h2 class="serif" style="font-size:24px;">¡Acceso guardado!</h2><p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">Ya puedes cerrar esta ventana. Usa el icono Gina & Edy de tu pantalla el día del evento.</p><button onclick="cerrarInvitacionTotal()" class="btn" style="margin-top:18px">GRACIAS, CERRAR</button></div>';
+    sec.innerHTML = '<div style="text-align:center"><div class="pwa-logo"><img src="./1.png" alt="G&E"></div><h2 class="serif" style="font-size:24px;">¡Acceso guardado!</h2><p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">Ya puedes cerrar esta ventana. Usa el icono Gina & Edy de tu pantalla el día del evento.</p><button onclick="try{window.close();}catch(e){}; document.getElementById(\'seccionPWA\').style.display=\'none\';" class="btn" style="margin-top:18px">GRACIAS, CERRAR</button></div>';
     sec.style.display='block';
+    sec.scrollIntoView({behavior:'smooth', block:'center'});
   }
+  const areaNormal = document.getElementById('areaNormal');
+  if(areaNormal) areaNormal.style.display='none';
 }
 function cerrarInvitacionTotal(){
+  // FIX V33 CIERRE: cerrar = mostrar despedida, NO regresar a invitacion
+  document.querySelectorAll('.pwa-overlay').forEach(m=>{ m.classList.remove('show'); m.style.display='none'; });
   const secP = document.getElementById('seccionPWA');
-  if(secP) secP.style.display='none';
-  // Fix 2: no hacer scroll infinito, solo ocultar
-  try{ window.scrollTo({top:0, behavior:'smooth'}); }catch(e){}
+  const areaNormal = document.getElementById('areaNormal');
+  if(areaNormal) areaNormal.style.display='none';
+  if(secP){
+    secP.innerHTML = `<div style="text-align:center">
+      <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.style.display='none'"></div>
+      <h2 class="serif" style="font-size:26px;">¡Gracias!</h2>
+      <p style="font-size:13px;color:#555;margin-top:10px;line-height:1.6">Tu respuesta ha sido guardada.<br>Puedes cerrar esta ventana.</p>
+      <div style="margin-top:18px;background:#fdfaf6;border-radius:16px;padding:14px;border:1px solid #e8e0d6">
+        <p style="font-size:11px;color:#8a9a96;letter-spacing:2px">GINA & EDY - 02.01.27</p>
+      </div>
+      <button onclick="try{window.close();}catch(e){}; document.getElementById('seccionPWA').style.display='none'; window.scrollTo({top:0,behavior:'smooth'});" class="btn-outline" style="margin-top:18px">CERRAR VENTANA</button>
+    </div>`;
+    secP.style.display='block';
+    secP.scrollIntoView({behavior:'smooth', block:'center'});
+  }
 }
 function cerrarNoGraciasModal(){
+  // FIX V33: No gracias tambien va a despedida, no a invitacion
   document.getElementById('pwaModalNoGracias').classList.remove('show');
   document.getElementById('pwaModalNoGracias').style.display='none';
   cerrarInvitacionTotal();
