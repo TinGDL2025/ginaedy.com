@@ -454,12 +454,17 @@ function render(list){
     const ad=parseInt(getVal(it, ['ad'])||(esFamilia(it.titular)?0:1))||0;
     let ab=it.ab!=null?parseInt(it.ab):k;
     let ac=it.ac!=null?parseInt(it.ac):l;
-    // FIX V28: si es familia, AB siempre = K y AC = L (corrige en memoria aunque Sheet siga mal)
+    // FIX V29: corrige FAMILIA y NO-FAMILIA en memoria
     if(esFamilia(it.titular)){
-      if(ab===k+1) ab=k;
-      if(ac===l-1) ac=l;
-      // forzado definitivo
+      // Familia: AB debe ser K (no K+1), AC = L
       if(ab!==k) ab=k;
+      if(ac!==l) ac=l;
+    } else {
+      // No-familia: AB debe ser K (acompañantes), no K+1 (total con titular)
+      // Si viene K+1, le quitamos el titular porque ad ya cuenta 1
+      if(ab===k+1) ab=k;
+      // Si aún viene inflado, forzamos
+      if(ab>k) ab=k;
       if(ac!==l) ac=l;
     }
     const mesa=getMesaNum(it);
