@@ -636,35 +636,41 @@ function cerrarPwaModalAndroid(){
   mostrarGraciasFinal();
 }
 function mostrarGraciasFinal(){
-  // FIX V33: despedida final no autodestruye
+  // V34: despedida final estable - no intenta window.close bloqueado, deja mensaje fijo
   const sec = document.getElementById('seccionPWA');
   if(sec){
-    sec.innerHTML = '<div style="text-align:center"><div class="pwa-logo"><img src="./1.png" alt="G&E"></div><h2 class="serif" style="font-size:24px;">¡Acceso guardado!</h2><p style="font-size:13px;color:#555;margin-top:8px;line-height:1.5">Ya puedes cerrar esta ventana. Usa el icono Gina & Edy de tu pantalla el día del evento.</p><button onclick="try{window.close();}catch(e){}; document.getElementById(\'seccionPWA\').style.display=\'none\';" class="btn" style="margin-top:18px">GRACIAS, CERRAR</button></div>';
+    sec.innerHTML = '<div style="text-align:center"><div class="pwa-logo"><img src="./1.png" alt="G&E"></div><h2 class="serif" style="font-size:26px;">¡Acceso guardado!</h2><p style="font-size:13px;color:#555;margin-top:10px;line-height:1.6">Ya puedes cerrar esta pestaña.<br>Usa el icono <b>Gina & Edy</b> de tu pantalla el día del evento.</p><div style="margin-top:18px;background:#fdfaf6;border-radius:16px;padding:14px;border:1px solid #e8e0d6"><p style="font-size:11px;color:#8a9a96;letter-spacing:2px">GINA & EDY - 02.01.27</p></div><button onclick="document.getElementById(\'seccionPWA\').innerHTML=\'<div style=text-align:center;padding:40px 20px><h2 class=serif style=font-size:22px>¡Listo!</h2><p style=font-size:13px;color:#555;margin-top:10px>Ya puedes cerrar esta pestaña manualmente.</p></div>\'; window.scrollTo({top:0,behavior:\'smooth\'});" class="btn-outline" style="margin-top:18px">CERRAR</button></div>';
     sec.style.display='block';
     sec.scrollIntoView({behavior:'smooth', block:'center'});
   }
   const areaNormal = document.getElementById('areaNormal');
   if(areaNormal) areaNormal.style.display='none';
+  document.querySelectorAll('.pwa-overlay').forEach(m=>{ m.classList.remove('show'); m.style.display='none'; });
 }
 function cerrarInvitacionTotal(){
-  // FIX V33 CIERRE: cerrar = mostrar despedida, NO regresar a invitacion
+  // V34 CIERRE UNIFICADO: todos los cierres terminan en despedida fija, no regresan a invitación, no depende de window.close()
   document.querySelectorAll('.pwa-overlay').forEach(m=>{ m.classList.remove('show'); m.style.display='none'; });
   const secP = document.getElementById('seccionPWA');
   const areaNormal = document.getElementById('areaNormal');
+  const areaCongelada = document.getElementById('areaCongelada');
   if(areaNormal) areaNormal.style.display='none';
+  if(areaCongelada) areaCongelada.style.display='none';
   if(secP){
     secP.innerHTML = `<div style="text-align:center">
       <div class="pwa-logo"><img src="./1.png" alt="G&E" onerror="this.style.display='none'"></div>
       <h2 class="serif" style="font-size:26px;">¡Gracias!</h2>
-      <p style="font-size:13px;color:#555;margin-top:10px;line-height:1.6">Tu respuesta ha sido guardada.<br>Puedes cerrar esta ventana.</p>
+      <p style="font-size:13px;color:#555;margin-top:10px;line-height:1.6">Tu respuesta ha sido guardada.<br>Puedes cerrar esta pestaña manualmente.</p>
       <div style="margin-top:18px;background:#fdfaf6;border-radius:16px;padding:14px;border:1px solid #e8e0d6">
         <p style="font-size:11px;color:#8a9a96;letter-spacing:2px">GINA & EDY - 02.01.27</p>
+        <p style="font-size:12px;color:#2f4a44;margin-top:6px">Usa el enlace de WhatsApp si necesitas volver a ver tu invitación.</p>
       </div>
-      <button onclick="try{window.close();}catch(e){}; document.getElementById('seccionPWA').style.display='none'; window.scrollTo({top:0,behavior:'smooth'});" class="btn-outline" style="margin-top:18px">CERRAR VENTANA</button>
+      <button onclick="document.getElementById('seccionPWA').innerHTML='<div style=text-align:center;padding:50px 20px><div class=pwa-logo><img src=./1.png alt=G&E></div><h2 class=serif style=font-size:24px>¡Listo!</h2><p style=font-size:13px;color:#555;margin-top:10px>Ya puedes cerrar esta pestaña.</p></div>'; window.scrollTo({top:0,behavior:'smooth'});" class="btn-outline" style="margin-top:18px">CERRAR</button>
     </div>`;
     secP.style.display='block';
     secP.scrollIntoView({behavior:'smooth', block:'center'});
   }
+  // Guarda que ya vio el flujo para no volver a mostrar PWA automático
+  try{ localStorage.setItem(getCurrentIdKey(), '1'); }catch(e){}
 }
 function cerrarNoGraciasModal(){
   // FIX V33: No gracias tambien va a despedida, no a invitacion
@@ -686,11 +692,13 @@ function cerrarTodoFinal(){
   document.querySelectorAll('.pwa-overlay').forEach(m=>{ m.classList.remove('show'); m.style.display='none'; });
   const secP = document.getElementById('seccionPWA');
   if(secP) secP.style.display='none';
-  // Mostrar estado cancelado en invitacion
+  const areaNormal = document.getElementById('areaNormal');
+  if(areaNormal) areaNormal.style.display='none';
   const area = document.getElementById('areaCongelada');
   if(area){
     area.style.display='block';
-    area.innerHTML='<div class="frozen" style="background:#c0392b"><h3 class="serif">Invitación cancelada</h3><p style="font-size:12px;margin-top:6px">Gracias por avisarnos. Lamentamos que no puedas asistir.</p></div>';
+    area.innerHTML='<div class="frozen" style="background:#c0392b"><h3 class="serif">Invitación cancelada</h3><p style="font-size:12px;margin-top:8px;line-height:1.5">Gracias por avisarnos. Lamentamos que no puedas asistir.<br>Puedes cerrar esta pestaña manualmente.</p><button onclick="document.getElementById(\'areaCongelada\').innerHTML=\'<div class=frozen style=background:#c0392b><h3 class=serif>Cancelada</h3><p style=font-size:12px;margin-top:6px>Puedes cerrar esta pestaña.</p></div>\';" class="btn-outline" style="margin-top:14px;border-color:#c0392b;color:#c0392b;background:white">CERRAR</button></div>';
+    area.scrollIntoView({behavior:'smooth', block:'center'});
   }
 }
 
