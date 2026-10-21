@@ -175,7 +175,7 @@ tr.cancelada td{color:#922b21}
 <div class="sub">Confirmados + Pendientes</div>
 </div>
 <div class="p-box gray">
-<div class="head">Disp Real 264 - Si Van</div>
+<div class="head">Disp Real 250 - Si Van</div>
 <div class="big" id="dDispTot">0</div>
 <div class="sub" id="totalDispSub">250 - 0 = 0</div>
 </div>
@@ -201,7 +201,9 @@ function incLS(id){const m=getLS();m[id]=(m[id]||0)+1;saveLS(m)}
 function getEnvios(id,it){const ls=getLS();return parseInt(it.envios||0)||parseInt(ls[id]||0)||0;}
 function esFamilia(t){return String(t||'').toLowerCase().trim().startsWith('fam')}
 
-function jsonp(u,cb){
+function jsonp(u,cb,opts){
+  opts = opts||{};
+  const timeout = opts.timeout || 25000; // aumentado a 25s para caidas leves
   const n='cb_'+Date.now()+Math.random().toString(36).slice(2);
   let handled = false;
   const timer = setTimeout(() => {
@@ -209,11 +211,14 @@ function jsonp(u,cb){
       handled = true;
       delete window[n];
       if (s && s.parentNode) s.remove();
-      alert('La conexión tardó demasiado. Revisa tu internet o reintenta.');
-      document.getElementById('btnGuardar').disabled = false;
-      document.getElementById('msg').textContent = 'Error de tiempo de espera';
+      // no re-habilita Guardar directo, dispara auditoria
+      if(opts.onTimeout) opts.onTimeout();
+      else {
+        alert('La conexión tardó demasiado. Verificando si se guardó...');
+        document.getElementById('msg').textContent = 'Verificando guardado...';
+      }
     }
-  }, 10000);
+  }, timeout);
 
   window[n]=d=>{
     if (!handled) {
@@ -222,7 +227,16 @@ function jsonp(u,cb){
       try{cb(d);}finally{delete window[n]; if (s && s.parentNode) s.remove();}
     }
   };
-  const s=document.createElement('script');s.src=u+(u.includes('?')?'&':'?')+'callback='+n;document.body.appendChild(s);
+  const s=document.createElement('script');s.src=u+(u.includes('?')?'&':'?')+'callback='+n+'&_='+Date.now();document.body.appendChild(s);
+  s.onerror=()=>{
+    if(!handled){
+      handled=true;
+      clearTimeout(timer);
+      delete window[n];
+      if(s && s.parentNode) s.remove();
+      if(opts.onError) opts.onError();
+    }
+  };
 }
 
 function efectoActualizar(){
@@ -613,7 +627,11 @@ function resetSistema(){
   });
 }
 
+let guardandoEnCurso = false;
+let ultimoIntento = null;
+
 function guardar(){
+  if(guardandoEnCurso){ alert('Ya se está guardando, espera...'); return; }
   const t=document.getElementById('titular').value.trim(),c=document.getElementById('celular').value.trim(),mesa=document.getElementById('mesa').value;
   
   if(!t||!c||!mesa){alert('Faltan datos');return;}
@@ -629,20 +647,67 @@ function guardar(){
   if(m>libres){alert(`Mesa ${mesa} libres ${libres} necesitas ${m}`);return;}
 
   const p={action:'add',titular:t,celular:c,mesa:mesa,adultos:k,ninos:l,grupo:getAcom(),tipo:document.getElementById('tipo').value,categoria:document.getElementById('cat').value};
+  ultimoIntento = {titular:t, celular:c, mesa:mesa, grupo:p.grupo};
   const qs=Object.keys(p).map(k=>k+'='+encodeURIComponent(p[k])).join('&');
   document.getElementById('msg').textContent='Guardando...';
   document.getElementById('btnGuardar').disabled=true;
+  guardandoEnCurso = true;
 
-  jsonp(GS_URL+'?'+qs,r=>{
-    document.getElementById('msg').textContent='OK '+(r.id||'');
+  jsonp(GS_URL+'?'+qs, r=>{
+    guardandoEnCurso = false;
+    if(r && r.duplicado){
+      document.getElementById('msg').textContent='Ya existía ID '+r.id+' (duplicado evitado)';
+    } else {
+      document.getElementById('msg').textContent='OK '+(r.id||'');
+    }
     document.getElementById('btnGuardar').disabled=false;
     cargar();
     document.getElementById('acomList').innerHTML='';
     document.getElementById('titular').value='';document.getElementById('celular').value='';
     document.getElementById('hintTitular').style.display='none';
     document.getElementById('adultos').value=0;document.getElementById('ninos').value=0;
+    ultimoIntento = null;
+  }, {
+    timeout: 25000,
+    onTimeout: ()=>{
+      document.getElementById('msg').textContent='Conexión lenta, verificando si se guardó...';
+      verificarSiSeGuardo();
+    },
+    onError: ()=>{
+      document.getElementById('msg').textContent='Error de red, verificando...';
+      verificarSiSeGuardo();
+    }
   });
 }
+
+function verificarSiSeGuardo(){
+  if(!ultimoIntento){
+    document.getElementById('msg').textContent='No hay intento previo';
+    document.getElementById('btnGuardar').disabled=false;
+    guardandoEnCurso=false;
+    return;
+  }
+  const p={action:'check', titular:ultimoIntento.titular, celular:ultimoIntento.celular, mesa:ultimoIntento.mesa, grupo:ultimoIntento.grupo};
+  const qs=Object.keys(p).map(k=>k+'='+encodeURIComponent(p[k])).join('&');
+  jsonp(GS_URL+'?'+qs, r=>{
+    if(r && r.existe){
+      document.getElementById('msg').textContent='Se guardó en primer intento ID '+r.id+' (no duplicado)';
+      document.getElementById('btnGuardar').disabled=false;
+      guardandoEnCurso=false;
+      cargar();
+      document.getElementById('acomList').innerHTML='';
+      document.getElementById('titular').value='';document.getElementById('celular').value='';
+      document.getElementById('hintTitular').style.display='none';
+      document.getElementById('adultos').value=0;document.getElementById('ninos').value=0;
+      ultimoIntento=null;
+    } else {
+      document.getElementById('msg').textContent='No se encontró guardado, puedes reintentar';
+      document.getElementById('btnGuardar').disabled=false;
+      guardandoEnCurso=false;
+    }
+  }, {timeout:15000});
+}
+
 
 
 // === V20 MESA VISUAL - FUNCIONES VENTANA EMERGENTE ===
