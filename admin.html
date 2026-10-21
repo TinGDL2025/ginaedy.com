@@ -452,21 +452,36 @@ function render(list){
     let m=parseInt(getVal(it, ['lugaresM','lugares','Lugares Asignados','m'])||0)||0;
     const s=parseInt(getVal(it, ['s','lugaresConf','Lugares Confirmados','S'])||0)||0;
     const ad=parseInt(getVal(it, ['ad'])||(esFamilia(it.titular)?0:1))||0;
-    let ab=it.ab!=null?parseInt(it.ab):k;
-    let ac=it.ac!=null?parseInt(it.ac):l;
-    // FIX V29: corrige FAMILIA y NO-FAMILIA en memoria
-    if(esFamilia(it.titular)){
-      // Familia: AB debe ser K (no K+1), AC = L
-      if(ab!==k) ab=k;
-      if(ac!==l) ac=l;
+    // FIX V31 - AUTOMATICO: distingue bug de parcial intencional
+    let abRaw = it.ab!=null ? parseInt(it.ab) : null;
+    let acRaw = it.ac!=null ? parseInt(it.ac) : null;
+    let ab, ac;
+    const esFam = esFamilia(it.titular);
+    if(esFam){
+      if(abRaw===null || isNaN(abRaw)) ab=k;
+      else if(s===m && abRaw===k+1 && acRaw===l-1){
+        // Bug familia total: AB=K+1, AC=L-1 para compensar S==M
+        ab=k; ac=l;
+      } else {
+        ab=Math.min(abRaw, k);
+        if(acRaw===null || isNaN(acRaw)) ac=l;
+        else ac=Math.min(acRaw, l);
+      }
     } else {
-      // No-familia: AB debe ser K (acompañantes), no K+1 (total con titular)
-      // Si viene K+1, le quitamos el titular porque ad ya cuenta 1
-      if(ab===k+1) ab=k;
-      // Si aún viene inflado, forzamos
-      if(ab>k) ab=k;
-      if(ac!==l) ac=l;
+      // No familia
+      if(abRaw===null || isNaN(abRaw)) ab=k;
+      else if(s===m && abRaw===k+1){
+        // Bug no-familia total
+        ab=k;
+      } else {
+        ab=Math.min(abRaw, k);
+      }
+      if(acRaw===null || isNaN(acRaw)) ac=l;
+      else ac=Math.min(acRaw, l);
     }
+    // Seguridad extra: nunca mayor que K/L
+    if(ab>k) ab=k;
+    if(ac>l) ac=l;
     const mesa=getMesaNum(it);
     const esConf=String(getVal(it, ['estatus','Estado','status','V','Estatus'])||it.estatus||'').toLowerCase().includes('confirm');
     if(m===0) m=k+l+ad;
