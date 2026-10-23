@@ -175,7 +175,7 @@ tr.cancelada td{color:#922b21}
 <div class="sub">Confirmados + Pendientes</div>
 </div>
 <div class="p-box gray">
-<div class="head">Disp Real 264 - Si Van</div>
+<div class="head">Disp Real 250 - Si Van</div>
 <div class="big" id="dDispTot">0</div>
 <div class="sub" id="totalDispSub">250 - 0 = 0</div>
 </div>
@@ -520,18 +520,19 @@ function render(list){
   document.getElementById('dConf').textContent=confirmadas;
   const dCancelEl=document.getElementById('dCancel'); if(dCancelEl) dCancelEl.textContent=canceladasCount;
 
-  document.getElementById('pInvT').textContent=mTotal;
-  document.getElementById('pInvSub').textContent=`Adultos ${kTotal+adTotal} + Menores ${lTotal}`;
+  const adultosAsist=abTotal+adConf+kPor+adPor;
+  const menoresAsist=acTotal+lPor;
+  const siVanTotal=sTotal+mPor;
+
+  // FIX DASH: Personas Invitadas = total que asistirán (pendientes+confirmados) para referencia estable
+  document.getElementById('pInvT').textContent=siVanTotal;
+  document.getElementById('pInvSub').textContent=`Adultos ${adultosAsist} + Menores ${menoresAsist}`;
 
   document.getElementById('pConfT').textContent=sTotal;
   document.getElementById('pConfSub').textContent=`Adultos ${abTotal+adConf} + Menores ${acTotal}`;
 
   document.getElementById('pPendT').textContent=mPor;
   document.getElementById('pPendSub').textContent=`Adultos ${kPor+adPor} + Menores ${lPor}`;
-
-  const adultosAsist=abTotal+adConf+kPor+adPor;
-  const menoresAsist=acTotal+lPor;
-  const siVanTotal=sTotal+mPor;
 
   document.getElementById('pAdultAsist').textContent=adultosAsist;
   document.getElementById('pMenorAsist').textContent=menoresAsist;
@@ -713,9 +714,10 @@ function verificarSiSeGuardo(){
 // === V20 MESA VISUAL - FUNCIONES VENTANA EMERGENTE ===
 function getPersonasDeMesa(mesaNum){
   const personas=[];
+  const norm = s=>String(s||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ');
   (DATA||[]).forEach(it=>{
     const esCancelada = String(it.estatus||'').toLowerCase().includes('cancelada') || it.cancelada;
-    if(esCancelada) return; // FIX: canceladas no aparecen en sillas
+    if(esCancelada) return;
     if(getMesaNum(it)!==parseInt(mesaNum)) return;
     const esConf = String(getVal(it, ['estatus','Estado','V'])||it.estatus||'').toLowerCase().includes('confirm');
     const nombresR = getVal(it, ['Grupo - Nombres Completos','grupo','Grupo'])||it.grupo||'';
@@ -723,13 +725,25 @@ function getPersonasDeMesa(mesaNum){
     const fuente = (esConf && nombresT) ? nombresT : nombresR;
     const lista = fuente ? fuente.split(/[,\n]+/).map(s=>s.trim()).filter(Boolean) : [];
     const k = parseInt(getVal(it, ['k','adultos'])||it.k||0);
-    const ad = parseInt(getVal(it, ['ad'])||0);
+    const ad = parseInt(getVal(it, ['ad'])||(esFamilia(it.titular)?0:1))||0;
     const l = parseInt(getVal(it, ['l','ninos'])||it.l||0);
+    const listaAE = it.listaAE || it.listaInvitados || [];
     if(lista.length===0){
       if(it.titular) personas.push({nombre:it.titular,tipo:'adulto',titular:it.titular, esConf, id:it.id});
     } else {
-      lista.forEach((nom, idx)=>{
-        const esMenor = idx >= (k + ad);
+      lista.forEach((nom)=>{
+        let esMenor=false;
+        if(listaAE && listaAE.length){
+          const origIdx = listaAE.findIndex(x=>norm(x)===norm(nom));
+          if(origIdx>=0){
+            esMenor = origIdx >= (k + ad);
+          } else {
+            // fallback si nombre no está en AE (cambio de titular): últimos L son menores
+            esMenor = l>0 && lista.indexOf(nom) >= lista.length - l;
+          }
+        } else {
+          esMenor = l>0 && lista.indexOf(nom) >= lista.length - l;
+        }
         personas.push({nombre:nom, tipo: esMenor?'menor':'adulto', titular:it.titular, esConf, id:it.id});
       });
     }
