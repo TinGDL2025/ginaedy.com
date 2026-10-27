@@ -592,8 +592,20 @@ function render(list){
     const nombresT = getVal(it, ['Nombres Confirmados (quién viene)','Nombres Confirmados','nombresConfirmados','T'])||'';
     // Si V dice Confirmado, usar T, si no, R
     const mostrar = (esConf && nombresT) ? nombresT : nombresR;
+    // VALIDACION V39: si S != AB+AD+AC, marcar
+    let alerta='';
+    if(esConf){
+      const abCheck = parseInt(getVal(it, ['ab'])||it.ab||0)||0;
+      const acCheck = parseInt(getVal(it, ['ac'])||it.ac||0)||0;
+      const adCheck = parseInt(getVal(it, ['ad'])||it.ad||(esFamilia(it.titular)?0:1))||0;
+      const sCheck = parseInt(getVal(it, ['s'])||it.s||0)||0;
+      if(sCheck !== (abCheck+acCheck+adCheck)){
+        alerta = `<br><span style="color:#c0392b;font-size:10px;font-weight:800">⚠️ S${sCheck} != AB${abCheck}+AD${adCheck}+AC${acCheck}=${abCheck+adCheck+acCheck}</span>`;
+      }
+    }
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${idx+1}</td><td><b>${it.titular}</b> <span class="small">(${it.id})</span><br><span class="small">${mostrar}</span></td><td>${mesaInfo}</td><td>${esConf?'Confirmado':it.estatus||'Pendiente'}</td><td>${btnHtml}</td>`;
+    if(alerta) tr.style.background='#fdecea';
+    tr.innerHTML=`<td>${idx+1}</td><td><b>${it.titular}</b> <span class="small">(${it.id})</span><br><span class="small">${mostrar}</span>${alerta}</td><td>${mesaInfo}</td><td>${esConf?'Confirmado':it.estatus||'Pendiente'}</td><td>${btnHtml}</td>`;
     tb.appendChild(tr);
   });
 }
