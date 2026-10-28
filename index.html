@@ -389,8 +389,8 @@ function tieneChecksVisibles(){
 
 function mostrarInvitacionCancelada(idMostrado){
   localStorage.removeItem('invitacionId');
-  const WA_GINA = "5213311111111"; // PENDIENTE: cambia por número real de Gina - Ej: 5213331112223
-  const WA_EDY = "5213322222222"; // PENDIENTE: cambia por número real de Edy - Ej: 5213344445556
+  const WA_GINA = "523310113106"; // PENDIENTE: cambia por número real de Gina - Ej: 5213331112223
+  const WA_EDY = "523311268161"; // PENDIENTE: cambia por número real de Edy - Ej: 5213344445556
   const mensaje = encodeURIComponent(`Hola Gina y Edy, mi invitación ${idMostrado||''} aparece como cancelada. ¿Me pueden ayudar?`);
   document.body.innerHTML = `
     <div style="min-height:100vh;background:#fdfaf6;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Inter,sans-serif">
@@ -569,7 +569,7 @@ function abrirFotos(){
 // === PWA + TUNEL - CONSTANTES Y FUNCIONES CORREGIDAS ===
 
 // === PWA + TUNEL - V32 FINAL ===
-const TUNEL_URL = "https://TU_TUNEL_URL_AQUI.ngrok.io"; // <-- PENDIENTE: cambia por tu ngrok real el día del evento ej: https://abcd-1234.ngrok-free.app
+const TUNEL_URL = "https://shawl-bagful-speller.ngrok-free.dev"; // <-- PENDIENTE: cambia por tu ngrok real el día del evento ej: https://abcd-1234.ngrok-free.app
 const HORARIO_INICIO = new Date('2027-01-02T18:00:00').getTime();
 const HORARIO_FIN = new Date('2027-01-03T02:00:00').getTime();
 const FOTOS_URL = TUNEL_URL;
