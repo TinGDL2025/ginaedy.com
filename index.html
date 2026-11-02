@@ -183,9 +183,9 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
       <div style="display:flex; align-items:center; justify-content:space-between; background:white; border-radius:14px; padding:12px 14px; border:1px solid #e8e0d6;">
         <div style="text-align:left; display:flex; gap:10px; align-items:center;">
           <p style="font-size:18px">💌</p>
-          <div><p style="font-size:11px;font-weight:700;">Acceso Salón</p><p style="font-size:10px;color:#888;">Mesa y nombres</p></div>
+          <div><p style="font-size:11px;font-weight:700;">Invitación</p><p style="font-size:10px;color:#888;">Acceso rápido</p></div>
         </div>
-        <button id="btnPWAInvitacion" onclick="abrirAccesoSalon()" style="background:white; color:#2f4a44; border:1.5px solid #2f4a44; padding:8px 14px; border-radius:20px; font-size:10px; font-weight:800; letter-spacing:0.8px; cursor:pointer; white-space:nowrap;">🎟️ ACCESO AL SALÓN</button>
+        <button id="btnPWAInvitacion" onclick="verInvitacionFlotante()" style="background:white; color:#2f4a44; border:1.5px solid #2f4a44; padding:8px 14px; border-radius:20px; font-size:10px; font-weight:800; letter-spacing:0.8px; cursor:pointer; white-space:nowrap;">💌 INVITACIÓN</button>
       </div>
       <div style="display:flex; align-items:center; justify-content:space-between; background:white; border-radius:14px; padding:12px 14px; border:1px solid #e8e0d6;">
         <div style="text-align:left; display:flex; gap:10px; align-items:center;">
@@ -266,31 +266,6 @@ body{font-family:'Inter',sans-serif;background:#fdfaf6;color:#2f4a44}
     <h3 class="serif" style="font-size:22px;">Gracias por tu retroalimentación</h3>
     <p style="font-size:13px;color:#555;margin-top:10px;line-height:1.6">Sentimos que no puedas asistir.<br>Esperamos verte pronto.</p>
     <button onclick="cerrarTodoFinal()" class="btn" style="margin-top:18px">CERRAR</button>
-  </div>
-</div>
-
-
-<div id="modalAccesoSalon" class="pwa-overlay" onclick="if(event.target.id==='modalAccesoSalon') cerrarAccesoSalon()">
-  <div class="pwa-box" style="max-width:420px">
-    <div class="pwa-logo"><img src="./1.png" alt="G&E"></div>
-    <span class="badge" style="background:#2f4a44;color:white;border-color:#2f4a44">ACCESO AL SALÓN</span>
-    <h3 class="serif" style="font-size:26px;margin-top:12px;">Gina & Edy</h3>
-    <p style="font-size:11px;letter-spacing:3px;color:#8a9a96;margin-top:4px">02.01.27</p>
-    
-    <div style="margin-top:18px;background:#2f4a44;color:white;border-radius:20px;padding:20px;text-align:center">
-      <p style="font-size:10px;letter-spacing:3px;color:#c9a88a">MESA</p>
-      <p id="accesoMesaNum" class="serif" style="font-size:72px;font-weight:700;line-height:1;margin-top:4px">-</p>
-    </div>
-    
-    <div style="margin-top:16px;background:white;border:1px solid #e8e0d6;border-radius:16px;padding:16px;text-align:center">
-      <p style="font-size:10px;letter-spacing:2px;color:#8a9a96">INVITADOS</p>
-      <div id="accesoNombres" style="margin-top:10px;display:flex;flex-direction:column;gap:8px"></div>
-    </div>
-    
-    <p id="accesoTitular" style="font-size:11px;color:#8a9a96;margin-top:12px"></p>
-    
-    <button onclick="cerrarAccesoSalon()" class="btn" style="margin-top:18px">CERRAR</button>
-    <p style="font-size:9px;color:#aaa;margin-top:8px">Presenta esta pantalla en la entrada del salón</p>
   </div>
 </div>
 
@@ -642,79 +617,6 @@ function verInvitacionFlotante(){
   window.scrollTo({top:0, behavior:'smooth'});
   try{ verInvitacion(); }catch(e){}
 }
-function abrirAccesoSalon(){
-  try{
-    const obj = (typeof DATA_ACTUAL!=='undefined' && DATA_ACTUAL) ? DATA_ACTUAL : null;
-    const mesaEl = document.getElementById('accesoMesaNum');
-    const nombresEl = document.getElementById('accesoNombres');
-    const titularEl = document.getElementById('accesoTitular');
-    
-    let mesa = '-';
-    let nombres = [];
-    let titular = '';
-    
-    if(obj){
-      mesa = obj.mesa || obj.Mesa || obj.mesaTxt || '-';
-      // Intentar obtener mesa de varios campos
-      if(mesa=='-' && obj.mesa) mesa=obj.mesa;
-      if(mesa=='-' && document.getElementById('mesaTxt')) mesa=document.getElementById('mesaTxt').textContent||'-';
-      
-      titular = obj.titular || obj.t || '';
-      
-      // Nombres confirmados: listaAE, tConfirmado, g, etc
-      let lista = [];
-      if(obj.listaAE && obj.listaAE.length>0) lista = obj.listaAE;
-      else if(obj.listaInvitados && obj.listaInvitados.length>0) lista = obj.listaInvitados;
-      else if(obj.tConfirmado) lista = obj.tConfirmado.split(',').map(s=>s.trim()).filter(Boolean);
-      else if(obj.nombresConf) lista = obj.nombresConf.split(',').map(s=>s.trim()).filter(Boolean);
-      else if(obj.g) lista = obj.g.split(',').map(s=>s.trim()).filter(Boolean);
-      else if(obj.T) lista = [obj.T];
-      
-      nombres = lista;
-      
-      // Si no hay lista pero hay sConfirmado, usar titular
-      if(nombres.length===0 && titular) nombres=[titular];
-    }else{
-      // Fallback desde DOM
-      let mesaTxt = document.getElementById('mesaTxt');
-      if(mesaTxt) mesa = mesaTxt.textContent||'-';
-      let titularTxt = document.getElementById('titularTxt');
-      if(titularTxt) titular = titularTxt.textContent||'';
-      let nombresConfTxt = document.getElementById('nombresConfTxt');
-      if(nombresConfTxt && nombresConfTxt.textContent && nombresConfTxt.textContent!=='-'){
-        nombres = nombresConfTxt.textContent.split(',').map(s=>s.trim()).filter(Boolean);
-      }else if(titular){
-        nombres=[titular];
-      }
-    }
-    
-    if(mesaEl) mesaEl.textContent = mesa;
-    if(nombresEl){
-      nombresEl.innerHTML='';
-      nombres.forEach(n=>{
-        const div = document.createElement('div');
-        div.style.cssText='background:#fdfaf6;border:1px solid #e8e0d6;border-radius:12px;padding:10px 12px;font-size:13px;color:#2f4a44;font-weight:500';
-        div.textContent = n;
-        nombresEl.appendChild(div);
-      });
-      if(nombres.length===0){
-        nombresEl.innerHTML='<p style="font-size:12px;color:#8a9a96">Sin nombres</p>';
-      }
-    }
-    if(titularEl) titularEl.textContent = titular ? 'Titular: '+titular : '';
-    
-    document.getElementById('modalAccesoSalon').style.display='flex';
-    document.getElementById('modalAccesoSalon').classList.add('show');
-  }catch(e){
-    console.error('abrirAccesoSalon error', e);
-    alert('Error abriendo acceso: '+e.message);
-  }
-}
-function cerrarAccesoSalon(){
-  const m=document.getElementById('modalAccesoSalon');
-  if(m){ m.classList.remove('show'); m.style.display='none'; }
-}
-
 function abrirTunel(){
   const ahora = Date.now();
   if(ahora < HORARIO_INICIO || ahora > HORARIO_FIN){
