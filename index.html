@@ -493,13 +493,6 @@ function renderData(obj){
     if(tipo.includes('fam')) return true;
     return false; 
   }
-    if(flag!==null) return flag;
-    const t=(o.titular||o.t||'').toString().toLowerCase().trim(); 
-    if(t.startsWith('fam')) return true;
-    const tipo=(o.tipo||o.j||'').toString().toLowerCase();
-    if(tipo.includes('fam')) return true;
-    return false; 
-  }
   esFamiliaActual=isFamObj(obj);
   AB_confirmados=K_asignados; AC_confirmados=L_asignados; S_confirmados=M_asignados;
   let tt=document.getElementById('titularTxt'); if(tt) tt.textContent=obj.t||'';
