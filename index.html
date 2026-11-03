@@ -443,9 +443,9 @@ function renderData(obj){
     let an=document.getElementById('areaNormal'); if(an) an.style.display='none';
     let ac=document.getElementById('areaCongelada'); if(ac) ac.style.display='block';
     let fc=document.getElementById('fechaConfTxt'); if(fc) fc.textContent=obj.fechaConfirmacion||'';
-    let sc=document.getElementById('sConfTxt'); if(sc) sc.textContent=obj.sConfirmado||obj.m||0;
+    let sc=document.getElementById('sConfTxt'); if(sc) sc.textContent=obj.sConfirmado||obj.s||obj.m||0;
     let mc=document.getElementById('mConfTxt'); if(mc) mc.textContent=obj.m||0;
-    let nc=document.getElementById('nombresConfTxt'); if(nc) nc.textContent=obj.tConfirmado||obj.g||'';
+    let nc=document.getElementById('nombresConfTxt'); if(nc) nc.textContent=obj.tConfirmado||obj.nombresConf||obj.nombresConfirmados||obj.T||obj.g||'';
     let tt=document.getElementById('titularTxt'); if(tt) tt.textContent=obj.t||obj.tConfirmado||'';
     // FIX V31.1: asegurar que fotos y PWA se muestren tras confirmar aunque haya casillas
     setTimeout(()=>{ try{ mostrarSeccionFotos(); }catch(e){} }, 900);
