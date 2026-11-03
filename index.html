@@ -453,7 +453,21 @@ function renderData(obj){
   }
   DATA_ACTUAL=obj; K_asignados=parseInt(obj.k)||0; L_asignados=parseInt(obj.l)||0; M_asignados=parseInt(obj.m)||0;
   // FIX V33: detectar familia por bandera o por titular
-  function isFamObj(o){      if(!o) return false;      let flag=null;     if(o.esFamilia!==undefined) flag=!!o.esFamilia;      else if(o.familia!==undefined) flag=!!o.familia;      else if(o.esFam!==undefined) flag=!!o.esFam;     let k=parseInt(o.k||0)||0, l=parseInt(o.l||0)||0, m=parseInt(o.m||0)||0;     if(m>0){ if(k+l===m) return true; if(k+l+1===m) return false; }     if(flag!==null) return flag;     const t=(o.titular||o.t||'').toString().toLowerCase().trim();      if(t.startsWith('fam')) return true;     const tipo=(o.tipo||o.j||'').toString().toLowerCase();     if(tipo.includes('fam')) return true;     return false;    }
+  function isFamObj(o){ 
+    if(!o) return false; 
+    let flag=null;
+    if(o.esFamilia!==undefined) flag=!!o.esFamilia; 
+    else if(o.familia!==undefined) flag=!!o.familia; 
+    else if(o.esFam!==undefined) flag=!!o.esFam;
+    let k=parseInt(o.k||0)||0, l=parseInt(o.l||0)||0, m=parseInt(o.m||0)||0;
+    if(m>0){ if(k+l===m) return true; if(k+l+1===m) return false; }
+    if(flag!==null) return flag;
+    const t=(o.titular||o.t||'').toString().toLowerCase().trim(); 
+    if(t.startsWith('fam')) return true;
+    const tipo=(o.tipo||o.j||'').toString().toLowerCase();
+    if(tipo.includes('fam')) return true;
+    return false; 
+  }
   esFamiliaActual=isFamObj(obj);
   AB_confirmados=K_asignados; AC_confirmados=L_asignados; S_confirmados=M_asignados;
   let tt=document.getElementById('titularTxt'); if(tt) tt.textContent=obj.t||'';
